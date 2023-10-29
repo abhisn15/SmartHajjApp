@@ -4,6 +4,7 @@ import 'package:Harmoni/dashboard/kategori/tabunganHaji.dart';
 import 'package:Harmoni/dashboard/kategori/tabunganLangsung.dart';
 import 'package:Harmoni/dashboard/kategori/tabunganQurban.dart';
 import 'package:Harmoni/dashboard/kategori/tabunganUmroh.dart';
+import 'package:Harmoni/dashboard/topupScreen.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:Harmoni/dashboard/productDetail/productDetailScreen.dart';
@@ -580,20 +581,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class TopupScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Topup'),
-      ),
-      body: Center(
-        child: Text('Halaman Topup'),
       ),
     );
   }
