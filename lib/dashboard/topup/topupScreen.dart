@@ -1,15 +1,16 @@
 import 'package:Harmoni/dashboard/topup/topupTabunganScreen.dart';
 import 'package:Harmoni/jamaah/tambahJamaahScreen.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
 
-class DompetScreen extends StatefulWidget {
-  const DompetScreen({Key? key}) : super(key: key);
+class TopupScreen extends StatefulWidget {
+  const TopupScreen({Key? key}) : super(key: key);
 
   @override
-  _DompetScreenState createState() => _DompetScreenState();
+  _TopupScreenState createState() => _TopupScreenState();
 }
 
-class _DompetScreenState extends State<DompetScreen> {
+class _TopupScreenState extends State<TopupScreen> {
   final List<Map<String, dynamic>> totalSaldoTabungan = [
     {
       "id": 1,
@@ -39,6 +40,16 @@ class _DompetScreenState extends State<DompetScreen> {
       "nik": "3174082902345009",
       "paketTabunganUmrah": "Paket Tabungan Umrah Sya`ban (Rp. 35.000.000)"
     },
+    {
+      "id": 3,
+      "title": "",
+      "img": "assets/home/topup.png",
+      "name": "Ricky Setiawan",
+      "totalSaldoTabungan": "Rp. 15.000.000",
+      "nomorVirtualAkun": "9887146700043673",
+      "nik": "3174082902345009",
+      "paketTabunganUmrah": "Paket Tabungan Umrah Sya`ban (Rp. 35.000.000)"
+    },
     // Tambahkan data lainnya di sini
   ];
 
@@ -49,91 +60,24 @@ class _DompetScreenState extends State<DompetScreen> {
     return Scaffold(
       backgroundColor: primaryColor,
       appBar: AppBar(
-        backgroundColor: primaryColor,
-        title: Center(
-          child: Text(
-            'DOMPET',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
+        elevation: 0,
+        backgroundColor: Color.fromRGBO(43, 69, 112, 1),
+        title: Container(
+          padding: EdgeInsets.only(right: 60),
+          child: Center(
+            child: Text(
+              "Topup",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
             ),
           ),
         ),
-        elevation: 0,
       ),
       body: Stack(
         children: <Widget>[
-          // Bagian atas
-          Container(
-            clipBehavior: Clip.none,
-            padding: EdgeInsets.only(top: 20),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: primaryColor,
-            ),
-            child: Column(
-              children: [
-                Container(
-                  clipBehavior: Clip.none,
-                  padding: EdgeInsets.only(bottom: 15),
-                  child: Image.asset('assets/dompet/profile.png'),
-                ),
-                Text(
-                  'ILHAM RAFI',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Container(
-                  clipBehavior: Clip.none,
-                  margin: EdgeInsets.only(top: 8),
-                  child: Text(
-                    '0853 2387 0429',
-                    style: TextStyle(
-                      color: primaryColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 8),
-                  child: Text(
-                    'Transfer on Dec 2, 2020',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Container(
-                  clipBehavior: Clip.none,
-                  margin: EdgeInsets.only(top: 15),
-                  child: Text(
-                    'Rp. 100.000.000',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Container(
-                  clipBehavior: Clip.none,
-                  margin: EdgeInsets.only(top: 24),
-                  child: Image.asset('assets/dompet/info.png'),
-                ),
-              ],
-            ),
-          ),
           Expanded(
             child: DraggableScrollableSheet(
-              initialChildSize: 0.4,
-              minChildSize: MediaQuery.of(context).size.width < 400 ? 0.4 : 0.3,
+              initialChildSize: 1,
+              minChildSize: 1,
               maxChildSize: 1.0,
               builder:
                   (BuildContext context, ScrollController scrollController) {
@@ -145,37 +89,29 @@ class _DompetScreenState extends State<DompetScreen> {
                       topRight: Radius.circular(20.0),
                     ),
                   ),
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.only(bottom: 16),
-                        child: Text(
-                          "____",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 27),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            controller: scrollController,
+                            itemCount: totalSaldoTabungan.length +
+                                listSaldoJamaah.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              if (index < totalSaldoTabungan.length) {
+                                final item = totalSaldoTabungan[index];
+                                return buildTotalSaldoTabunganItem(item);
+                              } else {
+                                final item = listSaldoJamaah[
+                                    index - totalSaldoTabungan.length];
+                                return buildListSaldoJamaahItem(item);
+                              }
+                            },
                           ),
                         ),
-                      ),
-                      Expanded(
-                        child: ListView.builder(
-                          controller: scrollController,
-                          itemCount: totalSaldoTabungan.length +
-                              listSaldoJamaah.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            if (index < totalSaldoTabungan.length) {
-                              final item = totalSaldoTabungan[index];
-                              return buildTotalSaldoTabunganItem(item);
-                            } else {
-                              final item = listSaldoJamaah[
-                                  index - totalSaldoTabungan.length];
-                              return buildListSaldoJamaahItem(item);
-                            }
-                          },
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },
@@ -194,7 +130,7 @@ class _DompetScreenState extends State<DompetScreen> {
         child: Text(
           item['name'],
           style: TextStyle(
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -262,7 +198,10 @@ class _DompetScreenState extends State<DompetScreen> {
     if (item['id'] == 1) {
       return ListTile(
         title: Container(
-          child: Text("List Saldo Jamaah"),
+          child: Text(
+            "List Saldo Jamaah",
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
           margin: EdgeInsets.only(left: 5),
         ),
         subtitle: Container(

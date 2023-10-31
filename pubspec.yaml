@@ -43,6 +43,8 @@ dependencies:
   path: ^1.8.3
   video_player: ^2.7.2
   flutter_launcher_icons: ^0.13.1
+  flutter_cupertino_date_picker_fork: ^1.0.7
+  file_picker: ^6.0.0
 
 flutter_native_splash:
 android: true
@@ -112,7 +114,10 @@ flutter:
     - assets/home/informasi/info_umroh.png
     - assets/home/informasi/haji.png
     - assets/home/informasi/info_qurban.png
+    - assets/home/dropdown_down.png
     - assets/jemaah/papakhan.png
+    - assets/jemaah/tambah.png
+    - assets/jemaah/tanggalLahir.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

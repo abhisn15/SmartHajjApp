@@ -10,16 +10,20 @@ class TabunganQurban extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromRGBO(43, 69, 112, 1),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        title: Row(
           children: [
-            Text(
-              "Tabungan Qurban",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-            ),
-            Text(
-              "Kuatkan tekad, pasang niat, bismillah",
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Tabungan Qurban",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                ),
+                Text(
+                  "Kuatkan tekad, pasang niat, bismillah",
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                ),
+              ],
             ),
           ],
         ),
