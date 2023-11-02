@@ -1,6 +1,6 @@
-import 'package:Harmoni/jamaah/tambahJamaahScreen.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui';
+import 'package:Harmoni/jamaah/detailJamaahScreen.dart';
+import 'package:Harmoni/jamaah/tambahJamaahScreen.dart';
 
 class JamaahScreen extends StatefulWidget {
   const JamaahScreen({Key? key}) : super(key: key);
@@ -10,601 +10,173 @@ class JamaahScreen extends StatefulWidget {
 }
 
 class _JamaahScreenState extends State<JamaahScreen> {
-  bool isTargetVisible = false;
-  double targetTabunganBorderRadius = 20.0;
+  final List<Map<String, dynamic>> daftarJamaah = [
+    {
+      "id": 1,
+      "name": "Ilham Rafi",
+      "nik": "NIK : 31740829088",
+      "location": "Jakarta / Jakarta",
+    },
+    {
+      "id": 2,
+      "name": "Papa Khan",
+      "nik": "NIK : 31740829088",
+      "location": "Jakarta / Jakarta",
+    },
+  ];
+  final primaryColor = Color.fromRGBO(43, 69, 112, 1);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Color.fromRGBO(43, 69, 112, 1),
-        child: ListView(
-          padding: const EdgeInsets.only(top: 30.0),
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(top: 40.0, bottom: 10.0),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Color.fromRGBO(43, 69, 112, 1),
-              ),
-              child: Center(
-                child: Text(
-                  "DAFTAR JAMAAH",
+      appBar: AppBar(
+        backgroundColor: primaryColor,
+        title: Text(
+          "DAFTAR JAMAAH",
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
+        elevation: 0,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20.0),
+        children: [
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TambahJamaahScreen(),
+                ),
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  "+ Tambah Jamaah",
                   style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Color.fromRGBO(43, 69, 112, 1),
                   ),
                 ),
-              ),
+              ],
             ),
-            Container(
-              margin: EdgeInsets.only(top: 20.0),
-              padding: EdgeInsets.only(top: 10.0, left: 24),
-              width: double.infinity,
-              height: 1000,
-              decoration: BoxDecoration(
-                color: Colors.white,
-              ),
-              child: Column(
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TambahJamaahScreen(),
-                        ),
-                      );
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+          ),
+          Column(
+            children: daftarJamaah.map((item) {
+              Color backgroundColor = item["id"] > 1
+                  ? Color.fromRGBO(238, 226, 223, 1)
+                  : Color.fromRGBO(141, 148, 168, 1);
+              Color textColor = item["id"] > 1 ? primaryColor : Colors.white;
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 20.0),
+                padding: const EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.0),
+                  color: backgroundColor,
+                ),
+                child: Row(
+                  children: [
+                    Image.asset("assets/jemaah/papakhan.png"),
+                    const SizedBox(width: 20),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "+ Tambah Jamaah",
+                          item["name"],
                           style: TextStyle(
-                            fontSize: 18,
-                            color: Color.fromRGBO(43, 69, 112, 1),
+                            fontSize: 16,
+                            color: textColor,
+                            fontWeight: FontWeight.bold,
                           ),
+                        ),
+                        Text(
+                          item["nik"],
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: textColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Kota / Provinsi:",
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: item['id'] > 1
+                                    ? primaryColor
+                                    : Color.fromRGBO(255, 255, 255, 1),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              item["location"],
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: item['id'] > 1
+                                    ? primaryColor
+                                    : Color.fromRGBO(255, 255, 255, 1),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DetailJamaahScreen(
+                                      item: item,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Text("Detail"),
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: Size(85, 25),
+                                primary: Color.fromRGBO(43, 69, 112, 1),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14.0),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          TambahJamaahScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Text("Edit"),
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: Size(85, 24),
+                                  primary: primaryColor, // Warna latar belakang
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        14.0), // Border radius sebesar 14
+                                  ),
+                                )),
+                          ],
                         ),
                       ],
                     ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(
-                        top: 0, left: 10, right: 24, bottom: 10),
-                    padding: EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      color: Color.fromRGBO(141, 148, 168, 1),
-                    ),
-                    child: Row(
-                      children: [
-                        Image.asset("assets/jemaah/papakhan.png"),
-                        Container(
-                          margin: EdgeInsets.only(top: 0, left: 20),
-                          padding: EdgeInsets.only(top: 12),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Ilham Rafi',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.left,
-                              ),
-                              Text(
-                                "NIK: 31740829088",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.left,
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: 5),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Kota / Provinsi:",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Color.fromRGBO(255, 255, 255, 1),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                    Text(
-                                      "Jakarta / Jakarta",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Color.fromRGBO(255, 255, 255, 1),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      // Tindakan yang akan dilakukan saat tombol "Detail" ditekan
-                                    },
-                                    child: Text("Detail"),
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize: Size(85, 25),
-                                      primary: Color.fromRGBO(43, 69, 112,
-                                          1), // Warna latar belakang
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            14.0), // Border radius sebesar 14
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      width:
-                                          10), // Memberikan jarak antara tombol "Detail" dan "Edit"
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      // Tindakan yang akan dilakukan saat tombol "Edit" ditekan
-                                    },
-                                    child: Text("Edit"),
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize: Size(85, 24),
-                                      primary: Color.fromRGBO(43, 69, 112,
-                                          1), // Warna latar belakang
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            14.0), // Border radius sebesar 14
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(
-                        top: 0, left: 10, right: 24, bottom: 10),
-                    padding: EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      color: Color.fromRGBO(141, 148, 168, 1),
-                    ),
-                    child: Row(
-                      children: [
-                        Image.asset("assets/jemaah/papakhan.png"),
-                        Container(
-                          margin: EdgeInsets.only(top: 0, left: 20),
-                          padding: EdgeInsets.only(top: 12),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Ilham Rafi',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.left,
-                              ),
-                              Text(
-                                "NIK: 31740829088",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.left,
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: 5),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Kota / Provinsi:",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Color.fromRGBO(255, 255, 255, 1),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                    Text(
-                                      "Jakarta / Jakarta",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Color.fromRGBO(255, 255, 255, 1),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      // Tindakan yang akan dilakukan saat tombol "Detail" ditekan
-                                    },
-                                    child: Text("Detail"),
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize: Size(85, 25),
-                                      primary: Color.fromRGBO(43, 69, 112,
-                                          1), // Warna latar belakang
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            14.0), // Border radius sebesar 14
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      width:
-                                          10), // Memberikan jarak antara tombol "Detail" dan "Edit"
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      // Tindakan yang akan dilakukan saat tombol "Edit" ditekan
-                                    },
-                                    child: Text("Edit"),
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize: Size(85, 24),
-                                      primary: Color.fromRGBO(43, 69, 112,
-                                          1), // Warna latar belakang
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            14.0), // Border radius sebesar 14
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(
-                        top: 0, left: 10, right: 24, bottom: 10),
-                    padding: EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      color: Color.fromRGBO(141, 148, 168, 1),
-                    ),
-                    child: Row(
-                      children: [
-                        Image.asset("assets/jemaah/papakhan.png"),
-                        Container(
-                          margin: EdgeInsets.only(top: 0, left: 20),
-                          padding: EdgeInsets.only(top: 12),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Ilham Rafi',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.left,
-                              ),
-                              Text(
-                                "NIK: 31740829088",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.left,
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: 5),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Kota / Provinsi:",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Color.fromRGBO(255, 255, 255, 1),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                    Text(
-                                      "Jakarta / Jakarta",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Color.fromRGBO(255, 255, 255, 1),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      // Tindakan yang akan dilakukan saat tombol "Detail" ditekan
-                                    },
-                                    child: Text("Detail"),
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize: Size(85, 25),
-                                      primary: Color.fromRGBO(43, 69, 112,
-                                          1), // Warna latar belakang
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            14.0), // Border radius sebesar 14
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      width:
-                                          10), // Memberikan jarak antara tombol "Detail" dan "Edit"
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      // Tindakan yang akan dilakukan saat tombol "Edit" ditekan
-                                    },
-                                    child: Text("Edit"),
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize: Size(85, 24),
-                                      primary: Color.fromRGBO(43, 69, 112,
-                                          1), // Warna latar belakang
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            14.0), // Border radius sebesar 14
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(
-                        top: 0, left: 10, right: 24, bottom: 10),
-                    padding: EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      color: Color.fromRGBO(141, 148, 168, 1),
-                    ),
-                    child: Row(
-                      children: [
-                        Image.asset("assets/jemaah/papakhan.png"),
-                        Container(
-                          margin: EdgeInsets.only(top: 0, left: 20),
-                          padding: EdgeInsets.only(top: 12),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Ilham Rafi',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.left,
-                              ),
-                              Text(
-                                "NIK: 31740829088",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.left,
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: 5),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Kota / Provinsi:",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Color.fromRGBO(255, 255, 255, 1),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                    Text(
-                                      "Jakarta / Jakarta",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Color.fromRGBO(255, 255, 255, 1),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      // Tindakan yang akan dilakukan saat tombol "Detail" ditekan
-                                    },
-                                    child: Text("Detail"),
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize: Size(85, 25),
-                                      primary: Color.fromRGBO(43, 69, 112,
-                                          1), // Warna latar belakang
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            14.0), // Border radius sebesar 14
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      width:
-                                          10), // Memberikan jarak antara tombol "Detail" dan "Edit"
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      // Tindakan yang akan dilakukan saat tombol "Edit" ditekan
-                                    },
-                                    child: Text("Edit"),
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize: Size(85, 24),
-                                      primary: Color.fromRGBO(43, 69, 112,
-                                          1), // Warna latar belakang
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            14.0), // Border radius sebesar 14
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(
-                        top: 0, left: 10, right: 24, bottom: 10),
-                    padding: EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      color: Color.fromRGBO(141, 148, 168, 1),
-                    ),
-                    child: Row(
-                      children: [
-                        Image.asset("assets/jemaah/papakhan.png"),
-                        Container(
-                          margin: EdgeInsets.only(top: 0, left: 20),
-                          padding: EdgeInsets.only(top: 12),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Ilham Rafi',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.left,
-                              ),
-                              Text(
-                                "NIK: 31740829088",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.left,
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: 5),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Kota / Provinsi:",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Color.fromRGBO(255, 255, 255, 1),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                    Text(
-                                      "Jakarta / Jakarta",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Color.fromRGBO(255, 255, 255, 1),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      // Tindakan yang akan dilakukan saat tombol "Detail" ditekan
-                                    },
-                                    child: Text("Detail"),
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize: Size(85, 25),
-                                      primary: Color.fromRGBO(43, 69, 112,
-                                          1), // Warna latar belakang
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            14.0), // Border radius sebesar 14
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      width:
-                                          10), // Memberikan jarak antara tombol "Detail" dan "Edit"
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      // Tindakan yang akan dilakukan saat tombol "Edit" ditekan
-                                    },
-                                    child: Text("Edit"),
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize: Size(85, 24),
-                                      primary: Color.fromRGBO(43, 69, 112,
-                                          1), // Warna latar belakang
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            14.0), // Border radius sebesar 14
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }

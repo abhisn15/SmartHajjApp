@@ -460,7 +460,22 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                         ),
                         child: IntrinsicWidth(
                           child: ElevatedButton(
-                            onPressed: _showImageSourceDialog,
+                            onPressed: () async {
+                              FilePickerResult? result =
+                                  await FilePicker.platform.pickFiles();
+
+                              if (result != null && result.files.isNotEmpty) {
+                                String? filePath = result.files.single.path;
+                                if (filePath != null) {
+                                  File file = File(filePath);
+                                  // Handle the selected file here.
+                                } else {
+                                  // Handle the case where the path is null
+                                }
+                              } else {
+                                // User canceled the picker
+                              }
+                            },
                             style: ButtonStyle(
                               elevation: MaterialStateProperty.all(0),
                               backgroundColor: MaterialStateProperty.all<Color>(
@@ -532,7 +547,22 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                         ),
                         child: IntrinsicWidth(
                           child: ElevatedButton(
-                            onPressed: _showImageSourceDialog,
+                            onPressed: () async {
+                              FilePickerResult? result =
+                                  await FilePicker.platform.pickFiles();
+
+                              if (result != null && result.files.isNotEmpty) {
+                                String? filePath = result.files.single.path;
+                                if (filePath != null) {
+                                  File file = File(filePath);
+                                  // Handle the selected file here.
+                                } else {
+                                  // Handle the case where the path is null
+                                }
+                              } else {
+                                // User canceled the picker
+                              }
+                            },
                             style: ButtonStyle(
                               elevation: MaterialStateProperty.all(0),
                               backgroundColor: MaterialStateProperty.all<Color>(
@@ -604,7 +634,22 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                         ),
                         child: IntrinsicWidth(
                           child: ElevatedButton(
-                            onPressed: _showImageSourceDialog,
+                            onPressed: () async {
+                              FilePickerResult? result =
+                                  await FilePicker.platform.pickFiles();
+
+                              if (result != null && result.files.isNotEmpty) {
+                                String? filePath = result.files.single.path;
+                                if (filePath != null) {
+                                  File file = File(filePath);
+                                  // Handle the selected file here.
+                                } else {
+                                  // Handle the case where the path is null
+                                }
+                              } else {
+                                // User canceled the picker
+                              }
+                            },
                             style: ButtonStyle(
                               elevation: MaterialStateProperty.all(0),
                               backgroundColor: MaterialStateProperty.all<Color>(

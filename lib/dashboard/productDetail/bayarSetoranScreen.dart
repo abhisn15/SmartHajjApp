@@ -1,14 +1,14 @@
 import 'package:Harmoni/dashboard/topup/topupTabunganScreen.dart';
 import 'package:flutter/material.dart';
 
-class TopupScreen extends StatefulWidget {
-  const TopupScreen({Key? key}) : super(key: key);
+class BayaranSetoranScreen extends StatefulWidget {
+  const BayaranSetoranScreen({Key? key}) : super(key: key);
 
   @override
-  _TopupScreenState createState() => _TopupScreenState();
+  _BayaranSetoranScreenState createState() => _BayaranSetoranScreenState();
 }
 
-class _TopupScreenState extends State<TopupScreen> {
+class _BayaranSetoranScreenState extends State<BayaranSetoranScreen> {
   final List<Map<String, dynamic>> totalSaldoTabungan = [
     {
       "id": 1,
@@ -38,16 +38,6 @@ class _TopupScreenState extends State<TopupScreen> {
       "nik": "3174082902345009",
       "paketTabunganUmrah": "Paket Tabungan Umrah Sya`ban (Rp. 35.000.000)"
     },
-    {
-      "id": 3,
-      "title": "",
-      "img": "assets/home/topup.png",
-      "name": "Ricky Setiawan",
-      "totalSaldoTabungan": "Rp. 15.000.000",
-      "nomorVirtualAkun": "9887146700043673",
-      "nik": "3174082902345009",
-      "paketTabunganUmrah": "Paket Tabungan Umrah Sya`ban (Rp. 35.000.000)"
-    },
     // Tambahkan data lainnya di sini
   ];
 
@@ -58,24 +48,91 @@ class _TopupScreenState extends State<TopupScreen> {
     return Scaffold(
       backgroundColor: primaryColor,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Color.fromRGBO(43, 69, 112, 1),
+        backgroundColor: primaryColor,
         title: Container(
-          padding: EdgeInsets.only(right: 60),
-          child: Center(
-            child: Text(
-              "Topup",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+          child: Text(
+            'DOMPET',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
+        elevation: 0,
       ),
       body: Stack(
         children: <Widget>[
+          // Bagian atas
+          Container(
+            clipBehavior: Clip.none,
+            padding: EdgeInsets.only(top: 20),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: primaryColor,
+            ),
+            child: Column(
+              children: [
+                Container(
+                  clipBehavior: Clip.none,
+                  padding: EdgeInsets.only(bottom: 15),
+                  child: Image.asset('assets/dompet/profile.png'),
+                ),
+                Text(
+                  'PAPA KHAN',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Container(
+                  clipBehavior: Clip.none,
+                  margin: EdgeInsets.only(top: 8),
+                  child: Text(
+                    '0853 2387 0429',
+                    style: TextStyle(
+                      color: Color.fromRGBO(141, 148, 168, 1),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 8),
+                  child: Text(
+                    'Transfer on Dec 2, 2020',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Container(
+                  clipBehavior: Clip.none,
+                  margin: EdgeInsets.only(top: 15),
+                  child: Text(
+                    'Rp. 100.000.000',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Container(
+                  clipBehavior: Clip.none,
+                  margin: EdgeInsets.only(top: 24),
+                  child: Image.asset('assets/dompet/info.png'),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: DraggableScrollableSheet(
-              initialChildSize: 1,
-              minChildSize: 1,
+              initialChildSize: 0.5,
+              minChildSize: MediaQuery.of(context).size.width < 400 ? 0.5 : 0.4,
               maxChildSize: 1.0,
               builder:
                   (BuildContext context, ScrollController scrollController) {
@@ -87,29 +144,37 @@ class _TopupScreenState extends State<TopupScreen> {
                       topRight: Radius.circular(20.0),
                     ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 27),
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: ListView.builder(
-                            controller: scrollController,
-                            itemCount: totalSaldoTabungan.length +
-                                listSaldoJamaah.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              if (index < totalSaldoTabungan.length) {
-                                final item = totalSaldoTabungan[index];
-                                return buildTotalSaldoTabunganItem(item);
-                              } else {
-                                final item = listSaldoJamaah[
-                                    index - totalSaldoTabungan.length];
-                                return buildListSaldoJamaahItem(item);
-                              }
-                            },
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          "____",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          controller: scrollController,
+                          itemCount: totalSaldoTabungan.length +
+                              listSaldoJamaah.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (index < totalSaldoTabungan.length) {
+                              final item = totalSaldoTabungan[index];
+                              return buildTotalSaldoTabunganItem(item);
+                            } else {
+                              final item = listSaldoJamaah[
+                                  index - totalSaldoTabungan.length];
+                              return buildListSaldoJamaahItem(item);
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },
@@ -128,7 +193,7 @@ class _TopupScreenState extends State<TopupScreen> {
         child: Text(
           item['name'],
           style: TextStyle(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
@@ -196,10 +261,7 @@ class _TopupScreenState extends State<TopupScreen> {
     if (item['id'] == 1) {
       return ListTile(
         title: Container(
-          child: Text(
-            "List Saldo Jamaah",
-            style: TextStyle(fontWeight: FontWeight.w600),
-          ),
+          child: Text("List Saldo Jamaah"),
           margin: EdgeInsets.only(left: 5),
         ),
         subtitle: Container(

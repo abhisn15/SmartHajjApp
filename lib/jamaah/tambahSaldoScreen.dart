@@ -2,11 +2,7 @@ import 'package:Harmoni/dashboard/productDetail/simulasiScreen.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
-class ProductDetailScreen extends StatelessWidget {
-  final Map<String, dynamic> product;
-
-  ProductDetailScreen({required this.product});
-
+class TambahSaldoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +11,7 @@ class ProductDetailScreen extends StatelessWidget {
           title: Align(
             alignment: Alignment.centerLeft, // Atur perataan teks ke tengah
             child: Text(
-              product["name"],
+              "Tabungan Umroh",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
             ),
           ),
@@ -26,8 +22,8 @@ class ProductDetailScreen extends StatelessWidget {
               Stack(
                 children: <Widget>[
                   Image.asset(
-                    product["detailImg"],
-                    width: double.maxFinite,
+                    "assets/home/detail_products/product_umroh.png",
+                    width: double.infinity,
                   ),
                   Positioned(
                     child: Container(
@@ -46,7 +42,7 @@ class ProductDetailScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            product["name"],
+                            "Tabungan Umroh",
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
@@ -64,7 +60,7 @@ class ProductDetailScreen extends StatelessWidget {
                           ),
                           SizedBox(height: 10),
                           Text(
-                            product["tabungan"],
+                            "Rp. 27.000,00",
                             style: TextStyle(
                                 fontSize: 24,
                                 color: Color.fromRGBO(43, 69, 112, 1),

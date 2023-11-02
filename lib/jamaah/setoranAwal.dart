@@ -1,17 +1,19 @@
 import 'package:Harmoni/jamaah/dompetALL.dart';
 import 'package:flutter/material.dart';
 
-class TopupTabunganScreen extends StatefulWidget {
-  const TopupTabunganScreen({Key? key}) : super(key: key);
+class SetoranAwal extends StatefulWidget {
+  const SetoranAwal({Key? key}) : super(key: key);
 
   @override
-  _TopupTabunganScreenState createState() => _TopupTabunganScreenState();
+  _SetoranAwalState createState() => _SetoranAwalState();
 }
 
-class _TopupTabunganScreenState extends State<TopupTabunganScreen> {
+class _SetoranAwalState extends State<SetoranAwal> {
   final primaryColor = Color.fromRGBO(43, 69, 112, 1);
   final defaultColor = Colors.white;
-
+  final abu = Color.fromRGBO(141, 148, 168, 1);
+  final sedikitAbu = Color.fromRGBO(244, 244, 244, 1);
+  final krems = Color.fromRGBO(238, 226, 223, 1);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +25,7 @@ class _TopupTabunganScreenState extends State<TopupTabunganScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Topup Tabungan",
+                  "Setoran Awal",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 ),
                 Text(
@@ -267,9 +269,7 @@ class _TopupTabunganScreenState extends State<TopupTabunganScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => DompetALL(),
-                    ),
+                    MaterialPageRoute(builder: (context) => DompetALL()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -280,7 +280,7 @@ class _TopupTabunganScreenState extends State<TopupTabunganScreen> {
                   minimumSize: Size(400, 50),
                 ),
                 child: Text(
-                  'BAYAR TOP UP TABUNGAN',
+                  'BAYAR SETORAN AWAL',
                   style: TextStyle(
                     fontSize: 16.0,
                     color: Colors.white,
