@@ -1,5 +1,5 @@
 import 'package:Harmoni/dompet/dompetScreen.dart';
-import 'package:Harmoni/profileScreen.dart';
+import 'package:Harmoni/profile/profileScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:Harmoni/dashboard/dashboardScreen.dart';
 import 'package:Harmoni/jamaah/jamaahScreen.dart';

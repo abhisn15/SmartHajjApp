@@ -128,410 +128,393 @@ class DetailJamaahScreen extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(
-            child: DraggableScrollableSheet(
-              initialChildSize: 0.5,
-              minChildSize: MediaQuery.of(context).size.width < 400 ? 0.5 : 0.4,
-              maxChildSize: 1.0,
-              builder:
-                  (BuildContext context, ScrollController scrollController) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20.0),
-                      topRight: Radius.circular(20.0),
-                    ),
+
+          DraggableScrollableSheet(
+            initialChildSize: 0.5,
+            minChildSize: MediaQuery.of(context).size.width < 400 ? 0.5 : 0.3,
+            maxChildSize: 1.0,
+            builder: (BuildContext context, ScrollController scrollController) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0),
                   ),
-                  child: ListView(
-                    controller: scrollController,
-                    children: [
-                      Column(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.only(bottom: 16),
-                            child: Text(
-                              "____",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
-                              ),
+                ),
+                child: ListView(
+                  controller: scrollController,
+                  children: [
+                    Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(bottom: 16),
+                          child: Text(
+                            "____",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                          Column(
+                        ),
+                        Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.symmetric(horizontal: 20),
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              width: double.infinity,
+                              height: 75,
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5)),
+                                  color: Color.fromRGBO(141, 148, 168, 1)),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                      margin: EdgeInsets.only(right: 20),
+                                      child:
+                                          Image.asset("assets/home/topup.png")),
+                                  Container(
+                                    margin: EdgeInsets.symmetric(vertical: 20),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          margin:
+                                              EdgeInsets.only(right: 100 * 1),
+                                          child: Text(
+                                            "Virtual Account BCA",
+                                            style: TextStyle(
+                                              color: defaultColor,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          margin:
+                                              EdgeInsets.only(right: 160 * 1),
+                                          child: Text(
+                                            "8923******",
+                                            style: TextStyle(
+                                              color: defaultColor,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                      child: Image.asset(
+                                          "assets/home/dropdown_down.png"))
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+                          width: double.infinity,
+                          height: 160,
+                          decoration: BoxDecoration(
+                              color: Color.fromRGBO(141, 148, 168, 1),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5))),
+                          child: Row(
                             children: [
                               Container(
-                                margin: EdgeInsets.symmetric(horizontal: 20),
-                                padding: EdgeInsets.symmetric(horizontal: 20),
-                                width: double.infinity,
-                                height: 75,
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(5)),
-                                    color: Color.fromRGBO(141, 148, 168, 1)),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Container(
-                                        margin: EdgeInsets.only(right: 20),
-                                        child: Image.asset(
-                                            "assets/home/topup.png")),
-                                    Container(
-                                      margin:
-                                          EdgeInsets.symmetric(vertical: 20),
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            margin:
-                                                EdgeInsets.only(right: 100 * 1),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 25,
+                                  ),
+                                  child: Image.asset(
+                                    "assets/tabunganUmroh.png",
+                                  )),
+                              Column(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(top: 20),
+                                    width: 220,
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          "Paket Tabungan Umroh Ramadhan",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w700,
+                                              color: defaultColor),
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.only(top: 5),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "Jumlah Tabungan: Rp. 15.000.000,00",
+                                                style: TextStyle(
+                                                    fontSize: 11,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: defaultColor),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.only(top: 5),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "VA: 12384859503",
+                                                style: TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: defaultColor),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      TopupTabunganScreen(),
+                                                ),
+                                              );
+                                            },
+                                            style: ButtonStyle(
+                                              minimumSize: MaterialStateProperty
+                                                  .all(Size(double.infinity,
+                                                      30)), // Mengganti maximumSize ke minimumSize
+                                              backgroundColor:
+                                                  MaterialStateProperty.all(
+                                                      primaryColor),
+                                              shape: MaterialStateProperty.all(
+                                                RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                              ),
+                                              // Sesuaikan properti lain sesuai kebutuhan
+                                            ),
                                             child: Text(
-                                              "Virtual Account BCA",
+                                              "Topup Tabungan",
                                               style: TextStyle(
-                                                color: defaultColor,
-                                                fontWeight: FontWeight.w700,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600,
                                               ),
                                             ),
                                           ),
-                                          Container(
-                                            margin:
-                                                EdgeInsets.only(right: 160 * 1),
-                                            child: Text(
-                                              "8923******",
-                                              style: TextStyle(
-                                                color: defaultColor,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                        )
+                                      ],
                                     ),
-                                    Container(
-                                        child: Image.asset(
-                                            "assets/home/dropdown_down.png"))
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                          Container(
-                            margin:
-                                EdgeInsets.only(top: 20, left: 20, right: 20),
-                            width: double.infinity,
-                            height: 160,
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(141, 148, 168, 1),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(5))),
-                            child: Row(
-                              children: [
-                                Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 25,
-                                    ),
-                                    child: Image.asset(
-                                      "assets/tabunganUmroh.png",
-                                    )),
-                                Column(
-                                  children: [
-                                    Container(
-                                      margin: EdgeInsets.only(top: 20),
-                                      width: 220,
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            "Paket Tabungan Umroh Ramadhan",
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700,
-                                                color: defaultColor),
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(top: 5),
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  "Jumlah Tabungan: Rp. 15.000.000,00",
-                                                  style: TextStyle(
-                                                      fontSize: 11,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      color: defaultColor),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(top: 5),
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  "VA: 12384859503",
-                                                  style: TextStyle(
-                                                      fontSize: 13,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      color: defaultColor),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Container(
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        TopupTabunganScreen(),
-                                                  ),
-                                                );
-                                              },
-                                              style: ButtonStyle(
-                                                minimumSize: MaterialStateProperty
-                                                    .all(Size(double.infinity,
-                                                        30)), // Mengganti maximumSize ke minimumSize
-                                                backgroundColor:
-                                                    MaterialStateProperty.all(
-                                                        primaryColor),
-                                                shape:
-                                                    MaterialStateProperty.all(
-                                                  RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                  ),
-                                                ),
-                                                // Sesuaikan properti lain sesuai kebutuhan
-                                              ),
-                                              child: Text(
-                                                "Topup Tabungan",
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+                          width: double.infinity,
+                          height: 160,
+                          decoration: BoxDecoration(
+                              color: Color.fromRGBO(141, 148, 168, 1),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5))),
+                          child: Row(
+                            children: [
+                              Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 25,
+                                  ),
+                                  child: Image.asset(
+                                    "assets/tabunganUmroh.png",
+                                  )),
+                              Column(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(top: 20),
+                                    width: 220,
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          "Paket Tabungan Umroh Ramadhan",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w700,
+                                              color: defaultColor),
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.only(top: 5),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "Jumlah Tabungan: Rp. 15.000.000,00",
                                                 style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
+                                                    fontSize: 11,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: defaultColor),
                                               ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin:
-                                EdgeInsets.only(top: 20, left: 20, right: 20),
-                            width: double.infinity,
-                            height: 160,
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(141, 148, 168, 1),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(5))),
-                            child: Row(
-                              children: [
-                                Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 25,
-                                    ),
-                                    child: Image.asset(
-                                      "assets/tabunganUmroh.png",
-                                    )),
-                                Column(
-                                  children: [
-                                    Container(
-                                      margin: EdgeInsets.only(top: 20),
-                                      width: 220,
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            "Paket Tabungan Umroh Ramadhan",
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700,
-                                                color: defaultColor),
+                                            ],
                                           ),
-                                          Container(
-                                            margin: EdgeInsets.only(top: 5),
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  "Jumlah Tabungan: Rp. 15.000.000,00",
-                                                  style: TextStyle(
-                                                      fontSize: 11,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      color: defaultColor),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(top: 5),
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  "VA: 12384859503",
-                                                  style: TextStyle(
-                                                      fontSize: 13,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      color: defaultColor),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Container(
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        TopupTabunganScreen(),
-                                                  ),
-                                                );
-                                              },
-                                              style: ButtonStyle(
-                                                minimumSize: MaterialStateProperty
-                                                    .all(Size(double.infinity,
-                                                        30)), // Mengganti maximumSize ke minimumSize
-                                                backgroundColor:
-                                                    MaterialStateProperty.all(
-                                                        primaryColor),
-                                                shape:
-                                                    MaterialStateProperty.all(
-                                                  RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                  ),
-                                                ),
-                                                // Sesuaikan properti lain sesuai kebutuhan
-                                              ),
-                                              child: Text(
-                                                "Topup Tabungan",
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.only(top: 5),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "VA: 12384859503",
                                                 style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w600,
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: defaultColor),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      TopupTabunganScreen(),
+                                                ),
+                                              );
+                                            },
+                                            style: ButtonStyle(
+                                              minimumSize: MaterialStateProperty
+                                                  .all(Size(double.infinity,
+                                                      30)), // Mengganti maximumSize ke minimumSize
+                                              backgroundColor:
+                                                  MaterialStateProperty.all(
+                                                      primaryColor),
+                                              shape: MaterialStateProperty.all(
+                                                RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
                                                 ),
                                               ),
+                                              // Sesuaikan properti lain sesuai kebutuhan
                                             ),
-                                          )
-                                        ],
-                                      ),
+                                            child: Text(
+                                              "Topup Tabungan",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                          Container(
-                            margin:
-                                EdgeInsets.only(top: 20, left: 20, right: 20),
-                            width: double.infinity,
-                            height: 160,
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(141, 148, 168, 1),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(5))),
-                            child: Row(
-                              children: [
-                                Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 25,
-                                    ),
-                                    child: Image.asset(
-                                      "assets/tabunganUmroh.png",
-                                    )),
-                                Column(
-                                  children: [
-                                    Container(
-                                      margin: EdgeInsets.only(top: 20),
-                                      width: 220,
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            "Paket Tabungan Umroh Ramadhan",
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700,
-                                                color: defaultColor),
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(top: 10),
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  "Rp. 2.000.000,00",
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      color: defaultColor),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Container(
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        TambahSaldoScreen(),
-                                                  ),
-                                                );
-                                              },
-                                              style: ButtonStyle(
-                                                minimumSize: MaterialStateProperty
-                                                    .all(Size(double.infinity,
-                                                        30)), // Mengganti maximumSize ke minimumSize
-                                                backgroundColor:
-                                                    MaterialStateProperty.all(
-                                                        primaryColor),
-                                                shape:
-                                                    MaterialStateProperty.all(
-                                                  RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                  ),
-                                                ),
-                                                // Sesuaikan properti lain sesuai kebutuhan
-                                              ),
-                                              child: Text(
-                                                "Tambah Saldo",
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+                          width: double.infinity,
+                          height: 160,
+                          decoration: BoxDecoration(
+                              color: Color.fromRGBO(141, 148, 168, 1),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5))),
+                          child: Row(
+                            children: [
+                              Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 25,
+                                  ),
+                                  child: Image.asset(
+                                    "assets/tabunganUmroh.png",
+                                  )),
+                              Column(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(top: 20),
+                                    width: 220,
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          "Paket Tabungan Umroh Ramadhan",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w700,
+                                              color: defaultColor),
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.only(top: 10),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "Rp. 2.000.000,00",
                                                 style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w600,
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: defaultColor),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      TambahSaldoScreen(),
+                                                ),
+                                              );
+                                            },
+                                            style: ButtonStyle(
+                                              minimumSize: MaterialStateProperty
+                                                  .all(Size(double.infinity,
+                                                      30)), // Mengganti maximumSize ke minimumSize
+                                              backgroundColor:
+                                                  MaterialStateProperty.all(
+                                                      primaryColor),
+                                              shape: MaterialStateProperty.all(
+                                                RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
                                                 ),
                                               ),
+                                              // Sesuaikan properti lain sesuai kebutuhan
                                             ),
-                                          )
-                                        ],
-                                      ),
+                                            child: Text(
+                                              "Tambah Saldo",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         ],
       ),

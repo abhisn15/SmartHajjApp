@@ -154,7 +154,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             Padding(
                               padding: const EdgeInsets.only(bottom: 10.0),
                               child: Text(
-                                "PAPA KHAN",
+                                "ILHAM RAFI",
                                 style: TextStyle(
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
@@ -163,7 +163,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                             ),
                             Text(
-                              "0853 1481 8119",
+                              "0853 2387 0429",
                               style: TextStyle(
                                 fontSize: 12.0,
                                 fontWeight: FontWeight.bold,

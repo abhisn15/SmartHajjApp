@@ -196,7 +196,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                 Container(
                                   margin: EdgeInsets.only(left: 50 * 1),
                                   child: Text(
-                                    "RAMADHAN 1448  H / 2024 M",
+                                    "RAMADHAN 1448 H / 2024 M",
                                     style: TextStyle(fontSize: 16, color: abu),
                                   ),
                                 ),

@@ -1,4 +1,5 @@
 import 'package:Harmoni/dashboard/topup/topupTabunganScreen.dart';
+import 'package:Harmoni/dompet/ProgressPaunter.dart';
 import 'package:flutter/material.dart';
 
 class DompetALL extends StatefulWidget {
@@ -49,12 +50,15 @@ class _DompetALLState extends State<DompetALL> {
       appBar: AppBar(
         backgroundColor: primaryColor,
         title: Container(
-          child: Text(
-            'DOMPET',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
+          margin: EdgeInsets.only(right: 50),
+          child: Center(
+            child: Text(
+              'DOMPET',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ),
@@ -128,56 +132,53 @@ class _DompetALLState extends State<DompetALL> {
               ],
             ),
           ),
-          Expanded(
-            child: DraggableScrollableSheet(
-              initialChildSize: 0.5,
-              minChildSize: MediaQuery.of(context).size.width < 400 ? 0.5 : 0.4,
-              maxChildSize: 1.0,
-              builder:
-                  (BuildContext context, ScrollController scrollController) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20.0),
-                      topRight: Radius.circular(20.0),
+          DraggableScrollableSheet(
+            initialChildSize: 0.5,
+            minChildSize: MediaQuery.of(context).size.width < 400 ? 0.5 : 0.3,
+            maxChildSize: 1.0,
+            builder: (BuildContext context, ScrollController scrollController) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(bottom: 16),
+                      child: Text(
+                        "____",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.only(bottom: 16),
-                        child: Text(
-                          "____",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                    Expanded(
+                      child: ListView.builder(
+                        controller: scrollController,
+                        itemCount:
+                            totalSaldoTabungan.length + listSaldoJamaah.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (index < totalSaldoTabungan.length) {
+                            final item = totalSaldoTabungan[index];
+                            return buildTotalSaldoTabunganItem(item);
+                          } else {
+                            final item = listSaldoJamaah[
+                                index - totalSaldoTabungan.length];
+                            return buildListSaldoJamaahItem(item);
+                          }
+                        },
                       ),
-                      Expanded(
-                        child: ListView.builder(
-                          controller: scrollController,
-                          itemCount: totalSaldoTabungan.length +
-                              listSaldoJamaah.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            if (index < totalSaldoTabungan.length) {
-                              final item = totalSaldoTabungan[index];
-                              return buildTotalSaldoTabunganItem(item);
-                            } else {
-                              final item = listSaldoJamaah[
-                                  index - totalSaldoTabungan.length];
-                              return buildListSaldoJamaahItem(item);
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -226,17 +227,14 @@ class _DompetALLState extends State<DompetALL> {
             ),
             Container(
               margin: EdgeInsets.only(top: 5, bottom: 5),
-              child: LinearProgressIndicator(
-                value: (double.tryParse(item['totalSaldoTabungan']
-                            .replaceAll('Rp. ', '')
-                            .replaceAll(',', '')) ??
-                        0) /
-                    (double.tryParse(item['target']
-                            .replaceAll('Rp. ', '')
-                            .replaceAll(',', '')) ??
-                        1),
-                backgroundColor: Color.fromRGBO(250, 208, 208, 1),
-                valueColor: AlwaysStoppedAnimation(Colors.green),
+              width: double.infinity,
+              color: Colors.green,
+              height: 4,
+              child: Container(
+                child: CustomPaint(
+                  painter:
+                      ProgressPainter(), // Buat CustomPainter untuk menggambar garis progres
+                ),
               ),
             ),
             Text(
@@ -304,6 +302,13 @@ class _DompetALLState extends State<DompetALL> {
                 color: Colors.green,
                 width: double.infinity,
                 height: 4,
+                child: Container(
+                  margin: EdgeInsets.only(left: 150),
+                  child: CustomPaint(
+                    painter:
+                        ProgressPainter(), // Buat CustomPainter untuk menggambar garis progres
+                  ),
+                ),
               ),
               // Tambahkan tampilan lainnya seperti nomorVirtualAkun, nik, dan paketTabunganUmrah
               Text(
@@ -432,6 +437,12 @@ class _DompetALLState extends State<DompetALL> {
                 color: Colors.green,
                 width: double.infinity,
                 height: 4,
+                child: Container(
+                  child: CustomPaint(
+                    painter:
+                        ProgressPainter(), // Buat CustomPainter untuk menggambar garis progres
+                  ),
+                ),
               ),
               Text(
                 "Nomor Virtual Akun",

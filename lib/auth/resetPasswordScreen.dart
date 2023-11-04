@@ -1,12 +1,21 @@
 import 'package:Harmoni/auth/daftarScreen.dart';
-import 'package:Harmoni/auth/lupaPasswordScreen.dart';
-import 'package:Harmoni/dashboard/dashboardScreen.dart';
+import 'package:Harmoni/auth/loginScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:Harmoni/BottomNavigationBar.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
 
-class LoginScreen extends StatelessWidget {
+class ResetPasswordScreen extends StatefulWidget {
+  @override
+  _ResetPasswordScreenState createState() => _ResetPasswordScreenState();
+}
+
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
+
+  bool passwordsMatch = true;
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -29,46 +38,33 @@ class LoginScreen extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(bottom: 30.0),
                 child: Text(
-                  "LOGIN",
+                  "RESET PASSWORD",
                   style: TextStyle(
-                    fontSize: 32.0,
+                    fontSize: 24.0,
                     fontWeight: FontWeight.bold,
                     color: Color.fromRGBO(43, 69, 112, 1),
                   ),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: 10.0,
-                  horizontal: 16.0,
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Color(0xFFf4f4f4), // Warna latar belakang email
-                    borderRadius: BorderRadius.circular(70.0), // Border radius
-                  ),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      labelText: 'Email, Username, atau Nomor Telepon',
-                      labelStyle: TextStyle(fontSize: 14.0),
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 18.0,
-                        horizontal: 20.0,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 0.0),
-              Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Color(0xFFf4f4f4), // Warna latar belakang password
-                    borderRadius: BorderRadius.circular(70.0), // Border radius
+                    color: Color(0xFFf4f4f4),
+                    borderRadius: BorderRadius.circular(70.0),
                   ),
                   child: TextField(
+                    controller: passwordController,
+                    onChanged: (value) {
+                      setState(() {
+                        if (confirmPasswordController.text.isNotEmpty &&
+                            confirmPasswordController.text != value) {
+                          passwordsMatch = false;
+                        } else {
+                          passwordsMatch = true;
+                        }
+                      });
+                    },
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       labelText: 'Password',
@@ -83,33 +79,41 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(
-                  bottom: 10.0,
-                  top: 0.0,
-                ),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LupaPasswoardScreen(),
-                        ),
-                      );
+                padding: EdgeInsets.all(16.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Color(0xFFf4f4f4),
+                    borderRadius: BorderRadius.circular(70.0),
+                    border: Border.all(
+                      color: (confirmPasswordController.text !=
+                              passwordController.text)
+                          ? Colors.red
+                          : Colors.transparent,
+                      width: 2.0,
+                    ),
+                  ),
+                  child: TextField(
+                    controller: confirmPasswordController,
+                    onChanged: (value) {
+                      setState(() {
+                        if (passwordController.text.isEmpty ||
+                            value != passwordController.text) {
+                          passwordsMatch = false;
+                        } else {
+                          passwordsMatch = true;
+                        }
+                      });
                     },
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        right: 40.0,
-                      ),
-                      child: Text(
-                        'Lupa Password?',
-                        style: TextStyle(
-                          color: Color.fromRGBO(43, 69, 112, 1),
-                          decoration: TextDecoration.none,
-                        ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      labelText: 'Confirm Password',
+                      labelStyle: TextStyle(fontSize: 15.0),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 18.0,
+                        horizontal: 20.0,
                       ),
                     ),
+                    obscureText: true,
                   ),
                 ),
               ),
@@ -118,18 +122,16 @@ class LoginScreen extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: ElevatedButton(
                   onPressed: () {
-                    try {
-                      // Tambahkan logika otentikasi Anda di sini
-                      // Jika otentikasi berhasil, arahkan pengguna ke DashboardScreen
+                    // Tambahkan logika otentikasi Anda di sini
+                    // Jika otentikasi berhasil, arahkan pengguna ke DashboardScreen
+                    if (passwordController.text ==
+                        confirmPasswordController.text) {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => BottomNavigationBarExample(),
+                          builder: (context) => LoginScreen(),
                         ),
                       );
-                    } catch (e) {
-                      print('Error: $e');
-                      // Handle the error or show a message to the user.
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -140,7 +142,7 @@ class LoginScreen extends StatelessWidget {
                     minimumSize: Size(350, 58),
                   ),
                   child: Text(
-                    'Masuk',
+                    'Change Password',
                     style: TextStyle(
                       fontSize: 24.0,
                       color: Color.fromRGBO(43, 69, 112, 1),
@@ -167,7 +169,7 @@ class LoginScreen extends StatelessWidget {
                   alignment: Alignment.center,
                   child: InkWell(
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => DaftarScreen(),

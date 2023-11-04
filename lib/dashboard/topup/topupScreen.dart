@@ -1,4 +1,5 @@
 import 'package:Harmoni/dashboard/topup/topupTabunganScreen.dart';
+import 'package:Harmoni/dompet/ProgressPaunter.dart';
 import 'package:flutter/material.dart';
 
 class TopupScreen extends StatefulWidget {
@@ -72,48 +73,45 @@ class _TopupScreenState extends State<TopupScreen> {
       ),
       body: Stack(
         children: <Widget>[
-          Expanded(
-            child: DraggableScrollableSheet(
-              initialChildSize: 1,
-              minChildSize: 1,
-              maxChildSize: 1.0,
-              builder:
-                  (BuildContext context, ScrollController scrollController) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20.0),
-                      topRight: Radius.circular(20.0),
-                    ),
+          DraggableScrollableSheet(
+            initialChildSize: 1,
+            minChildSize: 1,
+            maxChildSize: 1.0,
+            builder: (BuildContext context, ScrollController scrollController) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 27),
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: ListView.builder(
-                            controller: scrollController,
-                            itemCount: totalSaldoTabungan.length +
-                                listSaldoJamaah.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              if (index < totalSaldoTabungan.length) {
-                                final item = totalSaldoTabungan[index];
-                                return buildTotalSaldoTabunganItem(item);
-                              } else {
-                                final item = listSaldoJamaah[
-                                    index - totalSaldoTabungan.length];
-                                return buildListSaldoJamaahItem(item);
-                              }
-                            },
-                          ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 27),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          controller: scrollController,
+                          itemCount: totalSaldoTabungan.length +
+                              listSaldoJamaah.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (index < totalSaldoTabungan.length) {
+                              final item = totalSaldoTabungan[index];
+                              return buildTotalSaldoTabunganItem(item);
+                            } else {
+                              final item = listSaldoJamaah[
+                                  index - totalSaldoTabungan.length];
+                              return buildListSaldoJamaahItem(item);
+                            }
+                          },
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -128,7 +126,7 @@ class _TopupScreenState extends State<TopupScreen> {
         child: Text(
           item['name'],
           style: TextStyle(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
@@ -162,17 +160,14 @@ class _TopupScreenState extends State<TopupScreen> {
             ),
             Container(
               margin: EdgeInsets.only(top: 5, bottom: 5),
-              child: LinearProgressIndicator(
-                value: (double.tryParse(item['totalSaldoTabungan']
-                            .replaceAll('Rp. ', '')
-                            .replaceAll(',', '')) ??
-                        0) /
-                    (double.tryParse(item['target']
-                            .replaceAll('Rp. ', '')
-                            .replaceAll(',', '')) ??
-                        1),
-                backgroundColor: Color.fromRGBO(250, 208, 208, 1),
-                valueColor: AlwaysStoppedAnimation(Colors.green),
+              width: double.infinity,
+              height: 4,
+              color: Colors.green,
+              child: Container(
+                child: CustomPaint(
+                  painter:
+                      ProgressPainter(), // Buat CustomPainter untuk menggambar garis progres
+                ),
               ),
             ),
             Text(
@@ -198,7 +193,9 @@ class _TopupScreenState extends State<TopupScreen> {
         title: Container(
           child: Text(
             "List Saldo Jamaah",
-            style: TextStyle(fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+            ),
           ),
           margin: EdgeInsets.only(left: 5),
         ),
@@ -243,6 +240,13 @@ class _TopupScreenState extends State<TopupScreen> {
                 color: Colors.green,
                 width: double.infinity,
                 height: 4,
+                child: Container(
+                  margin: EdgeInsets.only(left: 150),
+                  child: CustomPaint(
+                    painter:
+                        ProgressPainter(), // Buat CustomPainter untuk menggambar garis progres
+                  ),
+                ),
               ),
               // Tambahkan tampilan lainnya seperti nomorVirtualAkun, nik, dan paketTabunganUmrah
               Text(
@@ -371,6 +375,10 @@ class _TopupScreenState extends State<TopupScreen> {
                 color: Colors.green,
                 width: double.infinity,
                 height: 4,
+                child: CustomPaint(
+                  painter:
+                      ProgressPainter(), // Buat CustomPainter untuk menggambar garis progres
+                ),
               ),
               Text(
                 "Nomor Virtual Akun",
@@ -449,7 +457,7 @@ class _TopupScreenState extends State<TopupScreen> {
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),

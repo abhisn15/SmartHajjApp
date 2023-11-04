@@ -31,9 +31,11 @@ class _JamaahScreenState extends State<JamaahScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
-        title: Text(
-          "DAFTAR JAMAAH",
-          style: TextStyle(fontWeight: FontWeight.w700),
+        title: Center(
+          child: Text(
+            "DAFTAR JAMAAH",
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
         ),
         elevation: 0,
       ),

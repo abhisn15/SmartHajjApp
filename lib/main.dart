@@ -6,10 +6,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 void main() {
-  FlutterError.onError = (details) {
-    FlutterError.presentError(details);
-    if (kReleaseMode) exit(1);
-  };
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(MyApp());

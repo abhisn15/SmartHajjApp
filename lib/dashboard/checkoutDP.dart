@@ -1,78 +1,70 @@
-import 'package:Harmoni/BottomNavigationBar.dart';
-import 'package:Harmoni/dashboard/dashboardScreen.dart';
-import 'package:Harmoni/dompet/dompetScreen.dart';
 import 'package:Harmoni/jamaah/dompetALL.dart';
 import 'package:flutter/material.dart';
 
-class SetoranAwalScreen extends StatefulWidget {
-  const SetoranAwalScreen({Key? key}) : super(key: key);
+class CheckoutDP extends StatefulWidget {
+  const CheckoutDP({Key? key}) : super(key: key);
 
   @override
-  _SetoranAwalScreenState createState() => _SetoranAwalScreenState();
+  _CheckoutDPState createState() => _CheckoutDPState();
 }
 
-class _SetoranAwalScreenState extends State<SetoranAwalScreen> {
-  final primaryColor = Color.fromRGBO(43, 69, 112, 1);
-  final defaultColor = Colors.white;
-  final abu = Color.fromRGBO(141, 148, 168, 1);
-  final sedikitAbu = Color.fromRGBO(244, 244, 244, 1);
-  final krems = Color.fromRGBO(238, 226, 223, 1);
+final primaryColor = Color.fromRGBO(43, 69, 112, 1);
+final defaultColor = Colors.white;
+final abu = Color.fromRGBO(141, 148, 168, 1);
+final sedikitAbu = Color.fromRGBO(244, 244, 244, 1);
+final krems = Color.fromRGBO(238, 226, 223, 1);
+
+class _CheckoutDPState extends State<CheckoutDP> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color.fromRGBO(43, 69, 112, 1),
-        title: Row(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Setoran Awal",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                ),
-                Text(
-                  "Kuatkan tekad, pasang niat, bismillah",
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
-                ),
-              ],
-            ),
-          ],
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: primaryColor,
+          title: Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Checkout DP",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                  ),
+                  Text(
+                    "Kuatkan tekad, pasang niat, bismillah",
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
+        body: SingleChildScrollView(
+            child: Column(
           children: <Widget>[
             Container(
-              height: 140,
-              decoration: BoxDecoration(color: Colors.white),
+              width: double.infinity,
+              height: 100,
+              color: defaultColor,
               child: Center(
-                  child: Text(
-                "SILAHKAN TRANSFER KE REKENING BERIKUT",
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
-              )),
+                child: Text("SILAKAN TRANSFER KE REKENING BERIKUT"),
+              ),
             ),
             Container(
-              height: 300,
-              padding: EdgeInsets.only(top: 20, left: 20, right: 20),
+              padding: EdgeInsets.symmetric(vertical: 24),
               width: double.infinity,
-              decoration: BoxDecoration(color: primaryColor),
+              height: 390,
+              color: primaryColor,
               child: Column(
                 children: [
                   Container(
                     margin: EdgeInsets.only(bottom: 20),
                     child: Text(
-                      "Nomor Virtual Account Anda",
+                      "NOMOR VIRTUAL ACCOUNT ANDA",
                       style: TextStyle(
                           color: defaultColor,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600),
                     ),
                   ),
                   Container(
@@ -81,8 +73,8 @@ class _SetoranAwalScreenState extends State<SetoranAwalScreen> {
                       "9887146700043563",
                       style: TextStyle(
                           color: defaultColor,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600),
                     ),
                   ),
                   Container(
@@ -92,61 +84,46 @@ class _SetoranAwalScreenState extends State<SetoranAwalScreen> {
                       style: TextStyle(
                           color: defaultColor,
                           fontSize: 14,
-                          fontWeight: FontWeight.bold),
+                          fontWeight: FontWeight.w700),
                     ),
                   ),
                   Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    height: 58,
                     width: double.infinity,
-                    height: 50,
-                    margin: EdgeInsets.only(bottom: 24),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(0))),
-                    child: ElevatedButton(
-                      onPressed: () {},
+                        borderRadius: BorderRadius.all(Radius.circular(70)),
+                        color: defaultColor),
+                    child: Center(
                       child: Text(
                         "COPY",
                         style: TextStyle(
-                            color: primaryColor,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      style: ButtonStyle(
-                        minimumSize: MaterialStateProperty.all(Size(
-                            double.infinity,
-                            30)), // Mengganti maximumSize ke minimumSize
-                        backgroundColor:
-                            MaterialStateProperty.all(defaultColor),
-                        shape: MaterialStateProperty.all(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(80),
-                          ),
-                        ),
-                        // Sesuaikan properti lain sesuai kebutuhan
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: primaryColor),
                       ),
                     ),
                   ),
                   Container(
-                    child: Column(
-                      children: [
-                        Container(
-                            child: Text(
-                          "Lakukan Pembayaran Setoran Awal",
-                          style: TextStyle(
-                              color: defaultColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700),
-                        )),
-                        Container(
-                            child: Text(
-                          "Senilai Rp. 1.000.000",
-                          style: TextStyle(
-                              color: defaultColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700),
-                        ))
-                      ],
+                    margin: EdgeInsets.only(top: 20),
+                    child: Text(
+                      "Lakukan Pembayaran Setoran Awal",
+                      style: TextStyle(
+                          color: defaultColor,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14),
                     ),
-                  )
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 0),
+                    child: Text(
+                      "Senilai Rp. 1.000.000",
+                      style: TextStyle(
+                          color: defaultColor,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -270,11 +247,9 @@ class _SetoranAwalScreenState extends State<SetoranAwalScreen> {
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          DompetALL(), // Ganti dengan DompetScreen() jika ingin langsung ke halaman DompetScreen
-                    ),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => DompetALL()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -285,7 +260,7 @@ class _SetoranAwalScreenState extends State<SetoranAwalScreen> {
                   minimumSize: Size(400, 50),
                 ),
                 child: Text(
-                  'BAYAR SETORAN AWAL',
+                  'BAYAR DP',
                   style: TextStyle(
                     fontSize: 16.0,
                     color: Colors.white,
@@ -295,8 +270,6 @@ class _SetoranAwalScreenState extends State<SetoranAwalScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        )));
   }
 }

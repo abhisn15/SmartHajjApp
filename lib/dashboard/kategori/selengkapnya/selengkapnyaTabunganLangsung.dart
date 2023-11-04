@@ -1,3 +1,4 @@
+import 'package:Harmoni/dashboard/checkoutScreen.dart';
 import 'package:flutter/material.dart';
 
 class SelengkapnyaTabunganLangsung extends StatelessWidget {
@@ -215,14 +216,12 @@ class SelengkapnyaTabunganLangsung extends StatelessWidget {
                                 horizontal: 20, vertical: 24),
                             child: ElevatedButton(
                               onPressed: () {
-                                // Tambahkan logika otentikasi Anda di sini
-                                // Jika otentikasi berhasil, arahkan pengguna ke DashboardScreen
-                                // Navigator.pushReplacement(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => BottomNavigation(),
-                                //   ),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CheckoutScreen(),
+                                  ),
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Color.fromRGBO(43, 69, 112, 1),
