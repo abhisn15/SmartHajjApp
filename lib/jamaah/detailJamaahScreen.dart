@@ -1,12 +1,21 @@
-import 'package:Harmoni/dashboard/topup/topupTabunganScreen.dart';
-import 'package:Harmoni/jamaah/tambahSaldoScreen.dart';
+import 'package:SmartHajj/dashboard/topup/topupTabunganScreen.dart';
+import 'package:SmartHajj/jamaah/tambahSaldoScreen.dart';
 import 'package:flutter/material.dart';
 
-class DetailJamaahScreen extends StatelessWidget {
+class DetailJamaahScreen extends StatefulWidget {
   final Map<String, dynamic> item;
 
   DetailJamaahScreen({required this.item});
 
+  final primaryColor = Color.fromRGBO(43, 69, 112, 1);
+  final defaultColor = Colors.white;
+
+  @override
+  _DetailJamaahScreenState createState() => _DetailJamaahScreenState();
+}
+
+class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
+  String? _selectedValue;
   final List<Map<String, dynamic>> totalSaldoTabungan = [
     {
       "id": 1,
@@ -38,9 +47,9 @@ class DetailJamaahScreen extends StatelessWidget {
     },
     // Tambahkan data lainnya di sini
   ];
-
   final primaryColor = Color.fromRGBO(43, 69, 112, 1);
   final defaultColor = Colors.white;
+  final sedikitAbu = Color.fromRGBO(244, 244, 244, 1);
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +87,7 @@ class DetailJamaahScreen extends StatelessWidget {
                   child: Image.asset('assets/dompet/profile.png'),
                 ),
                 Text(
-                  item["name"],
+                  widget.item["name"],
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -158,61 +167,100 @@ class DetailJamaahScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Column(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.symmetric(horizontal: 20),
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              width: double.infinity,
-                              height: 75,
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5)),
-                                  color: Color.fromRGBO(141, 148, 168, 1)),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                      margin: EdgeInsets.only(right: 20),
-                                      child:
-                                          Image.asset("assets/home/topup.png")),
-                                  Container(
-                                    margin: EdgeInsets.symmetric(vertical: 20),
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          margin:
-                                              EdgeInsets.only(right: 100 * 1),
-                                          child: Text(
-                                            "Virtual Account BCA",
-                                            style: TextStyle(
-                                              color: defaultColor,
-                                              fontWeight: FontWeight.w700,
-                                            ),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 20),
+                          width: double.infinity,
+                          height: 75,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                            color: Color.fromRGBO(141, 148, 168, 1),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(left: 20, right: 20),
+                                child: Image.asset("assets/home/topup.png"),
+                              ),
+                              Expanded(
+                                // Wrap the DropdownButtonFormField with Expanded
+                                child: Container(
+                                  padding: EdgeInsets.only(bottom: 10),
+                                  child: DropdownButtonFormField<String>(
+                                    isExpanded: true,
+                                    icon: Container(
+                                      margin: EdgeInsets.only(right: 30),
+                                      child: Image.asset(
+                                        "assets/home/dropdown_down.png",
+                                        width: 20,
+                                        height: 20,
+                                      ),
+                                    ),
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      prefixIconColor: primaryColor,
+                                    ),
+                                    value: _selectedValue,
+                                    items: [
+                                      DropdownMenuItem<String>(
+                                        value: 'Mastercard 8923******',
+                                        child: Container(
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                'Mastercard\n8923******',
+                                                style: TextStyle(
+                                                  color: _selectedValue ==
+                                                          'Mastercard 8923******'
+                                                      ? sedikitAbu
+                                                      : Colors.black,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        Container(
-                                          margin:
-                                              EdgeInsets.only(right: 160 * 1),
-                                          child: Text(
-                                            "8923******",
-                                            style: TextStyle(
-                                              color: defaultColor,
-                                              fontWeight: FontWeight.w700,
-                                            ),
+                                      ),
+                                      DropdownMenuItem<String>(
+                                        value: 'Virtual Account BCA 8923******',
+                                        child: Container(
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                'Virtual Account BCA\n8923******',
+                                                style: TextStyle(
+                                                  color: _selectedValue ==
+                                                          'Virtual Account BCA 8923******'
+                                                      ? sedikitAbu
+                                                      : Colors.black,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      ],
+                                      ),
+                                    ],
+                                    onChanged: (String? selectedItem) {
+                                      setState(() {
+                                        _selectedValue = selectedItem;
+                                        print('Selected item: $selectedItem');
+                                      });
+                                    },
+                                    hint: Container(
+                                      child: Text(
+                                        _selectedValue ?? 'Select an option',
+                                        style: TextStyle(
+                                          color: _selectedValue == null
+                                              ? defaultColor
+                                              : null,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                  Container(
-                                      child: Image.asset(
-                                          "assets/home/dropdown_down.png"))
-                                ],
-                              ),
-                            ),
-                          ],
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                         Container(
                           margin: EdgeInsets.only(top: 20, left: 20, right: 20),

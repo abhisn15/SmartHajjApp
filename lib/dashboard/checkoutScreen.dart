@@ -1,5 +1,5 @@
-import 'package:Harmoni/dashboard/checkoutDP.dart';
-import 'package:Harmoni/dashboard/productDetail/setoranAwalScreen.dart';
+import 'package:SmartHajj/dashboard/checkoutDP.dart';
+import 'package:SmartHajj/dashboard/productDetail/setoranAwalScreen.dart';
 import 'package:flutter/material.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -14,6 +14,9 @@ final defaultColor = Colors.white;
 final abu = Color.fromRGBO(141, 148, 168, 1);
 final sedikitAbu = Color.fromRGBO(244, 244, 244, 1);
 final krems = Color.fromRGBO(238, 226, 223, 1);
+
+String? _selectedValue;
+String? _selectedValueJamaah;
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   @override
@@ -83,30 +86,74 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 12),
-                  width: double.infinity,
+                  margin: EdgeInsets.only(right: 8, top: 10, bottom: 10),
+                  padding: EdgeInsets.only(top: 5),
                   height: 58,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(80)),
-                      color: sedikitAbu),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(left: 50 * 1),
-                        child: Text(
-                          "RAMADHAN 1448 H / 2024 M",
-                          style: TextStyle(fontSize: 16, color: abu),
+                      color: sedikitAbu,
+                      borderRadius: BorderRadius.all(Radius.circular(70))),
+                  child: DropdownButtonFormField<String>(
+                    icon: Container(
+                      margin: EdgeInsets.only(right: 16),
+                      child: Image.asset(
+                        "assets/home/dropdown.png",
+                        width: 10,
+                        height: 10,
+                      ),
+                    ),
+                    decoration: InputDecoration(
+                        border: InputBorder.none, // Remove the underline
+                        filled: false, // Add a background
+                        prefixIconColor: primaryColor),
+                    value: _selectedValue,
+                    items: [
+                      DropdownMenuItem<String>(
+                        value: 'RAMADHAN 1448 H / 2024 M',
+                        child: Container(
+                          margin: EdgeInsets.only(left: 32 * 1),
+                          child: Text(
+                            'RAMADHAN 1448 H / 2024 M',
+                            style: TextStyle(
+                              color:
+                                  _selectedValue == 'RAMADHAN 1448 H / 2024 M'
+                                      ? abu
+                                      : null,
+                            ),
+                          ),
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.only(right: 24 * 1),
-                        child: Image.asset(
-                          "assets/home/dropdown_down.png",
-                          color: primaryColor,
+                      DropdownMenuItem<String>(
+                        value: 'IDUL ADHA 1448 H / 2024 M',
+                        child: Container(
+                          margin: EdgeInsets.only(left: 34 * 1),
+                          child: Text(
+                            'IDUL ADHA 1448 H / 2024 M',
+                            style: TextStyle(
+                              color:
+                                  _selectedValue == 'IDUL ADHA 1448 H / 2024 M'
+                                      ? abu
+                                      : null,
+                            ),
+                          ),
                         ),
                       ),
                     ],
+                    onChanged: (String? selectedItem) {
+                      // Handle the selected item here
+                      setState(() {
+                        _selectedValue = selectedItem;
+                        print('Selected item: $selectedItem');
+                      });
+                    },
+                    hint: Container(
+                      margin: EdgeInsets.only(left: 20 * 1),
+                      child: Text(
+                        _selectedValue ?? 'Select an option',
+                        style: TextStyle(
+                          color: _selectedValue == null ? abu : null,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 Align(
@@ -147,27 +194,85 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 12),
+                  margin: EdgeInsets.symmetric(vertical: 10),
+                  padding: EdgeInsets.only(
+                    top: 5,
+                  ),
                   width: double.infinity,
                   height: 58,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(80)),
                       color: sedikitAbu),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
                     children: [
                       Container(
-                        margin: EdgeInsets.only(left: 20 * 1),
-                        child: Text(
-                          "RICKI SETIAWAN - NIK 3216212305850001",
-                          style: TextStyle(fontSize: 13, color: abu),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(right: 24 * 1),
-                        child: Image.asset(
-                          "assets/home/dropdown_down.png",
-                          color: primaryColor,
+                        child: DropdownButtonFormField<String>(
+                          icon: Container(
+                            margin: EdgeInsets.only(right: 16),
+                            child: Image.asset(
+                              "assets/home/dropdown.png",
+                              width: 10,
+                              height: 10,
+                            ),
+                          ),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            prefixIconColor: primaryColor,
+                          ),
+                          value: _selectedValueJamaah,
+                          items: [
+                            DropdownMenuItem<String>(
+                              value: 'RICKI SETIAWAN - NIK 3216212305850001',
+                              child: Container(
+                                margin:
+                                    EdgeInsets.symmetric(horizontal: 20 * 1),
+                                child: Text(
+                                  'RICKI SETIAWAN - NIK 3216212305850001',
+                                  style: TextStyle(
+                                    color: _selectedValueJamaah ==
+                                            'RICKI SETIAWAN - NIK 3216212305850001'
+                                        ? abu
+                                        : null,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            DropdownMenuItem<String>(
+                              value: 'PAPA KHAN - 3216212305850001',
+                              child: Container(
+                                margin:
+                                    EdgeInsets.symmetric(horizontal: 20 * 1),
+                                child: Text(
+                                  'PAPA KHAN - NIK 3216212305850001',
+                                  style: TextStyle(
+                                    color: _selectedValueJamaah ==
+                                            'PAPA KHAN - NIK 3216212305850001'
+                                        ? abu
+                                        : null,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                          onChanged: (String? selectedItem) {
+                            // Handle the selected item here
+                            setState(() {
+                              _selectedValueJamaah = selectedItem;
+                              print('Selected item: $selectedItem');
+                            });
+                          },
+                          hint: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 20 * 1),
+                            child: Text(
+                              _selectedValueJamaah ?? 'Select an option',
+                              style: TextStyle(
+                                  color:
+                                      _selectedValueJamaah == null ? abu : null,
+                                  fontSize: 14),
+                            ),
+                          ),
                         ),
                       )
                     ],

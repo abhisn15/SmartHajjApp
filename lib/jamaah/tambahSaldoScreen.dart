@@ -1,4 +1,4 @@
-import 'package:Harmoni/dashboard/productDetail/simulasiScreen.dart';
+import 'package:SmartHajj/dashboard/productDetail/simulasiScreen.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 

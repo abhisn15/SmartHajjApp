@@ -1,7 +1,7 @@
-import 'package:Harmoni/auth/daftarScreen.dart';
-import 'package:Harmoni/auth/resetPasswordScreen.dart';
+import 'package:SmartHajj/auth/daftarScreen.dart';
+import 'package:SmartHajj/auth/resetPasswordScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:Harmoni/BottomNavigationBar.dart';
+import 'package:SmartHajj/BottomNavigationBar.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
 

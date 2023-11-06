@@ -1,4 +1,5 @@
-import 'package:Harmoni/jamaah/dompetALL.dart';
+import 'package:SmartHajj/jamaah/dompetALL.dart';
+import 'package:SmartHajj/jamaah/dompetALL.dart';
 import 'package:flutter/material.dart';
 
 class SetoranAwal extends StatefulWidget {

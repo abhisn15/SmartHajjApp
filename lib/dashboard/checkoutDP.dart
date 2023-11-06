@@ -1,4 +1,4 @@
-import 'package:Harmoni/jamaah/dompetALL.dart';
+import 'package:SmartHajj/jamaah/dompetALL.dart';
 import 'package:flutter/material.dart';
 
 class CheckoutDP extends StatefulWidget {
@@ -13,6 +13,8 @@ final defaultColor = Colors.white;
 final abu = Color.fromRGBO(141, 148, 168, 1);
 final sedikitAbu = Color.fromRGBO(244, 244, 244, 1);
 final krems = Color.fromRGBO(238, 226, 223, 1);
+
+String? _selectedValue;
 
 class _CheckoutDPState extends State<CheckoutDP> {
   @override
@@ -200,46 +202,95 @@ class _CheckoutDPState extends State<CheckoutDP> {
             ),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20),
-              padding: EdgeInsets.symmetric(horizontal: 20),
               width: double.infinity,
               height: 75,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                  color: Color.fromRGBO(141, 148, 168, 1)),
+                borderRadius: BorderRadius.all(Radius.circular(5)),
+                color: Color.fromRGBO(141, 148, 168, 1),
+              ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                      margin: EdgeInsets.only(right: 20),
-                      child: Image.asset("assets/home/topup.png")),
-                  Container(
-                    margin: EdgeInsets.symmetric(vertical: 20),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(right: 160 * 1),
-                          child: Text(
-                            "Mastercard",
-                            style: TextStyle(
-                              color: defaultColor,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(right: 160 * 1),
-                          child: Text(
-                            "8923******",
-                            style: TextStyle(
-                              color: defaultColor,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    margin: EdgeInsets.only(left: 20, right: 20),
+                    child: Image.asset("assets/home/topup.png"),
                   ),
-                  Container(child: Image.asset("assets/home/dropdown_down.png"))
+                  Expanded(
+                    // Wrap the DropdownButtonFormField with Expanded
+                    child: Container(
+                      padding: EdgeInsets.only(bottom: 10),
+                      child: DropdownButtonFormField<String>(
+                        isExpanded: true,
+                        icon: Container(
+                          margin: EdgeInsets.only(right: 30),
+                          child: Image.asset(
+                            "assets/home/dropdown_down.png",
+                            width: 20,
+                            height: 20,
+                          ),
+                        ),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          prefixIconColor: primaryColor,
+                        ),
+                        value: _selectedValue,
+                        items: [
+                          DropdownMenuItem<String>(
+                            value: 'Mastercard 8923******',
+                            child: Container(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Mastercard\n8923******',
+                                    style: TextStyle(
+                                      color: _selectedValue ==
+                                              'Mastercard 8923******'
+                                          ? sedikitAbu
+                                          : Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          DropdownMenuItem<String>(
+                            value: 'Virtual Account BCA 8923******',
+                            child: Container(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Virtual Account BCA\n8923******',
+                                    style: TextStyle(
+                                      color: _selectedValue ==
+                                              'Virtual Account BCA 8923******'
+                                          ? sedikitAbu
+                                          : Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                        onChanged: (String? selectedItem) {
+                          setState(() {
+                            _selectedValue = selectedItem;
+                            print('Selected item: $selectedItem');
+                          });
+                        },
+                        hint: Container(
+                          child: Text(
+                            _selectedValue ?? 'Select an option',
+                            style: TextStyle(
+                              color:
+                                  _selectedValue == null ? defaultColor : null,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),

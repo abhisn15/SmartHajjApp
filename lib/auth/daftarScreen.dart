@@ -1,7 +1,7 @@
-import 'package:Harmoni/auth/loginScreen.dart';
-import 'package:Harmoni/auth/lupaPasswordScreen.dart';
+import 'package:SmartHajj/auth/loginScreen.dart';
+import 'package:SmartHajj/auth/lupaPasswordScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:Harmoni/BottomNavigationBar.dart';
+import 'package:SmartHajj/BottomNavigationBar.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
 
@@ -247,7 +247,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
               Padding(
                 padding: EdgeInsets.only(top: 30.0),
                 child: Text(
-                  'Belum punya akun? Klik di bawah.',
+                  'Already Have an account?',
                   style: TextStyle(
                     color: Colors.black,
                     decoration: TextDecoration.none,
@@ -263,12 +263,17 @@ class _DaftarScreenState extends State<DaftarScreen> {
                   alignment: Alignment.center,
                   child: InkWell(
                     onTap: () {
-                      // Tambahkan logika untuk menuju halaman lupa password di sini
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginScreen(),
+                        ),
+                      );
                     },
                     child: Padding(
                       padding: EdgeInsets.only(bottom: 30.0),
                       child: Text(
-                        'Daftar Disini',
+                        'Sign In',
                         style: TextStyle(
                           color: Color.fromRGBO(43, 69, 112, 1),
                           decoration: TextDecoration.none,

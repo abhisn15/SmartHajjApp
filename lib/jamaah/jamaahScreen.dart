@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:Harmoni/jamaah/detailJamaahScreen.dart';
-import 'package:Harmoni/jamaah/tambahJamaahScreen.dart';
+import 'package:SmartHajj/jamaah/detailJamaahScreen.dart';
+import 'package:SmartHajj/jamaah/tambahJamaahScreen.dart';
 
 class JamaahScreen extends StatefulWidget {
   const JamaahScreen({Key? key}) : super(key: key);

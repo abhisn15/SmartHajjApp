@@ -44,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: Colors.white,
       body: Center(
         child: Image.asset(
-          'assets/home/harmoni_splash.png',
+          'assets/icon_app.png',
           width: 255,
           height: 255,
         ),

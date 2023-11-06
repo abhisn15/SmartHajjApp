@@ -1,8 +1,8 @@
-import 'package:Harmoni/auth/daftarScreen.dart';
-import 'package:Harmoni/auth/lupaPasswordScreen.dart';
-import 'package:Harmoni/dashboard/dashboardScreen.dart';
+import 'package:SmartHajj/auth/daftarScreen.dart';
+import 'package:SmartHajj/auth/lupaPasswordScreen.dart';
+import 'package:SmartHajj/dashboard/dashboardScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:Harmoni/BottomNavigationBar.dart';
+import 'package:SmartHajj/BottomNavigationBar.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
 
@@ -23,7 +23,11 @@ class LoginScreen extends StatelessWidget {
               SizedBox(height: 100.0),
               Padding(
                 padding: EdgeInsets.only(bottom: 30.0),
-                child: Image.asset('assets/logo.png'),
+                child: Image.asset(
+                  'assets/icon_app.png',
+                  width: 140,
+                  height: 140,
+                ),
               ),
               SizedBox(height: 16.0),
               Padding(

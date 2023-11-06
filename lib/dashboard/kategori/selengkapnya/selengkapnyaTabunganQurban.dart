@@ -1,4 +1,4 @@
-import 'package:Harmoni/dashboard/checkoutScreen.dart';
+import 'package:SmartHajj/dashboard/checkoutScreen.dart';
 import 'package:flutter/material.dart';
 
 class SelengkapnyaTabunganQurban extends StatelessWidget {

@@ -1,4 +1,4 @@
-import 'package:Harmoni/dashboard/kategori/selengkapnya/selengkapnyaTabunganHaji.dart';
+import 'package:SmartHajj/dashboard/kategori/selengkapnya/selengkapnyaTabunganHaji.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 

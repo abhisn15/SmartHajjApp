@@ -1,8 +1,9 @@
-import 'package:Harmoni/dompet/dompetScreen.dart';
-import 'package:Harmoni/profile/profileScreen.dart';
+import 'package:SmartHajj/dashboard/checkoutScreen.dart';
+import 'package:SmartHajj/dompet/dompetScreen.dart';
+import 'package:SmartHajj/profile/profileScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:Harmoni/dashboard/dashboardScreen.dart';
-import 'package:Harmoni/jamaah/jamaahScreen.dart';
+import 'package:SmartHajj/dashboard/dashboardScreen.dart';
+import 'package:SmartHajj/jamaah/jamaahScreen.dart';
 
 void main() => runApp(const BottomNavigation());
 
@@ -73,9 +74,10 @@ class _BottomNavigationBarExampleState
           ),
           BottomNavigationBarItem(
             icon: Image.asset(
-              _isDompetActive
-                  ? 'assets/icon_dompet_active.png'
-                  : 'assets/dompet.png',
+              'assets/dompet.png',
+              color: _isDompetActive
+                  ? primaryColor
+                  : Color.fromRGBO(115, 115, 115, 1),
               width: 24,
               height: 24,
             ), // Menggunakan gambar ikon
