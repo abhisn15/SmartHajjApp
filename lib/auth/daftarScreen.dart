@@ -29,7 +29,11 @@ class _DaftarScreenState extends State<DaftarScreen> {
               SizedBox(height: 100.0),
               Padding(
                 padding: EdgeInsets.only(bottom: 30.0),
-                child: Image.asset('assets/logo.png'),
+                child: Image.asset(
+                  'assets/icon_app.png',
+                  width: 140,
+                  height: 140,
+                ),
               ),
               SizedBox(height: 16.0),
               Padding(
@@ -263,11 +267,13 @@ class _DaftarScreenState extends State<DaftarScreen> {
                   alignment: Alignment.center,
                   child: InkWell(
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
                           builder: (context) => LoginScreen(),
                         ),
+                        (route) =>
+                            false, // Ini akan menghapus semua halaman di atas LoginScreen
                       );
                     },
                     child: Padding(

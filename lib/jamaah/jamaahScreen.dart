@@ -30,6 +30,7 @@ class _JamaahScreenState extends State<JamaahScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: primaryColor,
         title: Center(
           child: Text(

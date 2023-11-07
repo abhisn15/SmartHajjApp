@@ -310,7 +310,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                           color: sedikitAbu),
                       child: DropdownButtonFormField<String>(
                         icon: Container(
-                          margin: EdgeInsets.only(right: 16),
+                          margin: EdgeInsets.only(right: 16 * 1),
                           child: Image.asset(
                             "assets/home/dropdown.png",
                             width: 10,

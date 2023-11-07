@@ -1,3 +1,4 @@
+import 'package:SmartHajj/dashboard/checkoutScreen.dart';
 import 'package:SmartHajj/jamaah/dompetALL.dart';
 import 'package:flutter/material.dart';
 
@@ -12,8 +13,11 @@ class _TopupTabunganScreenState extends State<TopupTabunganScreen> {
   final primaryColor = Color.fromRGBO(43, 69, 112, 1);
   final defaultColor = Colors.white;
   final sedikitAbu = Color.fromRGBO(244, 244, 244, 1);
-
-  String? _selectedValue;
+  final List<String> items = [
+    'Virtual Account\nBCA 8923******',
+    'Mastercard\n8923******',
+  ];
+  String? selectedValue;
 
   @override
   Widget build(BuildContext context) {
@@ -221,8 +225,8 @@ class _TopupTabunganScreenState extends State<TopupTabunganScreen> {
             ),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(vertical: 10),
               width: double.infinity,
-              height: 75,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(5)),
                 color: Color.fromRGBO(141, 148, 168, 1),
@@ -233,83 +237,45 @@ class _TopupTabunganScreenState extends State<TopupTabunganScreen> {
                     margin: EdgeInsets.only(left: 20, right: 20),
                     child: Image.asset("assets/home/topup.png"),
                   ),
-                  Expanded(
-                    // Wrap the DropdownButtonFormField with Expanded
-                    child: Container(
-                      padding: EdgeInsets.only(bottom: 10),
-                      child: DropdownButtonFormField<String>(
-                        isExpanded: true,
-                        icon: Container(
-                          margin: EdgeInsets.only(right: 30),
-                          child: Image.asset(
-                            "assets/home/dropdown_down.png",
-                            width: 20,
-                            height: 20,
-                          ),
-                        ),
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          prefixIconColor: primaryColor,
-                        ),
-                        value: _selectedValue,
-                        items: [
-                          DropdownMenuItem<String>(
-                            value: 'Mastercard 8923******',
-                            child: Container(
-                              child: Column(
-                                children: [
-                                  Text(
-                                    'Mastercard\n8923******',
-                                    style: TextStyle(
-                                      color: _selectedValue ==
-                                              'Mastercard 8923******'
-                                          ? sedikitAbu
-                                          : Colors.black,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: 'Kartu BCA 8923******',
-                            child: Container(
-                              child: Column(
-                                children: [
-                                  Text(
-                                    'Kartu BCA\n8923******',
-                                    style: TextStyle(
-                                      color: _selectedValue ==
-                                              'Kartu BCA 8923******'
-                                          ? sedikitAbu
-                                          : Colors.black,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                        onChanged: (String? selectedItem) {
-                          setState(() {
-                            _selectedValue = selectedItem;
-                            print('Selected item: $selectedItem');
-                          });
-                        },
-                        hint: Container(
-                          child: Text(
-                            _selectedValue ?? 'Select an option',
-                            style: TextStyle(
-                              color:
-                                  _selectedValue == null ? defaultColor : null,
-                            ),
-                          ),
-                        ),
+                  DropdownButton<String>(
+                    hint: Text(
+                      'Select an option',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: defaultColor,
                       ),
                     ),
-                  )
+                    dropdownColor: abu,
+                    icon: Container(
+                        margin: EdgeInsets.only(left: 120 * 1),
+                        child: Image.asset("assets/home/dropdown_down.png")),
+                    items: items
+                        .map((String item) => DropdownMenuItem<String>(
+                              value: item,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    item,
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: selectedValue == Text(item)
+                                            ? Colors.white
+                                            : Colors.white),
+                                  ),
+                                  SizedBox(
+                                      width:
+                                          10), // Beri jarak antara gambar dan teks
+                                ],
+                              ),
+                            ))
+                        .toList(),
+                    value: selectedValue,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedValue = value;
+                      });
+                    },
+                  ),
                 ],
               ),
             ),

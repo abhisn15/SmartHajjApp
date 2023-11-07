@@ -125,11 +125,13 @@ class LoginScreen extends StatelessWidget {
                     try {
                       // Tambahkan logika otentikasi Anda di sini
                       // Jika otentikasi berhasil, arahkan pengguna ke DashboardScreen
-                      Navigator.pushReplacement(
+                      Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => BottomNavigationBarExample(),
+                          builder: (context) => BottomNavigation(),
                         ),
+                        (route) =>
+                            false, // Ini akan menghapus semua halaman di atas LoginScreen
                       );
                     } catch (e) {
                       print('Error: $e');

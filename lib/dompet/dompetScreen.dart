@@ -49,6 +49,7 @@ class _DompetScreenState extends State<DompetScreen> {
     return Scaffold(
       backgroundColor: primaryColor,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: primaryColor,
         title: Center(
           child: Text(
@@ -131,7 +132,7 @@ class _DompetScreenState extends State<DompetScreen> {
             ),
           ),
           DraggableScrollableSheet(
-            initialChildSize: 0.5,
+            initialChildSize: 0.4,
             minChildSize: MediaQuery.of(context).size.width < 360 ? 0.3 : 0.4,
             maxChildSize: 1.0,
             builder: (BuildContext context, ScrollController scrollController) {

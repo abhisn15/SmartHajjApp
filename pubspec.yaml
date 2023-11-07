@@ -45,6 +45,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_cupertino_date_picker_fork: ^1.0.7
   file_picker: ^6.0.0
+  dropdown_button2: ^2.3.9
 
 flutter_native_splash:
 android: true
