@@ -1,4 +1,4 @@
-# harmoni
+# SmartHajj
 
 A new Flutter project.
 
