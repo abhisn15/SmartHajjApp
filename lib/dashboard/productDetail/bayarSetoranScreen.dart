@@ -60,6 +60,9 @@ class _BayaranSetoranScreenState extends State<BayaranSetoranScreen> {
           ),
         ),
         elevation: 0,
+        leading: const BackButton(
+          color: Colors.white, // <-- SEE HERE
+        ),
       ),
       body: Stack(
         children: <Widget>[

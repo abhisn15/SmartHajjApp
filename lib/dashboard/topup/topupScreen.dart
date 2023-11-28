@@ -66,9 +66,15 @@ class _TopupScreenState extends State<TopupScreen> {
           child: Center(
             child: Text(
               "Topup",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700),
             ),
           ),
+        ),
+        leading: const BackButton(
+          color: Colors.white, // <-- SEE HERE
         ),
       ),
       body: Stack(

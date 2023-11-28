@@ -73,6 +73,9 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
             ),
           ),
         ),
+        leading: const BackButton(
+          color: Colors.white, // <-- SEE HERE
+        ),
         elevation: 0,
       ),
       body: Stack(
@@ -145,8 +148,8 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
           ),
 
           DraggableScrollableSheet(
-            initialChildSize: 0.5,
-            minChildSize: MediaQuery.of(context).size.width < 400 ? 0.5 : 0.3,
+            initialChildSize: 0.4,
+            minChildSize: MediaQuery.of(context).size.width < 400 ? 0.4 : 0.3,
             maxChildSize: 1.0,
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(

@@ -16,9 +16,13 @@ class ProductDetailScreen extends StatelessWidget {
             alignment: Alignment.centerLeft, // Atur perataan teks ke tengah
             child: Text(
               product["name"],
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700),
             ),
           ),
+          leading: BackButton(color: Colors.white),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -34,7 +38,7 @@ class ProductDetailScreen extends StatelessWidget {
                       margin: EdgeInsets.only(top: 290),
                       padding: EdgeInsets.only(top: 24),
                       width: double.infinity,
-                      height: 650.0,
+                      height: 720,
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 255, 255, 255),
                         borderRadius: BorderRadius.only(

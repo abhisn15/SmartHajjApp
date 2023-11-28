@@ -1,12 +1,54 @@
+import 'dart:convert';
+
 import 'package:SmartHajj/auth/daftarScreen.dart';
 import 'package:SmartHajj/auth/lupaPasswordScreen.dart';
-import 'package:SmartHajj/dashboard/dashboardScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:SmartHajj/BottomNavigationBar.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'dart:ui';
 
-class LoginScreen extends StatelessWidget {
+import 'package:shared_preferences/shared_preferences.dart';
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
+
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  void login(String email, password) async {
+    try {
+      final response = await http.post(
+          Uri.parse('https://smarthajj.coffeelabs.id/api/login'),
+          body: {'email': email, 'password': password});
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body.toString());
+        print(data['token']);
+        print('Login successfully');
+        // Navigate to Dashboard on successful login
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BottomNavigation(),
+          ),
+          (route) => false,
+        );
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('token', data['token']);
+      } else {
+        print('Login Failed');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -52,6 +94,7 @@ class LoginScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(70.0), // Border radius
                   ),
                   child: TextField(
+                    controller: emailController,
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       labelText: 'Email, Username, atau Nomor Telepon',
@@ -73,6 +116,7 @@ class LoginScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(70.0), // Border radius
                   ),
                   child: TextField(
+                    controller: passwordController,
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       labelText: 'Password',
@@ -123,16 +167,8 @@ class LoginScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     try {
-                      // Tambahkan logika otentikasi Anda di sini
-                      // Jika otentikasi berhasil, arahkan pengguna ke DashboardScreen
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BottomNavigation(),
-                        ),
-                        (route) =>
-                            false, // Ini akan menghapus semua halaman di atas LoginScreen
-                      );
+                      login(emailController.text.toString(),
+                          passwordController.text.toString());
                     } catch (e) {
                       print('Error: $e');
                       // Handle the error or show a message to the user.

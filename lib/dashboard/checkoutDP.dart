@@ -33,15 +33,24 @@ class _CheckoutDPState extends State<CheckoutDP> {
                 children: [
                   Text(
                     "Checkout DP",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700),
                   ),
                   Text(
                     "Kuatkan tekad, pasang niat, bismillah",
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400),
                   ),
                 ],
               ),
             ],
+          ),
+          leading: const BackButton(
+            color: Colors.white, // <-- SEE HERE
           ),
         ),
         body: SingleChildScrollView(

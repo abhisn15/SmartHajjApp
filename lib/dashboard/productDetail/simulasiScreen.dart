@@ -1,6 +1,42 @@
-import 'package:SmartHajj/dashboard/productDetail/setoranAwalScreen.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+
+class NumberTextInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) {
+      return newValue.copyWith(
+        text: '',
+        selection: TextSelection.collapsed(offset: 0),
+      );
+    }
+
+    final numericValue =
+        int.tryParse(newValue.text.replaceAll(RegExp('[^0-9]'), ''));
+
+    if (numericValue != null) {
+      final formattedValue = NumberFormat.currency(
+        locale: 'id',
+        symbol: 'Rp',
+        decimalDigits: 0,
+      ).format(numericValue);
+
+      return newValue.copyWith(
+        text: formattedValue,
+        selection: TextSelection.fromPosition(
+          TextPosition(offset: formattedValue.length),
+        ),
+      );
+    }
+
+    // If parsing fails, return the old value
+    return oldValue;
+  }
+}
 
 class SimulasiScreen extends StatefulWidget {
   const SimulasiScreen({Key? key}) : super(key: key);
@@ -10,44 +46,85 @@ class SimulasiScreen extends StatefulWidget {
 }
 
 class _SimulasiScreenState extends State<SimulasiScreen> {
+  String? _selectedValue;
+  String? _selectedValueJamaah;
+
   final primaryColor = Color.fromRGBO(43, 69, 112, 1);
   final defaultColor = Colors.white;
   final abu = Color.fromRGBO(141, 148, 168, 1);
   final sedikitAbu = Color.fromRGBO(244, 244, 244, 1);
   final krems = Color.fromRGBO(238, 226, 223, 1);
 
-  // Initial Selected Value
-  String? _selectedValue; // Define _selectedValue here
-  String? _selectedValueJamaah; // Define _selectedValue here
+  final TextEditingController _setoranAwalController = TextEditingController();
+  final TextEditingController _setoranPerBulanController =
+      TextEditingController();
+  String _totalSetoran = '';
+  String _harganya = '';
+
+  void _calculateTotal() {
+    if (_setoranAwalController.text.isNotEmpty &&
+        _setoranPerBulanController.text.isNotEmpty) {
+      try {
+        final setoranAwal = NumberFormat.decimalPattern()
+            .parse(_setoranAwalController.text.replaceAll(RegExp('[^0-9]'), ''))
+            .toInt();
+        final setoranPerBulan = NumberFormat.decimalPattern()
+            .parse(_setoranPerBulanController.text
+                .replaceAll(RegExp('[^0-9]'), ''))
+            .toInt();
+        final totalSetoran = setoranAwal + setoranPerBulan;
+        final hargaPerkiraan = 35000000;
+        final harganya = hargaPerkiraan - totalSetoran;
+
+        setState(() {
+          _totalSetoran = NumberFormat.currency(
+            locale: 'id_ID',
+            symbol: 'Rp ',
+            decimalDigits: 0,
+          ).format(totalSetoran);
+
+          _harganya = NumberFormat.currency(
+            locale: 'id_ID',
+            symbol: 'Rp ',
+            decimalDigits: 0,
+          ).format(harganya);
+        });
+      } catch (e) {
+        print("Error: $e");
+        // Handle the error, for example, by showing a message to the user
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(43, 69, 112, 1),
-        title: Row(
+        backgroundColor: primaryColor,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Simulasi",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                ),
-                Text(
-                  "Kuatkan tekad, pasang niat, bismillah",
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
-                ),
-              ],
+            Text(
+              "Simulasi",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            Text(
+              "Kuatkan tekad, pasang niat, bismillah",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ],
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+        leading: const BackButton(
+          color: Colors.white,
         ),
       ),
       body: SingleChildScrollView(
@@ -62,31 +139,9 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                     Text(
                       "Anda telah memilih",
                       style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 18,
-                          color: primaryColor),
-                    ),
-                    Container(
-                        margin: EdgeInsets.only(top: 12, left: 20, right: 20),
-                        width: double.infinity,
-                        height: 58,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(80)),
-                            color: sedikitAbu),
-                        child: Center(
-                          child: Text(
-                            "PAKET TABUNGAN UMROH RAMADHAN",
-                            style: TextStyle(color: abu),
-                          ),
-                        )),
-                    Container(
-                      margin: EdgeInsets.only(top: 14),
-                      child: Text(
-                        "Harga Perkiraan",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 18,
-                            color: primaryColor),
+                        fontWeight: FontWeight.w400,
+                        fontSize: 18,
+                        color: primaryColor,
                       ),
                     ),
                     Container(
@@ -94,38 +149,72 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                       width: double.infinity,
                       height: 58,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(80)),
-                          color: sedikitAbu),
+                        borderRadius: BorderRadius.all(Radius.circular(80)),
+                        color: sedikitAbu,
+                      ),
                       child: Center(
                         child: Text(
-                          "Rp 35.000.000,00",
+                          "PAKET TABUNGAN UMROH RAMADHAN",
                           style: TextStyle(color: abu),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 14),
+                      child: Text(
+                        "Harga Perkiraan",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 18,
+                          color: primaryColor,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 12, left: 20, right: 20),
+                      width: double.infinity,
+                      height: 58,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(80)),
+                        color: sedikitAbu,
+                      ),
+                      child: Center(
+                        child: Text(
+                          _harganya,
+                          style: TextStyle(
+                              color: abu,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
                         ),
                       ),
                     ),
                     Container(
                       margin: EdgeInsets.only(top: 18),
                       color: primaryColor,
-                      padding:
-                          EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 20,
+                        horizontal: 24,
+                      ),
                       width: double.infinity,
                       child: Column(
                         children: [
                           Text(
                             "SIMULASI",
                             style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: krems),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: krems,
+                            ),
                           ),
                           Container(
                             margin: EdgeInsets.only(top: 14),
                             child: Text(
                               "Masukkan Setoran Awal",
                               style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: krems),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: krems,
+                              ),
                             ),
                           ),
                           Container(
@@ -133,13 +222,46 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                             width: double.infinity,
                             height: 58,
                             decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(80)),
-                                color: defaultColor),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(80)),
+                              color: defaultColor,
+                            ),
                             child: Center(
-                              child: Text(
-                                "Rp 1.000.000,00",
-                                style: TextStyle(fontSize: 16, color: abu),
+                              child: TextField(
+                                controller: _setoranAwalController,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  labelText: 'Masukkan Setoran Awal',
+                                  labelStyle: TextStyle(fontSize: 15.0),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 10.0,
+                                    horizontal: 40.0,
+                                  ),
+                                ),
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                onChanged: (value) {
+                                  _calculateTotal();
+                                  if (value.isNotEmpty) {
+                                    final numericValue = int.parse(value);
+                                    final formattedValue =
+                                        NumberFormat.currency(
+                                      locale: 'id',
+                                      symbol: 'Rp ',
+                                      decimalDigits: 0,
+                                    ).format(numericValue);
+                                    _setoranAwalController.value =
+                                        _setoranAwalController.value.copyWith(
+                                      text: formattedValue,
+                                      selection: TextSelection.fromPosition(
+                                        TextPosition(
+                                            offset: formattedValue.length),
+                                      ),
+                                    );
+                                  }
+                                },
                               ),
                             ),
                           ),
@@ -148,9 +270,10 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                             child: Text(
                               "Rencana Setoran Per Bulan",
                               style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: krems),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: krems,
+                              ),
                             ),
                           ),
                           Container(
@@ -158,13 +281,47 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                             width: double.infinity,
                             height: 58,
                             decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(80)),
-                                color: defaultColor),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(80)),
+                              color: defaultColor,
+                            ),
                             child: Center(
-                              child: Text(
-                                "Rp 500.000,00",
-                                style: TextStyle(fontSize: 16, color: abu),
+                              child: TextField(
+                                controller: _setoranPerBulanController,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  labelText: 'Masukkan Setoran Per Bulan',
+                                  labelStyle: TextStyle(fontSize: 15.0),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 10.0,
+                                    horizontal: 40.0,
+                                  ),
+                                ),
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                onChanged: (value) {
+                                  _calculateTotal();
+                                  if (value.isNotEmpty) {
+                                    final numericValue = int.parse(value);
+                                    final formattedValue =
+                                        NumberFormat.currency(
+                                      locale: 'id',
+                                      symbol: 'Rp ',
+                                      decimalDigits: 0,
+                                    ).format(numericValue);
+                                    _setoranPerBulanController.value =
+                                        _setoranPerBulanController.value
+                                            .copyWith(
+                                      text: formattedValue,
+                                      selection: TextSelection.fromPosition(
+                                        TextPosition(
+                                            offset: formattedValue.length),
+                                      ),
+                                    );
+                                  }
+                                },
                               ),
                             ),
                           ),
@@ -173,18 +330,20 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                             child: Text(
                               "Uang akan terkumpul setelah  7 Bulan",
                               style: TextStyle(
-                                  color: krems,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 16),
+                                color: krems,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
                           Container(
                             child: Text(
                               "Perkiraan Keberangkatan",
                               style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: krems),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: krems,
+                              ),
                             ),
                           ),
                           Container(
@@ -193,9 +352,10 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                             width: double.infinity,
                             height: 58,
                             decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(80)),
-                                color: defaultColor),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(80)),
+                              color: defaultColor,
+                            ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -211,15 +371,14 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                       ),
                                     ),
                                     decoration: InputDecoration(
-                                        border: InputBorder
-                                            .none, // Remove the underline
-                                        prefixIconColor: primaryColor),
+                                      border: InputBorder.none,
+                                    ),
                                     value: _selectedValue,
                                     items: [
                                       DropdownMenuItem<String>(
                                         value: 'RAMADHAN 1448 H / 2024 M',
                                         child: Container(
-                                          margin: EdgeInsets.only(left: 32 * 1),
+                                          margin: EdgeInsets.only(left: 32),
                                           child: Text(
                                             'RAMADHAN 1448 H / 2024 M',
                                             style: TextStyle(
@@ -234,7 +393,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                       DropdownMenuItem<String>(
                                         value: 'IDUL ADHA 1448 H / 2024 M',
                                         child: Container(
-                                          margin: EdgeInsets.only(left: 34 * 1),
+                                          margin: EdgeInsets.only(left: 34),
                                           child: Text(
                                             'IDUL ADHA 1448 H / 2024 M',
                                             style: TextStyle(
@@ -248,14 +407,12 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                       ),
                                     ],
                                     onChanged: (String? selectedItem) {
-                                      // Handle the selected item here
                                       setState(() {
                                         _selectedValue = selectedItem;
-                                        print('Selected item: $selectedItem');
                                       });
                                     },
                                     hint: Container(
-                                      margin: EdgeInsets.only(left: 20 * 1),
+                                      margin: EdgeInsets.only(left: 20),
                                       child: Text(
                                         _selectedValue ?? 'Select an option',
                                         style: TextStyle(
@@ -286,9 +443,10 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                         child: Text(
                           "Jamaah Atas Nama",
                           style: TextStyle(
-                              color: primaryColor,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16),
+                            color: primaryColor,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     ),
@@ -300,17 +458,16 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                 child: Column(
                   children: [
                     Container(
-                      padding: EdgeInsets.only(
-                        top: 5,
-                      ),
+                      padding: EdgeInsets.only(top: 5),
                       width: double.infinity,
                       height: 58,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(80)),
-                          color: sedikitAbu),
+                        borderRadius: BorderRadius.all(Radius.circular(80)),
+                        color: sedikitAbu,
+                      ),
                       child: DropdownButtonFormField<String>(
                         icon: Container(
-                          margin: EdgeInsets.only(right: 16 * 1),
+                          margin: EdgeInsets.only(right: 16),
                           child: Image.asset(
                             "assets/home/dropdown.png",
                             width: 10,
@@ -319,14 +476,13 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                         ),
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          prefixIconColor: primaryColor,
                         ),
                         value: _selectedValueJamaah,
                         items: [
                           DropdownMenuItem<String>(
                             value: 'RICKI SETIAWAN - NIK 3216212305850001',
                             child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: 20 * 1),
+                              margin: EdgeInsets.symmetric(horizontal: 20),
                               child: Text(
                                 'RICKI SETIAWAN - NIK 3216212305850001',
                                 style: TextStyle(
@@ -342,7 +498,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                           DropdownMenuItem<String>(
                             value: 'PAPA KHAN - 3216212305850001',
                             child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: 20 * 1),
+                              margin: EdgeInsets.symmetric(horizontal: 20),
                               child: Text(
                                 'PAPA KHAN - NIK 3216212305850001',
                                 style: TextStyle(
@@ -357,20 +513,18 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                           ),
                         ],
                         onChanged: (String? selectedItem) {
-                          // Handle the selected item here
                           setState(() {
                             _selectedValueJamaah = selectedItem;
-                            print('Selected item: $selectedItem');
                           });
                         },
                         hint: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 20 * 1),
+                          margin: EdgeInsets.symmetric(horizontal: 20),
                           child: Text(
                             _selectedValueJamaah ?? 'Select an option',
                             style: TextStyle(
-                                color:
-                                    _selectedValueJamaah == null ? abu : null,
-                                fontSize: 14),
+                              color: _selectedValueJamaah == null ? abu : null,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                       ),
@@ -385,19 +539,18 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SetoranAwalScreen()),
-                        );
+                        // Do something when the button is pressed
                       },
                       child: Text(
                         "MULAI SETORAN AWAL",
-                        style: TextStyle(fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       style: ElevatedButton.styleFrom(
                         minimumSize: Size(350, 45),
-                        primary: Color.fromRGBO(43, 69, 112, 1),
+                        primary: primaryColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5.0),
                         ),
@@ -405,7 +558,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ),

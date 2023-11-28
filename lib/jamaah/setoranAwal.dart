@@ -1,5 +1,4 @@
 import 'package:SmartHajj/jamaah/dompetALL.dart';
-import 'package:SmartHajj/jamaah/dompetALL.dart';
 import 'package:flutter/material.dart';
 
 class SetoranAwal extends StatefulWidget {
@@ -27,7 +26,10 @@ class _SetoranAwalState extends State<SetoranAwal> {
               children: [
                 Text(
                   "Setoran Awal",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
                 ),
                 Text(
                   "Kuatkan tekad, pasang niat, bismillah",
@@ -37,11 +39,8 @@ class _SetoranAwalState extends State<SetoranAwal> {
             ),
           ],
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+        leading: const BackButton(
+          color: Colors.white, // <-- SEE HERE
         ),
       ),
       body: SingleChildScrollView(

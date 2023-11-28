@@ -15,7 +15,7 @@ class CustomInformationButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 90.0,
-      margin: const EdgeInsets.only(left: 0, top: 20.0),
+      margin: const EdgeInsets.only(left: 0, top: 15 / 1),
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(

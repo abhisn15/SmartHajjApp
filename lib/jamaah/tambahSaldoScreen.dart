@@ -12,8 +12,14 @@ class TambahSaldoScreen extends StatelessWidget {
             alignment: Alignment.centerLeft, // Atur perataan teks ke tengah
             child: Text(
               "Tabungan Umroh",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700),
             ),
+          ),
+          leading: const BackButton(
+            color: Colors.white, // <-- SEE HERE
           ),
         ),
         body: SingleChildScrollView(
@@ -30,7 +36,7 @@ class TambahSaldoScreen extends StatelessWidget {
                       margin: EdgeInsets.only(top: 290),
                       padding: EdgeInsets.only(top: 24),
                       width: double.infinity,
-                      height: 650.0,
+                      height: 740,
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 255, 255, 255),
                         borderRadius: BorderRadius.only(

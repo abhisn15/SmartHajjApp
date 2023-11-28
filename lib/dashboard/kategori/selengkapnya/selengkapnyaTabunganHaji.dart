@@ -14,6 +14,9 @@ class SelengkapnyaTabunganHaji extends StatelessWidget {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
             ),
           ),
+          leading: const BackButton(
+            color: Colors.white, // <-- SEE HERE
+          ),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -29,7 +32,7 @@ class SelengkapnyaTabunganHaji extends StatelessWidget {
                       margin: EdgeInsets.only(top: 290),
                       padding: EdgeInsets.only(top: 24),
                       width: double.infinity,
-                      height: 650.0,
+                      height: 740,
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 255, 255, 255),
                         borderRadius: BorderRadius.only(

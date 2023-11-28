@@ -35,7 +35,7 @@ class _JamaahScreenState extends State<JamaahScreen> {
         title: Center(
           child: Text(
             "DAFTAR JAMAAH",
-            style: TextStyle(fontWeight: FontWeight.w700),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
           ),
         ),
         elevation: 0,
@@ -141,7 +141,10 @@ class _JamaahScreenState extends State<JamaahScreen> {
                                   ),
                                 );
                               },
-                              child: Text("Detail"),
+                              child: Text(
+                                "Detail",
+                                style: TextStyle(color: Colors.white),
+                              ),
                               style: ElevatedButton.styleFrom(
                                 minimumSize: Size(85, 25),
                                 primary: Color.fromRGBO(43, 69, 112, 1),
@@ -161,7 +164,10 @@ class _JamaahScreenState extends State<JamaahScreen> {
                                     ),
                                   );
                                 },
-                                child: Text("Edit"),
+                                child: Text(
+                                  "Edit",
+                                  style: TextStyle(color: Colors.white),
+                                ),
                                 style: ElevatedButton.styleFrom(
                                   minimumSize: Size(85, 24),
                                   primary: primaryColor, // Warna latar belakang

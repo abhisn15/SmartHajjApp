@@ -36,7 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_statusbarcolor_ns: ^0.5.0
   flutter_screenutil: ^5.9.0
-  intl: ^0.17.0
+  intl: ^0.18.1
   image_picker: ^1.0.4
   camera: ^0.10.5+5
   path_provider: ^2.1.1
@@ -46,6 +46,8 @@ dependencies:
   flutter_cupertino_date_picker_fork: ^1.0.7
   file_picker: ^6.0.0
   dropdown_button2: ^2.3.9
+  http: ^1.1.2
+  shared_preferences: ^2.2.2
 
 flutter_native_splash:
 android: true
@@ -98,13 +100,12 @@ flutter:
     - assets/icon_dompet_active.png
     - assets/home/dropdown.png
     - assets/home/harmoni_splash.png
+    - assets/home/dropdown_filter.png
     - assets/home/products/tabungan_qurban.png
     - assets/home/products/tabungan_umroh.png
     - assets/home/detail_products/product_umroh.png
     - assets/home/kategori/berangkat_langsung.png
     - assets/home/kategori/img_haji.png
-    - assets/home/kategori/filterTravelAgent.png
-    - assets/home/kategori/filterUmroh.png
     - assets/home/kategori/tabungan_qurban.png
     - assets/home/kategori/tabungan_umroh.png
     - assets/home/kategori/tabungan_haji.png

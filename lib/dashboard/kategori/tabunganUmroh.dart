@@ -17,64 +17,113 @@ class TabunganUmroh extends StatelessWidget {
               children: [
                 Text(
                   "Tabungan Umroh",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
                 ),
                 Text(
                   "Kuatkan tekad, pasang niat, bismillah",
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400),
                 ),
               ],
             ),
           ],
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+        leading: const BackButton(
+          color: Colors.white, // <-- SEE HERE
         ),
       ),
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.only(top: 10.0, left: 24),
           width: double.infinity,
-          height: 700,
+          height: 720,
           decoration: BoxDecoration(
             color: Colors.white,
           ),
           child: Column(
             children: [
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0, left: 6),
-                    child: TextButton(
-                      onPressed: () {
-                        // Tambahkan tindakan yang akan dilakukan saat tombol ditekan di sini
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Image.asset('assets/home/kategori/filterUmroh.png'),
-                        ],
+              Container(
+                margin: EdgeInsets.only(bottom: 10),
+                child: Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(
+                        right: 10,
+                        left: 10,
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //       builder: (context) =>
+                          //           SelengkapnyaTabunganLangsung()),
+                          // );
+                        },
+                        child: Row(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(right: 6),
+                              child: Image.asset(
+                                'assets/home/dropdown_filter.png',
+                                width: 12,
+                              ),
+                            ),
+                            Text(
+                              "Filter | Umroh",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 12),
+                            ),
+                          ],
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(140, 25),
+                          primary: Color.fromRGBO(43, 69, 112, 1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14.0),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0),
-                    child: TextButton(
+                    ElevatedButton(
                       onPressed: () {
-                        // Tambahkan tindakan yang akan dilakukan saat tombol ditekan di sini
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //       builder: (context) =>
+                        //           SelengkapnyaTabunganLangsung()),
+                        // );
                       },
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Image.asset('assets/home/kategori/filterUmroh.png'),
+                          Container(
+                            margin: EdgeInsets.only(right: 6),
+                            child: Image.asset(
+                              'assets/home/dropdown_filter.png',
+                              width: 12,
+                            ),
+                          ),
+                          Text(
+                            "Filter | Travel Agent",
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
                         ],
                       ),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(140, 25),
+                        primary: Color.fromRGBO(43, 69, 112, 1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14.0),
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               Container(
                 margin: EdgeInsets.only(top: 0, left: 10, right: 24),
@@ -163,7 +212,10 @@ class TabunganUmroh extends StatelessWidget {
                                             SelengkapnyaTabunganLangsung()),
                                   );
                                 },
-                                child: Text("Selengkapnya"),
+                                child: Text(
+                                  "Selengkapnya",
+                                  style: TextStyle(color: Colors.white),
+                                ),
                                 style: ElevatedButton.styleFrom(
                                   minimumSize: Size(140, 25),
                                   primary: Color.fromRGBO(43, 69, 112, 1),

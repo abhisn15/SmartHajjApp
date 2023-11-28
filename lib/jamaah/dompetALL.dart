@@ -1,6 +1,5 @@
 import 'package:SmartHajj/dashboard/topup/topupTabunganScreen.dart';
 import 'package:SmartHajj/dompet/ProgressPaunter.dart';
-import 'package:SmartHajj/dashboard/topup/topupTabunganScreen.dart';
 import 'package:flutter/material.dart';
 
 class DompetALL extends StatefulWidget {
@@ -62,6 +61,9 @@ class _DompetALLState extends State<DompetALL> {
               ),
             ),
           ),
+        ),
+        leading: const BackButton(
+          color: Colors.white, // <-- SEE HERE
         ),
         elevation: 0,
       ),
@@ -134,8 +136,8 @@ class _DompetALLState extends State<DompetALL> {
             ),
           ),
           DraggableScrollableSheet(
-            initialChildSize: 0.5,
-            minChildSize: MediaQuery.of(context).size.width < 400 ? 0.5 : 0.3,
+            initialChildSize: 0.3,
+            minChildSize: MediaQuery.of(context).size.width < 400 ? 0.3 : 0.4,
             maxChildSize: 1.0,
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(

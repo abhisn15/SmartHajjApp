@@ -1,5 +1,4 @@
 import 'package:SmartHajj/dashboard/checkoutDP.dart';
-import 'package:SmartHajj/dashboard/productDetail/setoranAwalScreen.dart';
 import 'package:flutter/material.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -33,15 +32,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 children: [
                   Text(
                     "Checkout",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700),
                   ),
                   Text(
                     "Kuatkan tekad, pasang niat, bismillah",
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400),
                   ),
                 ],
               ),
             ],
+          ),
+          leading: const BackButton(
+            color: Colors.white, // <-- SEE HERE
           ),
         ),
         body: Container(
@@ -320,7 +328,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         },
                         child: Text(
                           "BAYAR",
-                          style: TextStyle(fontWeight: FontWeight.w700),
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.w700),
                         ),
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size(350, 45),

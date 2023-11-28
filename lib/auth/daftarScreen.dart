@@ -1,7 +1,7 @@
 import 'package:SmartHajj/auth/loginScreen.dart';
-import 'package:SmartHajj/auth/lupaPasswordScreen.dart';
+// import 'package:SmartHajj/auth/lupaPasswordScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:SmartHajj/BottomNavigationBar.dart';
+// import 'package:SmartHajj/BottomNavigationBar.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
 
@@ -113,6 +113,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
                         horizontal: 20.0,
                       ),
                     ),
+                    keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   ),
                 ),

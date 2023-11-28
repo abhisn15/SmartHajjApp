@@ -79,21 +79,24 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
               children: [
                 Text(
                   "Tabungan Jamaah",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
                 ),
                 Text(
                   "Form Tambah Data",
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400),
                 ),
               ],
             ),
           ],
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+        leading: const BackButton(
+          color: Colors.white, // <-- SEE HERE
         ),
       ),
       body: SingleChildScrollView(
