@@ -2,6 +2,14 @@ import 'dart:convert';
 
 import 'package:SmartHajj/Dashboard/CustomCategoryButton.dart';
 import 'package:SmartHajj/Dashboard/CustomInformationButton.dart';
+import 'package:SmartHajj/dashboard/informasi/hewanQurban.dart';
+import 'package:SmartHajj/dashboard/informasi/infoHotel.dart';
+import 'package:SmartHajj/dashboard/informasi/infoMaktab.dart';
+import 'package:SmartHajj/dashboard/informasi/infoPasport.dart';
+import 'package:SmartHajj/dashboard/informasi/infoPesawat.dart';
+import 'package:SmartHajj/dashboard/informasi/infoVisa.dart';
+import 'package:SmartHajj/dashboard/informasi/manasikHaji.dart';
+import 'package:SmartHajj/dashboard/informasi/manasikUmroh.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganHaji.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganLangsung.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganQurban.dart';
@@ -576,28 +584,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 image: "assets/home/informasi/info_pasport.png",
                                 text: "Info Pasport",
                                 onPressed: () {
-                                  // Implement logic for handling the "Tabungan Langsung" category click
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => InfoPasport()));
                                 },
                               ),
                               CustomInformationButton(
                                 image: "assets/home/informasi/info_visa.png",
                                 text: "Info Visa",
                                 onPressed: () {
-                                  // Implement logic for handling the "Tabungan Umroh" category click
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => InfoVisa()));
                                 },
                               ),
                               CustomInformationButton(
                                 image: "assets/home/informasi/info_pesawat.png",
                                 text: "Info Pesawat",
                                 onPressed: () {
-                                  // Implement logic for handling the "Tabungan Haji" category click
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => InfoPesawat()));
                                 },
                               ),
                               CustomInformationButton(
                                 image: "assets/home/informasi/info_hotel.png",
                                 text: "Info Hotel",
                                 onPressed: () {
-                                  // Implement logic for handling the "Tabungan Qurban" category click
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => InfoHotel()));
                                 },
                               ),
                             ],
@@ -611,28 +631,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 image: "assets/home/informasi/info_maktab.png",
                                 text: "Info Maktab",
                                 onPressed: () {
-                                  // Implement logic for handling the "Tabungan Langsung" category click
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => InfoMaktab()));
                                 },
                               ),
                               CustomInformationButton(
                                 image: "assets/home/informasi/info_umroh.png",
                                 text: "Manasik Umroh",
                                 onPressed: () {
-                                  // Implement logic for handling the "Tabungan Umroh" category click
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ManasikUmroh()));
                                 },
                               ),
                               CustomInformationButton(
                                 image: "assets/home/informasi/haji.png",
                                 text: "Manasik Haji",
                                 onPressed: () {
-                                  // Implement logic for handling the "Tabungan Haji" category click
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ManasikHaji()));
                                 },
                               ),
                               CustomInformationButton(
                                 image: "assets/home/informasi/info_qurban.png",
                                 text: "Hewan Qurban",
                                 onPressed: () {
-                                  // Implement logic for handling the "Tabungan Qurban" category click
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => HewanQurban()));
                                 },
                               ),
                             ],
