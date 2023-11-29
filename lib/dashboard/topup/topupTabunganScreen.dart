@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:SmartHajj/dashboard/checkoutScreen.dart';
 import 'package:SmartHajj/jamaah/dompetALL.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class TopupTabunganScreen extends StatefulWidget {
   const TopupTabunganScreen({Key? key}) : super(key: key);
@@ -18,6 +21,56 @@ class _TopupTabunganScreenState extends State<TopupTabunganScreen> {
     'Mastercard\n8923******',
   ];
   String? selectedValue;
+  final textField = Color.fromRGBO(244, 244, 244, 1);
+
+  File? image;
+
+  Future pickImageFromCamera() async {
+    final pickedImage =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    if (pickedImage == null) return;
+    final imageTemp = File(pickedImage.path);
+    setState(() => image = imageTemp);
+  }
+
+  Future pickImageFromGallery() async {
+    final pickedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedImage == null) return;
+    final imageTemp = File(pickedImage.path);
+    setState(() => image = imageTemp);
+  }
+
+  Future<void> _showImageSourceDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Pilih Sumber Gambar'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                ListTile(
+                  title: Text('Kamera'),
+                  onTap: () {
+                    pickImageFromCamera();
+                    Navigator.of(context).pop();
+                  },
+                ),
+                ListTile(
+                  title: Text('Galeri'),
+                  onTap: () {
+                    pickImageFromGallery();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,15 +158,18 @@ class _TopupTabunganScreenState extends State<TopupTabunganScreen> {
                     height: 50,
                     margin: EdgeInsets.only(bottom: 24),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(0))),
+                      borderRadius: BorderRadius.all(Radius.circular(0)),
+                    ),
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed:
+                          _showImageSourceDialog, // Panggil pickImage langsung saat tombol ditekan
                       child: Text(
-                        "COPY",
+                        "Upload Bukti Transfer",
                         style: TextStyle(
-                            color: primaryColor,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
+                          color: primaryColor,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       style: ButtonStyle(
                         minimumSize: MaterialStateProperty.all(Size(
@@ -212,76 +268,32 @@ class _TopupTabunganScreenState extends State<TopupTabunganScreen> {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(top: 40),
+              margin: EdgeInsets.only(top: 20),
               child: Row(
                 children: [
                   Container(
-                    margin: EdgeInsets.only(left: 30, bottom: 20),
+                    margin: EdgeInsets.only(left: 24, bottom: 20),
                     child: Text(
-                      "Pilih Kartu",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              padding: EdgeInsets.symmetric(vertical: 10),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-                color: Color.fromRGBO(141, 148, 168, 1),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(left: 20, right: 20),
-                    child: Image.asset("assets/home/topup.png"),
-                  ),
-                  DropdownButton<String>(
-                    hint: Text(
-                      'Select an option',
+                      "Bukti Pembayaran",
                       style: TextStyle(
-                        fontSize: 14,
-                        color: defaultColor,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
                       ),
                     ),
-                    dropdownColor: abu,
-                    icon: Container(
-                        margin: EdgeInsets.only(left: 120 * 1),
-                        child: Image.asset("assets/home/dropdown_down.png")),
-                    items: items
-                        .map((String item) => DropdownMenuItem<String>(
-                              value: item,
-                              child: Row(
-                                children: [
-                                  Text(
-                                    item,
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: selectedValue == Text(item)
-                                            ? Colors.white
-                                            : Colors.white),
-                                  ),
-                                  SizedBox(
-                                      width:
-                                          10), // Beri jarak antara gambar dan teks
-                                ],
-                              ),
-                            ))
-                        .toList(),
-                    value: selectedValue,
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedValue = value;
-                      });
-                    },
                   ),
                 ],
               ),
             ),
+            if (image != null)
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                child: Image.file(
+                  image!,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
               child: ElevatedButton(

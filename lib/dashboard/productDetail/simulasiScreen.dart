@@ -1,3 +1,4 @@
+import 'package:SmartHajj/dashboard/productDetail/setoranAwalScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -48,12 +49,18 @@ class SimulasiScreen extends StatefulWidget {
 class _SimulasiScreenState extends State<SimulasiScreen> {
   String? _selectedValue;
   String? _selectedValueJamaah;
+  String? selectedValue;
 
   final primaryColor = Color.fromRGBO(43, 69, 112, 1);
   final defaultColor = Colors.white;
   final abu = Color.fromRGBO(141, 148, 168, 1);
   final sedikitAbu = Color.fromRGBO(244, 244, 244, 1);
   final krems = Color.fromRGBO(238, 226, 223, 1);
+
+  final List<String> items = [
+    'Payment Gate Away',
+    'Melalui Bank',
+  ];
 
   final TextEditingController _setoranAwalController = TextEditingController();
   final TextEditingController _setoranPerBulanController =
@@ -533,13 +540,92 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                 ),
               ),
               Container(
+                margin: EdgeInsets.only(top: 20),
+                child: Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(left: 24, bottom: 20),
+                      child: Text(
+                        "Pilih Pembayaran",
+                        style: TextStyle(
+                          color: primaryColor,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 30),
+                padding: EdgeInsets.symmetric(vertical: 10),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                  color: Color.fromRGBO(141, 148, 168, 1),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(left: 20, right: 20),
+                      child: Image.asset("assets/home/topup.png"),
+                    ),
+                    DropdownButton<String>(
+                      hint: Text(
+                        'Select an option',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: defaultColor,
+                        ),
+                      ),
+                      dropdownColor: abu,
+                      icon: Container(
+                          margin: EdgeInsets.only(left: 80 * 1),
+                          child: Image.asset("assets/home/dropdown_down.png")),
+                      items: items
+                          .map((String item) => DropdownMenuItem<String>(
+                                value: item,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      item,
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: selectedValue == Text(item)
+                                              ? Colors.white
+                                              : Colors.white),
+                                    ),
+                                    SizedBox(
+                                        width:
+                                            10), // Beri jarak antara gambar dan teks
+                                  ],
+                                ),
+                              ))
+                          .toList(),
+                      value: selectedValue,
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedValue = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Container(
                 margin: EdgeInsets.only(top: 30),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        // Do something when the button is pressed
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                SetoranAwalScreen(), // Ganti dengan DompetScreen() jika ingin langsung ke halaman DompetScreen
+                          ),
+                        );
                       },
                       child: Text(
                         "MULAI SETORAN AWAL",

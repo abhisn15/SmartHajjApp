@@ -1,9 +1,14 @@
 import 'dart:convert';
-
 import 'package:SmartHajj/auth/loginScreen.dart';
+import 'package:SmartHajj/profile/Syarat&KetentuanScreen.dart';
+import 'package:SmartHajj/profile/bantuanScreen.dart';
+import 'package:SmartHajj/profile/faqScreen.dart';
+import 'package:SmartHajj/profile/gantiPasswordScreen.dart';
+import 'package:SmartHajj/profile/kebijakanPrivasiScreen.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
+import 'editProfileScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -159,12 +164,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               onPressed: () {
                                 // Tambahkan logika otentikasi Anda di sini
                                 // Jika otentikasi berhasil, arahkan pengguna ke DashboardScreen
-                                // Navigator.pushReplacement(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => BottomNavigation(),
-                                //   ),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditProfileScreen(),
+                                  ),
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.symmetric(
@@ -203,12 +208,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               onPressed: () {
                                 // Tambahkan logika otentikasi Anda di sini
                                 // Jika otentikasi berhasil, arahkan pengguna ke DashboardScreen
-                                // Navigator.pushReplacement(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => BottomNavigation(),
-                                //   ),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => GantiPasswordScreen(),
+                                  ),
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.symmetric(
@@ -259,12 +264,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               onPressed: () {
                                 // Tambahkan logika otentikasi Anda di sini
                                 // Jika otentikasi berhasil, arahkan pengguna ke DashboardScreen
-                                // Navigator.pushReplacement(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => BottomNavigation(),
-                                //   ),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        KebijakanPrivasiScreen(),
+                                  ),
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.symmetric(
@@ -303,12 +309,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               onPressed: () {
                                 // Tambahkan logika otentikasi Anda di sini
                                 // Jika otentikasi berhasil, arahkan pengguna ke DashboardScreen
-                                // Navigator.pushReplacement(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => BottomNavigation(),
-                                //   ),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        SyaratKetentuanScreen(),
+                                  ),
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.symmetric(
@@ -327,7 +334,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       child: Image.asset(
                                           "assets/profile/syarat_ketentuan.png")),
                                   Container(
-                                    margin: EdgeInsets.only(right: 60),
+                                    margin: EdgeInsets.only(right: 70 / 1),
                                     child: Text(
                                       'Syarat & Ketentuan',
                                       style: TextStyle(
@@ -347,12 +354,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               onPressed: () {
                                 // Tambahkan logika otentikasi Anda di sini
                                 // Jika otentikasi berhasil, arahkan pengguna ke DashboardScreen
-                                // Navigator.pushReplacement(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => BottomNavigation(),
-                                //   ),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => FaqScreen(),
+                                  ),
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.symmetric(
@@ -391,12 +398,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               onPressed: () {
                                 // Tambahkan logika otentikasi Anda di sini
                                 // Jika otentikasi berhasil, arahkan pengguna ke DashboardScreen
-                                // Navigator.pushReplacement(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => BottomNavigation(),
-                                //   ),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => BantuanScreen(),
+                                  ),
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.symmetric(
@@ -434,7 +441,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: ElevatedButton(
                               onPressed: () async {
                                 await _logout();
-                                Navigator.pushReplacement(
+                                Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => LoginScreen(),
