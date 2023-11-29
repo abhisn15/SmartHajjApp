@@ -7,6 +7,8 @@ import 'package:SmartHajj/dashboard/kategori/tabunganLangsung.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganQurban.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganUmroh.dart';
 import 'package:SmartHajj/dashboard/topup/topupScreen.dart';
+import 'package:SmartHajj/dompet/dompetScreen.dart';
+import 'package:SmartHajj/jamaah/dompetALL.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
@@ -286,7 +288,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => TopupScreen(),
+                                      builder: (context) => DompetALL(),
                                     ),
                                   );
                                 },

@@ -2,6 +2,8 @@ import 'package:SmartHajj/dashboard/productDetail/setoranAwalScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/link.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NumberTextInputFormatter extends TextInputFormatter {
   @override
@@ -58,8 +60,8 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
   final krems = Color.fromRGBO(238, 226, 223, 1);
 
   final List<String> items = [
+    'Bank Transfer',
     'Payment Gate Away',
-    'Melalui Bank',
   ];
 
   final TextEditingController _setoranAwalController = TextEditingController();
@@ -102,6 +104,8 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
       }
     }
   }
+
+  final websiteUri = Uri.parse('https://smarthajj.coffeelabs.id');
 
   @override
   Widget build(BuildContext context) {
@@ -620,12 +624,16 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                SetoranAwalScreen(), // Ganti dengan DompetScreen() jika ingin langsung ke halaman DompetScreen
-                          ),
-                        );
+                        if (selectedValue == 'Bank Transfer') {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => SetoranAwalScreen(),
+                            ),
+                          );
+                        } else if (selectedValue == 'Payment Gate Away') {
+                          launchUrl(websiteUri,
+                              mode: LaunchMode.externalApplication);
+                        }
                       },
                       child: Text(
                         "MULAI SETORAN AWAL",

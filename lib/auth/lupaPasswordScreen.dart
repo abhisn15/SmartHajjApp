@@ -1,7 +1,6 @@
 import 'package:SmartHajj/auth/daftarScreen.dart';
 import 'package:SmartHajj/auth/resetPasswordScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:SmartHajj/BottomNavigationBar.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
 
