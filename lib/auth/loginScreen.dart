@@ -1,5 +1,6 @@
 import 'dart:convert';
-
+import 'dart:io';
+import 'package:http/io_client.dart';
 import 'package:SmartHajj/auth/daftarScreen.dart';
 import 'package:SmartHajj/auth/lupaPasswordScreen.dart';
 import 'package:flutter/material.dart';
@@ -21,16 +22,29 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  void login(String email, password) async {
+  void login(String email, String password) async {
     try {
-      final response = await http.post(
-          Uri.parse('https://smarthajj.coffeelabs.id/api/login'),
-          body: {'email': email, 'password': password});
+      HttpClient httpClient = new HttpClient();
+      httpClient.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+
+      HttpClientRequest request = await httpClient.postUrl(
+        Uri.parse('https://smarthajj.coffeelabs.id/api/login'),
+      );
+
+      // Add headers and body to the request
+      request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
+      request.write('email=$email&password=$password');
+
+      HttpClientResponse response = await request.close();
 
       if (response.statusCode == 200) {
-        var data = jsonDecode(response.body.toString());
+        // Reading response data
+        String responseBody = await response.transform(utf8.decoder).join();
+        var data = jsonDecode(responseBody);
         print(data['token']);
         print('Login successfully');
+
         // Navigate to Dashboard on successful login
         Navigator.pushAndRemoveUntil(
           context,
@@ -39,6 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           (route) => false,
         );
+
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', data['token']);
       } else {

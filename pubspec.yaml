@@ -111,6 +111,15 @@ flutter:
     - assets/home/kategori/tabungan_umroh.png
     - assets/home/kategori/tabungan_haji.png
     - assets/home/informasi/info_pasport.png
+    - assets/home/informasi/pasportUmroh.jpeg
+    - assets/home/informasi/visaUmroh.jpeg
+    - assets/home/informasi/pesawatUmroh.jpeg
+    - assets/home/informasi/hotel.jpeg
+    - assets/home/informasi/maktab.jpeg
+    - assets/home/informasi/pergiUmroh.jpeg
+    - assets/home/informasi/pergiHaji.jpeg
+    - assets/home/informasi/qurbanSapi.jpeg
+    - assets/home/informasi/qurbanKambing.jpeg
     - assets/home/informasi/info_visa.png
     - assets/home/informasi/info_pesawat.png
     - assets/home/informasi/info_hotel.png

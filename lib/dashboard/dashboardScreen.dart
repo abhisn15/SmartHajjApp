@@ -1,21 +1,20 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:SmartHajj/Dashboard/CustomCategoryButton.dart';
 import 'package:SmartHajj/Dashboard/CustomInformationButton.dart';
-import 'package:SmartHajj/dashboard/informasi/hewanQurban.dart';
-import 'package:SmartHajj/dashboard/informasi/infoHotel.dart';
-import 'package:SmartHajj/dashboard/informasi/infoMaktab.dart';
-import 'package:SmartHajj/dashboard/informasi/infoPasport.dart';
-import 'package:SmartHajj/dashboard/informasi/infoPesawat.dart';
-import 'package:SmartHajj/dashboard/informasi/infoVisa.dart';
-import 'package:SmartHajj/dashboard/informasi/manasikHaji.dart';
-import 'package:SmartHajj/dashboard/informasi/manasikUmroh.dart';
+import 'package:SmartHajj/dashboard/informasi/hewanQurban/hewanQurban.dart';
+import 'package:SmartHajj/dashboard/informasi/infoHotel/infoHotel.dart';
+import 'package:SmartHajj/dashboard/informasi/infoMaktab/infoMaktab.dart';
+import 'package:SmartHajj/dashboard/informasi/infoPassport/infoPasport.dart';
+import 'package:SmartHajj/dashboard/informasi/infoPesawat/infoPesawat.dart';
+import 'package:SmartHajj/dashboard/informasi/infoVisa/infoVisa.dart';
+import 'package:SmartHajj/dashboard/informasi/manasikHaji/manasikHaji.dart';
+import 'package:SmartHajj/dashboard/informasi/manasikUmroh/manasikUmroh.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganHaji.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganLangsung.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganQurban.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganUmroh.dart';
-import 'package:SmartHajj/dashboard/topup/topupScreen.dart';
-import 'package:SmartHajj/dompet/dompetScreen.dart';
 import 'package:SmartHajj/jamaah/dompetALL.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -40,19 +39,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<Map<String, dynamic>> fetchData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
-    final response = await http.get(
-      Uri.parse('https://smarthajj.coffeelabs.id/api/user'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
 
-    if (response.statusCode == 200) {
-      // If the server returns a 200 OK response, parse the JSON
-      return jsonDecode(response.body);
-    } else {
-      // If the server did not return a 200 OK response,
-      // throw an exception.
+      if (token == null) {
+        // Handle the case where the token is not available
+        throw Exception('Token not available');
+      }
+
+      HttpClient httpClient = new HttpClient();
+      httpClient.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+
+      // Use httpClient.get instead of httpClient.getUrl
+      HttpClientRequest request = await httpClient.getUrl(
+        Uri.parse('https://smarthajj.coffeelabs.id/api/user'),
+      );
+
+      // Add token to headers
+      request.headers.add('Authorization', 'Bearer $token');
+
+      HttpClientResponse response = await request.close();
+
+      String responseBody = await response.transform(utf8.decoder).join();
+      if (response.statusCode == 200) {
+        // If the server returns a 200 OK response, parse the JSON
+        return jsonDecode(responseBody);
+      } else {
+        // If the server did not return a 200 OK response,
+        // throw an exception.
+        throw Exception('Failed to load data: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Catch any exceptions that occur during the process
+      print('Error: $e');
       throw Exception('Failed to load data');
     }
   }
@@ -181,8 +202,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Text(
                       'Data is null')); // Handle the case when data is null
             } else {
-              // If the Future is complete and the data is available,
-              // you can access the data through the snapshot.data
               Map<String, dynamic> userData =
                   snapshot.data as Map<String, dynamic>;
               return Container(
