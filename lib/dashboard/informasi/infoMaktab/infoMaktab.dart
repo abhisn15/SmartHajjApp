@@ -1,4 +1,4 @@
-import 'package:SmartHajj/dashboard/informasi/infoPassport/ArtikelPasportScreen.dart';
+import 'package:SmartHajj/dashboard/informasi/infoMaktab/ArtikelMaktabScreen.dart';
 import 'package:flutter/material.dart';
 
 class InfoMaktab extends StatefulWidget {
@@ -88,7 +88,7 @@ class _InfoMaktabState extends State<InfoMaktab> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ArtikelPasportScreen(
+                    builder: (context) => ArtikelMaktabScreen(
                       artikelId: listArtikel[index]['id'],
                       listArtikel: listArtikel,
                     ),

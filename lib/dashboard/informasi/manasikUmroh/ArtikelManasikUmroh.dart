@@ -40,7 +40,7 @@ class ArtikelManasikUmrohScreen extends StatelessWidget {
         title: Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            "Info Pasport",
+            "Manasik Umroh",
             style: TextStyle(
               color: Colors.white,
               fontSize: 16,

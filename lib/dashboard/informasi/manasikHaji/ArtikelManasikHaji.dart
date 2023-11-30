@@ -26,7 +26,7 @@ class ArtikelManasikHajiScreen extends StatelessWidget {
       // Handle the case where the article with the specified ID is not found
       return Scaffold(
         appBar: AppBar(
-          title: Text("Info Visa"),
+          title: Text("Manasik Haji"),
         ),
         body: Center(
           child: Text("Article not found."),
@@ -40,7 +40,7 @@ class ArtikelManasikHajiScreen extends StatelessWidget {
         title: Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            "Info Pasport",
+            "Manasik Haji",
             style: TextStyle(
               color: Colors.white,
               fontSize: 16,

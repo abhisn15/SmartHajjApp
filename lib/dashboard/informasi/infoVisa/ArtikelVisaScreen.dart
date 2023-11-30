@@ -39,7 +39,7 @@ class ArtikelVisaScreen extends StatelessWidget {
         title: Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            "Info Pasport",
+            "Info Visa",
             style: TextStyle(
               color: Colors.white,
               fontSize: 16,

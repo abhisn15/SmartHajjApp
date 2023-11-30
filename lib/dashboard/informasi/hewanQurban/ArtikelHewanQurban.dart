@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-class ArtikelHotelScreen extends StatelessWidget {
+class ArtikelHewanQurbanScreen extends StatelessWidget {
   final int artikelId;
   final List<Map<String, dynamic>> listArtikel;
 
-  ArtikelHotelScreen({required this.artikelId, required this.listArtikel});
+  ArtikelHewanQurbanScreen(
+      {required this.artikelId, required this.listArtikel});
 
   final primaryColor = Color.fromRGBO(43, 69, 112, 1);
   final defaultColor = Colors.white;
@@ -25,7 +26,9 @@ class ArtikelHotelScreen extends StatelessWidget {
       // Handle the case where the article with the specified ID is not found
       return Scaffold(
         appBar: AppBar(
-          title: Text("Info Pasport"),
+          title: Text(
+            "Hewan Qurban",
+          ),
         ),
         body: Center(
           child: Text("Article not found."),

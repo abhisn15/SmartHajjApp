@@ -25,7 +25,7 @@ class ArtikelPesawatScreen extends StatelessWidget {
       // Handle the case where the article with the specified ID is not found
       return Scaffold(
         appBar: AppBar(
-          title: Text("Info Pasport"),
+          title: Text("Info Pesawat"),
         ),
         body: Center(
           child: Text("Article not found."),
@@ -39,7 +39,7 @@ class ArtikelPesawatScreen extends StatelessWidget {
         title: Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            "Info Pasport",
+            "Info Pesawat",
             style: TextStyle(
               color: Colors.white,
               fontSize: 16,

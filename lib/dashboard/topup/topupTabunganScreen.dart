@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:SmartHajj/dashboard/checkoutScreen.dart';
-import 'package:SmartHajj/jamaah/dompetALL.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 

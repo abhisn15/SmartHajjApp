@@ -13,18 +13,16 @@ class LupaPasswoardScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Align(
-        alignment: Alignment.topCenter,
+        alignment: Alignment.center,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              SizedBox(height: 100.0),
-              Padding(
-                padding: EdgeInsets.only(bottom: 30.0),
+              SizedBox(height: 30.0),
+              Container(
                 child: Image.asset(
                   'assets/icon_app.png',
-                  width: 140,
-                  height: 140,
+                  width: 200,
                 ),
               ),
               SizedBox(height: 16.0),

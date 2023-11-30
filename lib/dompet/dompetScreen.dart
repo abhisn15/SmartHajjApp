@@ -199,7 +199,7 @@ class _DompetScreenState extends State<DompetScreen> {
                   ),
                 ),
                 DraggableScrollableSheet(
-                  initialChildSize: 0.3,
+                  initialChildSize: 0.4,
                   minChildSize:
                       MediaQuery.of(context).size.width < 400 ? 0.3 : 0.4,
                   maxChildSize: 1.0,
@@ -326,20 +326,19 @@ class _DompetScreenState extends State<DompetScreen> {
   Widget buildListSaldoJamaahItem(Map<String, dynamic> item) {
     return ListTile(
       title: Container(
+        margin: EdgeInsets.only(bottom: 10, left: 5),
         child: Text(
           item['title'],
           style: TextStyle(
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w500,
           ),
         ),
-        margin: EdgeInsets.only(left: 5),
       ),
       subtitle: Container(
         margin: EdgeInsets.only(
           top: 15,
           left: 5,
           right: 5,
-          bottom: 10,
         ),
         padding: EdgeInsets.only(left: 20, right: 10, top: 10, bottom: 5),
         width: double.infinity,

@@ -1,4 +1,4 @@
-import 'package:SmartHajj/dashboard/informasi/infoVisa/ArtikelVisaScreen.dart';
+import 'package:SmartHajj/dashboard/informasi/manasikUmroh/ArtikelManasikUmroh.dart';
 import 'package:flutter/material.dart';
 
 class ManasikUmroh extends StatefulWidget {
@@ -88,7 +88,7 @@ class _ManasikUmrohState extends State<ManasikUmroh> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ArtikelVisaScreen(
+                    builder: (context) => ArtikelManasikUmrohScreen(
                       artikelId: listArtikel[index]['id'],
                       listArtikel: listArtikel,
                     ),

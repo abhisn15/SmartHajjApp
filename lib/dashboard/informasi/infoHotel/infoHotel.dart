@@ -1,4 +1,4 @@
-import 'package:SmartHajj/dashboard/informasi/infoPassport/ArtikelPasportScreen.dart';
+import 'package:SmartHajj/dashboard/informasi/infoHotel/ArtikelHotelScreen.dart';
 import 'package:flutter/material.dart';
 
 class InfoHotel extends StatefulWidget {
@@ -88,7 +88,7 @@ class _InfoHotelState extends State<InfoHotel> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ArtikelPasportScreen(
+                    builder: (context) => ArtikelHotelScreen(
                       artikelId: listArtikel[index]['id'],
                       listArtikel: listArtikel,
                     ),

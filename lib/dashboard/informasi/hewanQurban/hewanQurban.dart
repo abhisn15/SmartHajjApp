@@ -1,4 +1,4 @@
-import 'package:SmartHajj/dashboard/informasi/infoVisa/ArtikelVisaScreen.dart';
+import 'package:SmartHajj/dashboard/informasi/hewanQurban/ArtikelHewanQurban.dart';
 import 'package:flutter/material.dart';
 
 class HewanQurban extends StatefulWidget {
@@ -88,7 +88,7 @@ class _HewanQurbanState extends State<HewanQurban> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ArtikelVisaScreen(
+                    builder: (context) => ArtikelHewanQurbanScreen(
                       artikelId: listArtikel[index]['id'],
                       listArtikel: listArtikel,
                     ),
