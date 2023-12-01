@@ -77,14 +77,38 @@ class _DaftarScreenState extends State<DaftarScreen> {
         print('Signup successfully');
 
         // Show success alert
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Signup Successful"),
+              content: Text("Akun anda berhasil terdaftar!!"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.pushReplacement(
+                      // Navigate to login screen
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LoginScreen(),
+                      ),
+                    );
+                  },
+                  child: Text("OK"),
+                ),
+              ],
+            );
+          },
+        );
 
         // Navigate to login screen after showing the alert
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => LoginScreen(),
-          ),
-        );
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => LoginScreen(),
+        //   ),
+        // );
       } else {
         print('Signup Failed: ${response.statusCode}');
 

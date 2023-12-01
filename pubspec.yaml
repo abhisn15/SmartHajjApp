@@ -49,6 +49,7 @@ dependencies:
   http: ^1.1.2
   shared_preferences: ^2.2.2
   url_launcher: ^6.2.1
+  flutter_html: ^3.0.0-beta.2
 
 flutter_native_splash:
 android: true

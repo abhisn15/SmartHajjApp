@@ -497,6 +497,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                 builder: (context) =>
                                                     ProductDetailScreen(
                                                   product: product,
+                                                  packageId: product['hajj_id'],
+                                                  departId:
+                                                      product['depart_id'],
                                                 ),
                                               ),
                                             );

@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:SmartHajj/dashboard/productDetail/setoranAwalScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NumberTextInputFormatter extends TextInputFormatter {
@@ -42,8 +46,19 @@ class NumberTextInputFormatter extends TextInputFormatter {
 
 class SimulasiScreen extends StatefulWidget {
   final String hajjId;
+  final String departId;
+  final String packageType;
+  final String price;
+  final String agentId;
 
-  const SimulasiScreen({required this.hajjId, Key? key}) : super(key: key);
+  const SimulasiScreen({
+    required this.hajjId,
+    required this.departId,
+    required this.packageType,
+    required this.price,
+    required this.agentId,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _SimulasiScreenState createState() => _SimulasiScreenState();
@@ -51,12 +66,19 @@ class SimulasiScreen extends StatefulWidget {
 
 class _SimulasiScreenState extends State<SimulasiScreen> {
   late String hajjId;
+  late String departId;
+  late String packageType;
+  late List<Map<String, dynamic>> jamaahList;
 
   @override
   void initState() {
     super.initState();
     hajjId = widget.hajjId;
+    departId = widget.departId;
+    packageType = widget.packageType;
     print('Hajj ID: $hajjId');
+    print('Depart ID: $departId');
+    print('PackageType: $packageType');
   }
 
   String? _selectedValue;
@@ -115,7 +137,166 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
     }
   }
 
+  void showAlert(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Login"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  TextEditingController deposit = TextEditingController();
+  TextEditingController deposit_plan = TextEditingController();
+
   final websiteUri = Uri.parse('https://smarthajj.coffeelabs.id');
+
+  void login(String email, String password) async {
+    if (email.isEmpty || password.isEmpty) {
+      showAlert("Login anda tidak valid. Harap isi semua kolom.");
+      return;
+    }
+
+    try {
+      HttpClient httpClient = new HttpClient();
+      httpClient.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+
+      HttpClientRequest request = await httpClient.postUrl(
+        Uri.parse('https://smarthajj.coffeelabs.id/api/createPayment/'),
+      );
+
+      // Add headers and body to the request
+      request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
+      request.write('email=$email&password=$password');
+
+      HttpClientResponse response = await request.close();
+
+      if (response.statusCode == 200) {
+        // Reading response data
+        String responseBody = await response.transform(utf8.decoder).join();
+        var data = jsonDecode(responseBody);
+        print(data['token']);
+        print(data['users']);
+        print('Login successfully');
+        showAlert("Login Berhasil!");
+
+        // Navigate to Dashboard on successful login
+        // Navigator.pushAndRemoveUntil(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => BottomNavigation(),
+        //   ),
+        //   (route) => false,
+        // );
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('token', data['token']);
+        prefs.setString('agentId', data['users'].toString());
+        return;
+      } else {
+        print('Login Failed: ${response.statusCode}');
+        showAlert("Login anda tidak valid. Silakan coba lagi.");
+        return;
+      }
+    } catch (e) {
+      print('Error during login: $e');
+      showAlert("Login anda tidak valid. Terjadi Kesalahan.");
+      return;
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchData() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+      String? agentId = prefs.getString('users');
+      // Ensure that token is not null before using it
+      if (token == null) {
+        throw Exception('Token not available');
+      }
+
+      HttpClient httpClient = new HttpClient();
+      httpClient.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+
+      HttpClientRequest request = await httpClient.getUrl(
+        Uri.parse(
+            'https://smarthajj.coffeelabs.id/api/getPilgrimByAgent/$agentId'),
+      );
+
+      request.headers.add('Authorization', 'Bearer $token');
+
+      HttpClientResponse response = await request.close();
+
+      String responseBody = await response.transform(utf8.decoder).join();
+      if (response.statusCode == 200) {
+        return jsonDecode(responseBody);
+      } else {
+        print('Response Body: $responseBody');
+        print('Response Status Code: ${response.statusCode}');
+        // Provide a more meaningful error message
+        throw Exception(
+            'Failed to load user data. Status Code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+      // Provide a more user-friendly error message
+      throw Exception('Failed to load user data. Please try again later.');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchDataJamaah() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+      String? agentId = prefs.getString('users');
+      // Ensure that token is not null before using it
+      if (token == null) {
+        throw Exception('Token not available');
+      }
+
+      HttpClient httpClient = new HttpClient();
+      httpClient.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+
+      HttpClientRequest request = await httpClient.getUrl(
+        Uri.parse('https://smarthajj.coffeelabs.id/api/getAllPilgrim'),
+      );
+
+      request.headers.add('Authorization', 'Bearer $token');
+
+      HttpClientResponse response = await request.close();
+
+      String responseBody = await response.transform(utf8.decoder).join();
+      if (response.statusCode == 200) {
+        // Update jamaahList here
+        jamaahList = List<Map<String, dynamic>>.from(jsonDecode(responseBody));
+        return jamaahList;
+      } else {
+        print('Response Body: $responseBody');
+        print('Response Status Code: ${response.statusCode}');
+        // Provide a more meaningful error message
+        throw Exception(
+            'Failed to load user data. Status Code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+      // Provide a more user-friendly error message
+      throw Exception('Failed to load user data. Please try again later.');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -349,7 +530,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                           Container(
                             margin: EdgeInsets.symmetric(vertical: 20),
                             child: Text(
-                              "Uang akan terkumpul setelah  7 Bulan",
+                              "Uang akan terkumpul setelah 7 Bulan",
                               style: TextStyle(
                                 color: krems,
                                 fontWeight: FontWeight.w700,
@@ -479,77 +660,80 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                 child: Column(
                   children: [
                     Container(
-                      padding: EdgeInsets.only(top: 5),
-                      width: double.infinity,
-                      height: 58,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(80)),
-                        color: sedikitAbu,
-                      ),
-                      child: DropdownButtonFormField<String>(
-                        icon: Container(
-                          margin: EdgeInsets.only(right: 16),
-                          child: Image.asset(
-                            "assets/home/dropdown.png",
-                            width: 10,
-                            height: 10,
-                          ),
+                        padding: EdgeInsets.only(top: 5),
+                        width: double.infinity,
+                        height: 58,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(80)),
+                          color: sedikitAbu,
                         ),
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                        ),
-                        value: _selectedValueJamaah,
-                        items: [
-                          DropdownMenuItem<String>(
-                            value: 'RICKI SETIAWAN - NIK 3216212305850001',
-                            child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: 20),
-                              child: Text(
-                                'RICKI SETIAWAN - NIK 3216212305850001',
-                                style: TextStyle(
-                                  color: _selectedValueJamaah ==
-                                          'RICKI SETIAWAN - NIK 3216212305850001'
-                                      ? abu
-                                      : null,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: 'PAPA KHAN - 3216212305850001',
-                            child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: 20),
-                              child: Text(
-                                'PAPA KHAN - NIK 3216212305850001',
-                                style: TextStyle(
-                                  color: _selectedValueJamaah ==
-                                          'PAPA KHAN - NIK 3216212305850001'
-                                      ? abu
-                                      : null,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                        onChanged: (String? selectedItem) {
-                          setState(() {
-                            _selectedValueJamaah = selectedItem;
-                          });
-                        },
-                        hint: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            _selectedValueJamaah ?? 'Select an option',
-                            style: TextStyle(
-                              color: _selectedValueJamaah == null ? abu : null,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
+                        child: FutureBuilder(
+                          future: fetchDataJamaah(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return CircularProgressIndicator(
+                                color: sedikitAbu,
+                              );
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else if (snapshot.hasData) {
+                              jamaahList = List<Map<String, dynamic>>.from(
+                                  snapshot.data!);
+                              return Column(
+                                children: [
+                                  DropdownButton<String>(
+                                    value: _selectedValueJamaah,
+                                    items:
+                                        jamaahList.asMap().entries.map((entry) {
+                                      int index = entry.key;
+                                      Map<String, dynamic> jamaah = entry.value;
+                                      return DropdownMenuItem<String>(
+                                        value: index
+                                            .toString(), // Gunakan indeks sebagai nilai
+                                        child: Container(
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 20),
+                                          child: Text(
+                                            '${jamaah['name']} - NIK ${jamaah['nik']}',
+                                            style: TextStyle(
+                                              color: _selectedValueJamaah ==
+                                                      index.toString()
+                                                  ? abu
+                                                  : null,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? selectedItem) {
+                                      setState(() {
+                                        _selectedValueJamaah = selectedItem;
+                                      });
+                                    },
+                                    hint: Container(
+                                      margin:
+                                          EdgeInsets.symmetric(horizontal: 20),
+                                      child: Text(
+                                        _selectedValueJamaah ??
+                                            'Select an option',
+                                        style: TextStyle(
+                                          color: _selectedValueJamaah == null
+                                              ? abu
+                                              : null,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              );
+                            } else {
+                              return Text('No data available.');
+                            }
+                          },
+                        )),
                   ],
                 ),
               ),

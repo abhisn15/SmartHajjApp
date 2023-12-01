@@ -18,10 +18,35 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  void showAlert(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Login"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   void login(String email, String password) async {
+    if (email.isEmpty || password.isEmpty) {
+      showAlert("Login anda tidak valid. Harap isi semua kolom.");
+      return;
+    }
+
     try {
       HttpClient httpClient = new HttpClient();
       httpClient.badCertificateCallback =
@@ -42,24 +67,55 @@ class _LoginScreenState extends State<LoginScreen> {
         String responseBody = await response.transform(utf8.decoder).join();
         var data = jsonDecode(responseBody);
         print(data['token']);
+        print(data['users']);
         print('Login successfully');
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Login Successful"),
+              content: Text("Login telah berhasil!"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.pushReplacement(
+                      // Navigate to login screen
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BottomNavigation(),
+                      ),
+                    );
+                  },
+                  child: Text("OK"),
+                ),
+              ],
+            );
+          },
+        );
 
         // Navigate to Dashboard on successful login
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BottomNavigation(),
-          ),
-          (route) => false,
-        );
+        // Navigator.pushAndRemoveUntil(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => BottomNavigation(),
+        //   ),
+        //   (route) => false,
+        // );
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', data['token']);
+        prefs.setString('agentId', data['users'].toString());
+        return;
       } else {
         print('Login Failed: ${response.statusCode}');
+        showAlert("Login anda tidak valid. Silakan coba lagi.");
+        return;
       }
     } catch (e) {
       print('Error during login: $e');
+      showAlert("Login anda tidak valid. Terjadi Kesalahan.");
+      return;
     }
   }
 

@@ -1,13 +1,77 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:SmartHajj/dashboard/productDetail/simulasiScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'dart:ui';
 
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ProductDetailScreen extends StatelessWidget {
+class ProductDetailScreen extends StatefulWidget {
   final Map<String, dynamic> product;
+  final String packageId;
+  final String departId;
 
-  ProductDetailScreen({required this.product});
+  ProductDetailScreen({
+    required this.product,
+    required this.packageId,
+    required this.departId,
+  });
+
+  @override
+  _ProductDetailScreenState createState() => _ProductDetailScreenState();
+}
+
+class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  late Future<List<Map<String, dynamic>>> productData;
+
+  @override
+  void initState() {
+    super.initState();
+    productData = fetchDataProduct();
+  }
+
+  Future<List<Map<String, dynamic>>> fetchDataProduct() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      if (token == null) {
+        throw Exception('Token not available');
+      }
+
+      // Print the URI
+      final Uri uri = Uri.parse(
+        "https://smarthajj.coffeelabs.id/api/getHajj/${widget.packageId}/${widget.departId}",
+      );
+      print('Request URI: $uri');
+
+      HttpClient httpClient = new HttpClient();
+      httpClient.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+
+      HttpClientRequest request = await httpClient.getUrl(uri);
+
+      request.headers.add('Authorization', 'Bearer $token');
+
+      HttpClientResponse response = await request.close();
+
+      String responseBody = await response.transform(utf8.decoder).join();
+      if (response.statusCode == 200) {
+        print('Response Body: $responseBody');
+        return List<Map<String, dynamic>>.from(jsonDecode(responseBody));
+      } else {
+        print('Response Body: $responseBody');
+        print('Response Status Code: ${response.statusCode}');
+        throw Exception('Failed to load product data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching product data: $e');
+      throw Exception('Failed to load product data');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +81,7 @@ class ProductDetailScreen extends StatelessWidget {
         title: Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            product["name"],
+            widget.product["name"],
             style: TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -33,7 +97,7 @@ class ProductDetailScreen extends StatelessWidget {
             Stack(
               children: <Widget>[
                 Image.network(
-                  'https://smarthajj.coffeelabs.id/storage/${product["image"]}',
+                  'https://smarthajj.coffeelabs.id/storage/${widget.product["image"]}',
                   width: double.infinity,
                   fit: BoxFit.cover,
                 ),
@@ -42,7 +106,6 @@ class ProductDetailScreen extends StatelessWidget {
                     margin: EdgeInsets.only(top: 290),
                     padding: EdgeInsets.only(top: 24),
                     width: double.infinity,
-                    height: 740,
                     decoration: BoxDecoration(
                       color: Color.fromARGB(255, 255, 255, 255),
                       borderRadius: BorderRadius.only(
@@ -54,7 +117,7 @@ class ProductDetailScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          product["name"],
+                          widget.product["name"],
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
@@ -75,7 +138,7 @@ class ProductDetailScreen extends StatelessWidget {
                           NumberFormat.currency(
                             locale: 'id_ID',
                             symbol: 'Rp ',
-                          ).format(double.parse(product["price"])),
+                          ).format(double.parse(widget.product["price"])),
                           style: TextStyle(
                             fontSize: 24,
                             color: Color.fromRGBO(43, 69, 112, 1),
@@ -85,13 +148,14 @@ class ProductDetailScreen extends StatelessWidget {
                         SizedBox(height: 20),
                         Container(
                           margin: EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            "Lorem ipsum dolor sit amet consectetur. Vulputate dignissim accumsan pellentesque morbi tempus eget aliquam et diam. Enim id quis mauris velit vulputate aenean laoreet odio et. Pellentesque lacus elit enim integer. Quam purus porttitor congue libero at pellentesque eu sit.",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w400,
-                            ),
+                          child: Html(
+                            data: widget.product['feature'],
+                            style: {
+                              // You can customize the style here
+                              'body': Style(
+                                  fontSize: FontSize(12.0),
+                                  fontWeight: FontWeight.w400),
+                            },
                           ),
                         ),
                         SizedBox(height: 20),
@@ -114,25 +178,14 @@ class ProductDetailScreen extends StatelessWidget {
                               vertical: 10, horizontal: 20),
                           child: Align(
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                              "• Lorem ipsum dolor sit amet consectetur. Ut eget turpis lorem enim duis nunc scelerisque amet mattis.",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 20),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "• Lorem ipsum dolor sit amet consectetur. Ut eget turpis lorem enim duis nunc scelerisque amet mattis.",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
+                            child: Html(
+                              data: widget.product['feature'],
+                              style: {
+                                // You can customize the style here
+                                'body': Style(
+                                    fontSize: FontSize(12.0),
+                                    fontWeight: FontWeight.w400),
+                              },
                             ),
                           ),
                         ),
@@ -156,25 +209,14 @@ class ProductDetailScreen extends StatelessWidget {
                               vertical: 10, horizontal: 20),
                           child: Align(
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                              "• Lorem ipsum dolor sit amet consectetur. Ut eget turpis lorem enim duis nunc scelerisque amet mattis.",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 20),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "• Lorem ipsum dolor sit amet consectetur. Ut eget turpis lorem enim duis nunc scelerisque amet mattis.",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
+                            child: Html(
+                              data: widget.product['benefit'],
+                              style: {
+                                // You can customize the style here
+                                'body': Style(
+                                    fontSize: FontSize(12.0),
+                                    fontWeight: FontWeight.w400),
+                              },
                             ),
                           ),
                         ),
@@ -198,25 +240,14 @@ class ProductDetailScreen extends StatelessWidget {
                               vertical: 10, horizontal: 20),
                           child: Align(
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                              "• Lorem ipsum dolor sit amet consectetur. Ut eget turpis lorem enim duis nunc scelerisque amet mattis.",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 20),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "• Lorem ipsum dolor sit amet consectetur. Ut eget turpis lorem enim duis nunc scelerisque amet mattis.",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
+                            child: Html(
+                              data: widget.product['terms'],
+                              style: {
+                                // You can customize the style here
+                                'body': Style(
+                                    fontSize: FontSize(12.0),
+                                    fontWeight: FontWeight.w400),
+                              },
                             ),
                           ),
                         ),
@@ -230,7 +261,11 @@ class ProductDetailScreen extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => SimulasiScreen(
-                                    hajjId: product["hajj_id"],
+                                    hajjId: widget.product["hajj_id"],
+                                    departId: widget.product['depart_id'],
+                                    packageType: "hajj",
+                                    price: widget.product['price'],
+                                    agentId: ['users'].toString(),
                                   ),
                                 ),
                               );
