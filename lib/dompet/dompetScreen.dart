@@ -168,6 +168,18 @@ class _DompetScreenState extends State<DompetScreen> {
                         ),
                       ),
                       Container(
+                        clipBehavior: Clip.none,
+                        margin: EdgeInsets.only(top: 8),
+                        child: Text(
+                          snapshot.data!['phone'],
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      Container(
                         margin: EdgeInsets.only(top: 8),
                         child: Text(
                           'Transfer on Dec 2, 2020',

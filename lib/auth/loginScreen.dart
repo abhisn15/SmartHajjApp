@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/io_client.dart';
 import 'package:SmartHajj/auth/daftarScreen.dart';
 import 'package:SmartHajj/auth/lupaPasswordScreen.dart';
 import 'package:flutter/material.dart';
@@ -57,10 +56,10 @@ class _LoginScreenState extends State<LoginScreen> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', data['token']);
       } else {
-        print('Login Failed');
+        print('Login Failed: ${response.statusCode}');
       }
     } catch (e) {
-      print(e.toString());
+      print('Error during login: $e');
     }
   }
 

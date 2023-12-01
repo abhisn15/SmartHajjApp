@@ -160,6 +160,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                           ),
+                          Container(
+                            margin: EdgeInsets.only(top: 8),
+                            child: Text(
+                              userData['phone'],
+                              style: TextStyle(
+                                color: Color.fromRGBO(141, 148, 168, 1),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
                         ],
                       )),
                     ),

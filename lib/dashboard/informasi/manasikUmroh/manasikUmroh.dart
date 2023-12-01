@@ -1,5 +1,5 @@
-import 'package:SmartHajj/dashboard/informasi/manasikUmroh/ArtikelManasikUmroh.dart';
 import 'package:flutter/material.dart';
+import 'package:SmartHajj/dashboard/informasi/manasikUmroh/ArtikelManasikUmroh.dart';
 
 class ManasikUmroh extends StatefulWidget {
   const ManasikUmroh({Key? key}) : super(key: key);
@@ -11,52 +11,25 @@ class ManasikUmroh extends StatefulWidget {
 class _ManasikUmrohState extends State<ManasikUmroh> {
   final List<Map<String, dynamic>> listArtikel = [
     {
-      'id': 1,
-      'penulis': 'Abhi Surya Nugroho',
-      'profile': 'assets/profile/profile.png',
-      'category': 'Pergi Umroh',
-      'img': 'assets/home/informasi/pergiUmroh.jpeg',
-      'judul-artikel': 'Wadidawww Sekarang ada yang Menarik di Pergi Umroh!!',
-      'waktu': '1 Menit Yang Lalu',
-      'tanggal-pembuatan': 'Des 01, 2023'
-    },
-    {
-      'id': 2,
-      'penulis': 'Ilham Rafi',
-      'profile': 'assets/profile/profile.png',
-      'category': 'Pergi Umroh',
-      'img': 'assets/home/informasi/pergiUmroh.jpeg',
-      'judul-artikel': 'Wadidawww Sekarang ada yang Menarik di Pergi Umroh!!',
-      'waktu': '1 Menit Yang Lalu',
-      'tanggal-pembuatan': 'Des 02, 2023'
-    },
-    {
-      'id': 3,
-      'penulis': 'Abhi Surya Nugroho',
-      'profile': 'assets/profile/profile.png',
-      'category': 'Pergi Umroh',
-      'img': 'assets/home/informasi/pergiUmroh.jpeg',
-      'judul-artikel': 'Wadidawww Sekarang ada yang Menarik di Pergi Umroh!!',
-      'waktu': '1 Menit Yang Lalu',
-      'tanggal-pembuatan': 'Des 03, 2023'
-    },
-    {
-      'id': 4,
-      'penulis': 'Ilham Rafi',
-      'profile': 'assets/profile/profile.png',
-      'category': 'Pergi Umroh',
-      'img': 'assets/home/informasi/pergiUmroh.jpeg',
-      'judul-artikel': 'Wadidawww Sekarang ada yang Menarik di Pergi Umroh!!',
-      'waktu': '1 Menit Yang Lalu',
-      'tanggal-pembuatan': 'Des 04, 2023'
+      "article_id": "1",
+      "slug": "ini-merupakan-headline-terkini-untuk-info-ini",
+      "headline": "Ini Merupakan Headline Terkini untuk Info Ini",
+      "detail":
+          "<p>lorem ipsum Dolor sir amet,lorem ipsum Dolor sir amet,lorem ipsum Dolor sir amet,lorem ipsum Dolor sir amet,<\/p>\r\n\r\n<p>lorem ipsum Dolor sir amet,lorem ipsum Dolor sir amet,lorem ipsum Dolor sir amet,lorem ipsum Dolor sir amet,<\/p>\r\n\r\n<p>lorem ipsum Dolor sir amet,lorem ipsum Dolor sir amet,lorem ipsum Dolor sir amet,lorem ipsum Dolor sir amet,<\/p>\r\n\r\n<p>lorem ipsum Dolor sir amet,lorem ipsum Dolor sir amet,lorem ipsum Dolor sir amet,lorem ipsum Dolor sir amet,<\/p>\r\n\r\n<p>lorem ipsum Dolor sir amet,lorem ipsum Dolor sir amet,lorem ipsum Dolor sir amet,lorem ipsum Dolor sir amet,<\/p>",
+      "pict":
+          "article/1701386732_wallpapersden.com_valorant-fade-4k-art_2880x1800.jpg",
+      "category_id": "2",
+      "category_name": "Info Haji",
+      "profile":
+          "assets/profile.jpg", // Update this with your actual profile image
+      "penulis": "John Doe",
+      "tanggal_pembuatan": "2 hours ago",
     },
   ];
 
   final primaryColor = Color.fromRGBO(43, 69, 112, 1);
   final defaultColor = Colors.white;
   final abu = Color.fromRGBO(141, 148, 168, 1);
-  final sedikitAbu = Color.fromRGBO(244, 244, 244, 1);
-  final krems = Color.fromRGBO(238, 226, 223, 1);
 
   @override
   Widget build(BuildContext context) {
@@ -89,8 +62,10 @@ class _ManasikUmrohState extends State<ManasikUmroh> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => ArtikelManasikUmrohScreen(
-                      artikelId: listArtikel[index]['id'],
+                      artikelId: listArtikel[index]['article_id'],
                       listArtikel: listArtikel,
+                      selectedArticle:
+                          listArtikel[index], // Provide the selected article
                     ),
                   ),
                 );
@@ -100,8 +75,8 @@ class _ManasikUmrohState extends State<ManasikUmroh> {
                 child: Row(
                   children: [
                     Container(
-                      child: Image.asset(
-                        listArtikel[index]['img'],
+                      child: Image.network(
+                        listArtikel[index]['pict'],
                         height: 180,
                         width: 140 * 1,
                         fit: BoxFit.cover,
@@ -114,7 +89,7 @@ class _ManasikUmrohState extends State<ManasikUmroh> {
                         Container(
                           width: 140,
                           child: Text(
-                            listArtikel[index]['category'],
+                            listArtikel[index]['category_name'],
                             style: TextStyle(
                               color: Colors.orange,
                               fontSize: 12,
@@ -126,7 +101,7 @@ class _ManasikUmrohState extends State<ManasikUmroh> {
                           margin: EdgeInsets.only(top: 10),
                           width: 180,
                           child: Text(
-                            listArtikel[index]['judul-artikel'],
+                            listArtikel[index]['headline'],
                             style: TextStyle(
                               color: primaryColor,
                               fontSize: 14,
@@ -138,7 +113,7 @@ class _ManasikUmrohState extends State<ManasikUmroh> {
                           margin: EdgeInsets.only(top: 10),
                           width: 140,
                           child: Text(
-                            listArtikel[index]['waktu'],
+                            listArtikel[index]['tanggal_pembuatan'],
                             style: TextStyle(
                               color: abu,
                               fontSize: 10,

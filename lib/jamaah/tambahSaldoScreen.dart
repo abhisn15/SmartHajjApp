@@ -223,12 +223,12 @@ class TambahSaldoScreen extends StatelessWidget {
                                 horizontal: 20, vertical: 24),
                             child: ElevatedButton(
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SimulasiScreen(),
-                                  ),
-                                );
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) => SimulasiScreen(),
+                                //   ),
+                                // );
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Color.fromRGBO(43, 69, 112, 1),

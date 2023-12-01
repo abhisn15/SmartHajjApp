@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 class ArtikelManasikUmrohScreen extends StatelessWidget {
   final int artikelId;
   final List<Map<String, dynamic>> listArtikel;
+  final Map<String, dynamic>
+      selectedArticle; // Change the type to Map<String, dynamic>
 
   ArtikelManasikUmrohScreen(
-      {required this.artikelId, required this.listArtikel});
+      {required this.artikelId,
+      required this.listArtikel,
+      required this.selectedArticle});
 
   final primaryColor = Color.fromRGBO(43, 69, 112, 1);
   final defaultColor = Colors.white;
@@ -16,7 +20,7 @@ class ArtikelManasikUmrohScreen extends StatelessWidget {
     // Find the article with the specified ID
     Map<String, dynamic>? selectedArticle;
     for (var article in listArtikel) {
-      if (article['id'] == artikelId) {
+      if (article['article_id'] == artikelId.toString()) {
         selectedArticle = article;
         break;
       }
@@ -60,7 +64,7 @@ class ArtikelManasikUmrohScreen extends StatelessWidget {
               Container(
                 margin: EdgeInsets.only(bottom: 20, left: 8),
                 child: Text(
-                  selectedArticle['judul-artikel'],
+                  selectedArticle['headline'],
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w600,
@@ -76,7 +80,7 @@ class ArtikelManasikUmrohScreen extends StatelessWidget {
                         shape: BoxShape.circle,
                         color: Colors.grey[200],
                       ),
-                      child: Image.asset(
+                      child: Image.network(
                         selectedArticle['profile'],
                         width: 60,
                       ),
@@ -84,16 +88,16 @@ class ArtikelManasikUmrohScreen extends StatelessWidget {
                     Container(
                       margin: EdgeInsets.only(left: 20),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment
-                            .start, // Align content to the left
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             selectedArticle['penulis'],
                             style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w500),
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                          Text(selectedArticle['tanggal-pembuatan']),
+                          Text(selectedArticle['tanggal_pembuatan']),
                         ],
                       ),
                     ),
@@ -101,23 +105,17 @@ class ArtikelManasikUmrohScreen extends StatelessWidget {
                 ),
               ),
               Container(
-                  margin: EdgeInsets.only(top: 20, bottom: 20),
-                  child: Image.asset(selectedArticle['img'])),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                child: Column(
-                  children: [
-                    Text(
-                        "git pull, a combination of git fetch + git merge, updates some parts of your local repository with changes from the remote repository. To understand what is and isn't affected by git pull, you need to first understand the concept of remote tracking branches. When you clone a repository, you clone one working branch, main, and all of the remote tracking branches. git fetch updates the remote tracking branches. "),
-                  ],
-                ),
+                margin: EdgeInsets.only(top: 20, bottom: 20),
+                child: Image.network(selectedArticle['pict']),
               ),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                 child: Column(
                   children: [
                     Text(
-                        "git pull, a combination of git fetch + git merge, updates some parts of your local repository with changes from the remote repository. To understand what is and isn't affected by git pull, you need to first understand the concept of remote tracking branches. When you clone a repository, you clone one working branch, main, and all of the remote tracking branches. git fetch updates the remote tracking branches. "),
+                      selectedArticle['detail'],
+                      // Replace this with your actual article detail content
+                    ),
                   ],
                 ),
               ),

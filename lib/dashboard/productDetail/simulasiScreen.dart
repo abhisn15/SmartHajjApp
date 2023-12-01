@@ -2,7 +2,6 @@ import 'package:SmartHajj/dashboard/productDetail/setoranAwalScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/link.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NumberTextInputFormatter extends TextInputFormatter {
@@ -42,13 +41,24 @@ class NumberTextInputFormatter extends TextInputFormatter {
 }
 
 class SimulasiScreen extends StatefulWidget {
-  const SimulasiScreen({Key? key}) : super(key: key);
+  final String hajjId;
+
+  const SimulasiScreen({required this.hajjId, Key? key}) : super(key: key);
 
   @override
   _SimulasiScreenState createState() => _SimulasiScreenState();
 }
 
 class _SimulasiScreenState extends State<SimulasiScreen> {
+  late String hajjId;
+
+  @override
+  void initState() {
+    super.initState();
+    hajjId = widget.hajjId;
+    print('Hajj ID: $hajjId');
+  }
+
   String? _selectedValue;
   String? _selectedValueJamaah;
   String? selectedValue;

@@ -31,11 +31,13 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   late Future<Map<String, dynamic>> apiData;
+  late Future<List<Map<String, dynamic>>> apiDataProduct;
 
   @override
   void initState() {
     super.initState();
-    apiData = fetchData(); // Call your API function
+    apiData = fetchData(); // Call your user API function
+    apiDataProduct = fetchDataProduct(); // Call your product API function
   }
 
   Future<Map<String, dynamic>> fetchData() async {
@@ -52,66 +54,62 @@ class _DashboardScreenState extends State<DashboardScreen> {
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
 
-      // Use httpClient.get instead of httpClient.getUrl
       HttpClientRequest request = await httpClient.getUrl(
         Uri.parse('https://smarthajj.coffeelabs.id/api/user'),
       );
 
-      // Add token to headers
       request.headers.add('Authorization', 'Bearer $token');
 
       HttpClientResponse response = await request.close();
 
       String responseBody = await response.transform(utf8.decoder).join();
       if (response.statusCode == 200) {
-        // If the server returns a 200 OK response, parse the JSON
         return jsonDecode(responseBody);
       } else {
-        // If the server did not return a 200 OK response,
-        // throw an exception.
-        throw Exception('Failed to load data: ${response.statusCode}');
+        print('Response Body: $responseBody');
+        print('Response Status Code: ${response.statusCode}');
+        throw Exception('Failed to load user data: ${response.statusCode}');
       }
     } catch (e) {
-      // Catch any exceptions that occur during the process
-      print('Error: $e');
-      throw Exception('Failed to load data');
+      print('Error fetching user data: $e');
+      throw Exception('Failed to load user data');
     }
   }
 
-  final List<Map<String, dynamic>> listProduct = [
-    {
-      "id": 1,
-      "img": "assets/home/products/tabungan_qurban.png",
-      "name": "Tabungan Qurban",
-      "jadwal": "Berangkat Januari 2029",
-      "detailImg": "assets/home/detail_products/product_umroh.png",
-      "tabungan": "Rp. 27.000,00",
-    },
-    {
-      "id": 2,
-      "img": "assets/home/products/tabungan_umroh.png",
-      "name": "Tabungan Umroh",
-      "jadwal": "Berangkat Januari 2029",
-      "detailImg": "assets/home/detail_products/product_umroh.png",
-      "tabungan": "Rp. 27.000,00",
-    },
-    {
-      "id": 3,
-      "img": "assets/home/products/tabungan_qurban.png",
-      "name": "Tabungan Haji",
-      "jadwal": "Berangkat Januari 2029",
-      "detailImg": "assets/home/detail_products/product_umroh.png",
-      "tabungan": "Rp. 27.000,00",
-    },
-    {
-      "id": 4,
-      "img": "assets/home/products/tabungan_umroh.png",
-      "name": "Tabungan Haji",
-      "jadwal": "Berangkat Januari 2029",
-      "detailImg": "assets/home/detail_products/product_umroh.png",
-      "tabungan": "Rp. 27.000,00",
+  Future<List<Map<String, dynamic>>> fetchDataProduct() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      if (token == null) {
+        throw Exception('Token not available');
+      }
+
+      HttpClient httpClient = new HttpClient();
+      httpClient.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+
+      HttpClientRequest request = await httpClient.getUrl(
+        Uri.parse('https://smarthajj.coffeelabs.id/api/getAllHajj'),
+      );
+
+      request.headers.add('Authorization', 'Bearer $token');
+
+      HttpClientResponse response = await request.close();
+
+      String responseBody = await response.transform(utf8.decoder).join();
+      if (response.statusCode == 200) {
+        return List<Map<String, dynamic>>.from(jsonDecode(responseBody));
+      } else {
+        print('Response Body: $responseBody');
+        print('Response Status Code: ${response.statusCode}');
+        throw Exception('Failed to load product data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching product data: $e');
+      throw Exception('Failed to load product data');
     }
-  ];
+  }
 
   final List<Map<String, dynamic>> listKategori = [
     {
@@ -242,6 +240,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ),
                                     Text(
                                       userData['email'],
+                                      style: TextStyle(
+                                        fontSize: 12.0,
+                                        fontWeight: FontWeight.bold,
+                                        color:
+                                            Color.fromARGB(255, 190, 194, 204),
+                                      ),
+                                    ),
+                                    Text(
+                                      userData['phone'],
                                       style: TextStyle(
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.bold,
@@ -424,7 +431,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       margin: EdgeInsets.only(top: 20.0),
                       padding: EdgeInsets.only(top: 30.0),
                       width: double.infinity,
-                      height: 680.0,
+                      height: 700.0,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
@@ -446,76 +453,105 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                           ),
                           Container(
-                            height: 200.0,
+                            height: 220.0,
                             margin: const EdgeInsets.only(
                                 top: 20.0, bottom: 20, left: 0),
-                            child: ListView(
-                              physics: BouncingScrollPhysics(),
-                              scrollDirection: Axis.horizontal,
-                              children: listProduct.map((product) {
-                                return Container(
-                                  width: 150.0,
-                                  margin: EdgeInsets.only(left: 10),
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        255, 255, 255, 255),
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(20.0),
-                                    ),
-                                  ),
-                                  child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                ProductDetailScreen(
-                                                    product: product),
+                            child: FutureBuilder<List<Map<String, dynamic>>>(
+                              future: fetchDataProduct(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  // If the Future is still running, display a loading indicator
+                                  return Center(
+                                      child: CircularProgressIndicator());
+                                } else if (snapshot.hasError) {
+                                  // If an error occurred, display the error message
+                                  return Center(
+                                      child: Text('Error: ${snapshot.error}'));
+                                } else if (snapshot.data == null) {
+                                  return Center(child: Text('Data is null'));
+                                } else {
+                                  List<Map<String, dynamic>> productList =
+                                      snapshot.data!;
+                                  return ListView.builder(
+                                    physics: BouncingScrollPhysics(),
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: productList.length,
+                                    itemBuilder: (context, index) {
+                                      final product = productList[index];
+                                      return Container(
+                                        width: 150.0,
+                                        margin: EdgeInsets.only(left: 20),
+                                        decoration: BoxDecoration(
+                                          color: const Color.fromARGB(
+                                              255, 255, 255, 255),
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(20.0),
                                           ),
-                                        );
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                          padding: EdgeInsets.all(0),
-                                          primary: Colors.transparent,
-                                          elevation: 0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Image.asset(
-                                            product["img"],
-                                          ),
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.only(top: 5.0),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                Text(
-                                                  product["name"],
-                                                  style: TextStyle(
-                                                    fontSize: 12.5,
-                                                    color: Color(0xFF2B4570),
-                                                    fontWeight: FontWeight.w800,
-                                                  ),
+                                        ),
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ProductDetailScreen(
+                                                  product: product,
                                                 ),
-                                                SizedBox(height: 5.0),
-                                                Text(
-                                                  product["jadwal"],
-                                                  style: TextStyle(
-                                                    fontSize: 11.0,
-                                                    color: Color.fromRGBO(
-                                                        141, 148, 168, 1),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                              ),
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            padding: EdgeInsets.all(0),
+                                            primary: Colors.transparent,
+                                            elevation: 0,
                                           ),
-                                        ],
-                                      )),
-                                );
-                              }).toList(),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Container(
+                                                child: Image.network(
+                                                  'https://smarthajj.coffeelabs.id/storage/${product["image"]}',
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 5.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      product["name"],
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        color:
+                                                            Color(0xFF2B4570),
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      "Berangkat ${product['date']}-${product['month']}-${product['year']}",
+                                                      style: TextStyle(
+                                                        fontSize: 14.0,
+                                                        color: Color.fromRGBO(
+                                                            141, 148, 168, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                }
+                              },
                             ),
                           ),
                           Container(
