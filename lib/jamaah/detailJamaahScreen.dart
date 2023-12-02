@@ -1,7 +1,7 @@
 import 'package:SmartHajj/dashboard/checkoutScreen.dart';
 import 'package:SmartHajj/dashboard/topup/topupTabunganScreen.dart';
-import 'package:SmartHajj/jamaah/tambahSaldoScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DetailJamaahScreen extends StatefulWidget {
   final Map<String, dynamic> item;
@@ -16,6 +16,12 @@ class DetailJamaahScreen extends StatefulWidget {
 }
 
 class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch Jamaah data when the screen is initialized
+  }
+
   final List<String> items = [
     'Virtual Account\nBCA 8923******',
     'Mastercard\n8923******',
@@ -91,10 +97,15 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
             child: Column(
               children: <Widget>[
                 Container(
-                  clipBehavior: Clip.none,
-                  padding: EdgeInsets.only(bottom: 15),
-                  child: Image.asset('assets/dompet/profile.png'),
-                ),
+                    padding: EdgeInsets.only(bottom: 15),
+                    child: ClipOval(
+                      child: Image.network(
+                        'https://smarthajj.coffeelabs.id/storage/${widget.item["f_pic"]}',
+                        width: 150,
+                        height: 150,
+                        fit: BoxFit.cover,
+                      ),
+                    )),
                 Text(
                   widget.item["name"],
                   style: TextStyle(
@@ -107,7 +118,7 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                   clipBehavior: Clip.none,
                   margin: EdgeInsets.only(top: 8),
                   child: Text(
-                    '0853 2387 0429',
+                    widget.item['phone'],
                     style: TextStyle(
                       color: Color.fromRGBO(141, 148, 168, 1),
                       fontSize: 12,
@@ -130,10 +141,14 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                   clipBehavior: Clip.none,
                   margin: EdgeInsets.only(top: 15),
                   child: Text(
-                    'Rp. 2.000.000,00',
+                    NumberFormat.currency(
+                      locale: 'id_ID',
+                      symbol: 'Rp ',
+                    ).format(
+                        double.parse(widget.item["deposit"] ?? "0" ?? "0")),
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
+                      fontSize: 24,
+                      color: Color.fromRGBO(255, 255, 255, 1),
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -153,6 +168,7 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
             maxChildSize: 1.0,
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
@@ -177,7 +193,6 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                           ),
                         ),
                         Container(
-                          margin: EdgeInsets.symmetric(horizontal: 20),
                           padding: EdgeInsets.symmetric(vertical: 10),
                           width: double.infinity,
                           decoration: BoxDecoration(
@@ -236,9 +251,10 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                           ),
                         ),
                         Container(
-                          margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+                          margin: EdgeInsets.only(top: 20),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 20),
                           width: double.infinity,
-                          height: 160,
                           decoration: BoxDecoration(
                               color: Color.fromRGBO(141, 148, 168, 1),
                               borderRadius:
@@ -246,24 +262,22 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                           child: Row(
                             children: [
                               Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 25,
-                                  ),
                                   child: Image.asset(
-                                    "assets/tabunganUmroh.png",
-                                  )),
+                                "assets/tabunganUmroh.png",
+                                width: 140,
+                                height: 140,
+                              )),
                               Column(
                                 children: [
                                   Container(
-                                    margin: EdgeInsets.only(top: 20),
-                                    width: 220,
+                                    margin: EdgeInsets.only(left: 10),
+                                    width: 200,
                                     child: Column(
                                       children: [
                                         Text(
                                           "Paket Tabungan Umroh Ramadhan",
                                           style: TextStyle(
-                                              fontSize: 18,
+                                              fontSize: 16,
                                               fontWeight: FontWeight.w700,
                                               color: defaultColor),
                                         ),
@@ -295,40 +309,48 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                                             ],
                                           ),
                                         ),
-                                        Container(
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      TopupTabunganScreen(),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          TopupTabunganScreen(),
+                                                    ),
+                                                  );
+                                                },
+                                                style: ButtonStyle(
+                                                  minimumSize:
+                                                      MaterialStateProperty.all(
+                                                          Size(30, 30)),
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                          primaryColor),
+                                                  shape:
+                                                      MaterialStateProperty.all(
+                                                    RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                    ),
+                                                  ),
+                                                  // Sesuaikan properti lain sesuai kebutuhan
                                                 ),
-                                              );
-                                            },
-                                            style: ButtonStyle(
-                                              minimumSize: MaterialStateProperty
-                                                  .all(Size(double.infinity,
-                                                      30)), // Mengganti maximumSize ke minimumSize
-                                              backgroundColor:
-                                                  MaterialStateProperty.all(
-                                                      primaryColor),
-                                              shape: MaterialStateProperty.all(
-                                                RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
+                                                child: Text(
+                                                  "Topup Tabungan",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
                                                 ),
                                               ),
-                                              // Sesuaikan properti lain sesuai kebutuhan
                                             ),
-                                            child: Text(
-                                              "Topup Tabungan",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
+                                          ],
                                         )
                                       ],
                                     ),
@@ -339,9 +361,10 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                           ),
                         ),
                         Container(
-                          margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+                          margin: EdgeInsets.only(top: 20),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 20),
                           width: double.infinity,
-                          height: 160,
                           decoration: BoxDecoration(
                               color: Color.fromRGBO(141, 148, 168, 1),
                               borderRadius:
@@ -349,24 +372,22 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                           child: Row(
                             children: [
                               Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 25,
-                                  ),
                                   child: Image.asset(
-                                    "assets/tabunganUmroh.png",
-                                  )),
+                                "assets/tabunganUmroh.png",
+                                width: 140,
+                                height: 140,
+                              )),
                               Column(
                                 children: [
                                   Container(
-                                    margin: EdgeInsets.only(top: 20),
-                                    width: 220,
+                                    margin: EdgeInsets.only(left: 10),
+                                    width: 200,
                                     child: Column(
                                       children: [
                                         Text(
                                           "Paket Tabungan Umroh Ramadhan",
                                           style: TextStyle(
-                                              fontSize: 18,
+                                              fontSize: 16,
                                               fontWeight: FontWeight.w700,
                                               color: defaultColor),
                                         ),
@@ -398,40 +419,48 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                                             ],
                                           ),
                                         ),
-                                        Container(
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      TopupTabunganScreen(),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          TopupTabunganScreen(),
+                                                    ),
+                                                  );
+                                                },
+                                                style: ButtonStyle(
+                                                  minimumSize:
+                                                      MaterialStateProperty.all(
+                                                          Size(30, 30)),
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                          primaryColor),
+                                                  shape:
+                                                      MaterialStateProperty.all(
+                                                    RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                    ),
+                                                  ),
+                                                  // Sesuaikan properti lain sesuai kebutuhan
                                                 ),
-                                              );
-                                            },
-                                            style: ButtonStyle(
-                                              minimumSize: MaterialStateProperty
-                                                  .all(Size(double.infinity,
-                                                      30)), // Mengganti maximumSize ke minimumSize
-                                              backgroundColor:
-                                                  MaterialStateProperty.all(
-                                                      primaryColor),
-                                              shape: MaterialStateProperty.all(
-                                                RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
+                                                child: Text(
+                                                  "Topup Tabungan",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
                                                 ),
                                               ),
-                                              // Sesuaikan properti lain sesuai kebutuhan
                                             ),
-                                            child: Text(
-                                              "Topup Tabungan",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
+                                          ],
                                         )
                                       ],
                                     ),
@@ -442,9 +471,10 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                           ),
                         ),
                         Container(
-                          margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+                          margin: EdgeInsets.only(top: 20),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 20),
                           width: double.infinity,
-                          height: 160,
                           decoration: BoxDecoration(
                               color: Color.fromRGBO(141, 148, 168, 1),
                               borderRadius:
@@ -452,24 +482,22 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                           child: Row(
                             children: [
                               Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 25,
-                                  ),
                                   child: Image.asset(
-                                    "assets/tabunganUmroh.png",
-                                  )),
+                                "assets/tabunganUmroh.png",
+                                width: 140,
+                                height: 140,
+                              )),
                               Column(
                                 children: [
                                   Container(
-                                    margin: EdgeInsets.only(top: 20),
-                                    width: 220,
+                                    margin: EdgeInsets.only(left: 10),
+                                    width: 200,
                                     child: Column(
                                       children: [
                                         Text(
                                           "Paket Tabungan Umroh Ramadhan",
                                           style: TextStyle(
-                                              fontSize: 18,
+                                              fontSize: 16,
                                               fontWeight: FontWeight.w700,
                                               color: defaultColor),
                                         ),
@@ -487,40 +515,48 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                                             ],
                                           ),
                                         ),
-                                        Container(
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      TambahSaldoScreen(),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          TopupTabunganScreen(),
+                                                    ),
+                                                  );
+                                                },
+                                                style: ButtonStyle(
+                                                  minimumSize:
+                                                      MaterialStateProperty.all(
+                                                          Size(30, 30)),
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                          primaryColor),
+                                                  shape:
+                                                      MaterialStateProperty.all(
+                                                    RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                    ),
+                                                  ),
+                                                  // Sesuaikan properti lain sesuai kebutuhan
                                                 ),
-                                              );
-                                            },
-                                            style: ButtonStyle(
-                                              minimumSize: MaterialStateProperty
-                                                  .all(Size(double.infinity,
-                                                      30)), // Mengganti maximumSize ke minimumSize
-                                              backgroundColor:
-                                                  MaterialStateProperty.all(
-                                                      primaryColor),
-                                              shape: MaterialStateProperty.all(
-                                                RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
+                                                child: Text(
+                                                  "Topup Tabungan",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
                                                 ),
                                               ),
-                                              // Sesuaikan properti lain sesuai kebutuhan
                                             ),
-                                            child: Text(
-                                              "Tambah Saldo",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
+                                          ],
                                         )
                                       ],
                                     ),

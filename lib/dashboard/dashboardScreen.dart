@@ -15,7 +15,7 @@ import 'package:SmartHajj/dashboard/kategori/tabunganHaji.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganLangsung.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganQurban.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganUmroh.dart';
-import 'package:SmartHajj/jamaah/dompetALL.dart';
+import 'package:SmartHajj/dompet/dompetALL.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
@@ -80,6 +80,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
+      String? agentId = prefs.getString('users');
 
       if (token == null) {
         throw Exception('Token not available');
@@ -431,7 +432,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       margin: EdgeInsets.only(top: 20.0),
                       padding: EdgeInsets.only(top: 30.0),
                       width: double.infinity,
-                      height: 700.0,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
@@ -453,7 +453,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                           ),
                           Container(
-                            height: 220.0,
+                            height: 240.0,
                             margin: const EdgeInsets.only(
                                 top: 20.0, bottom: 20, left: 0),
                             child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -480,8 +480,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     itemBuilder: (context, index) {
                                       final product = productList[index];
                                       return Container(
-                                        width: 150.0,
-                                        margin: EdgeInsets.only(left: 20),
+                                        margin: EdgeInsets.only(
+                                          left: 20,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: const Color.fromARGB(
                                               255, 255, 255, 255),

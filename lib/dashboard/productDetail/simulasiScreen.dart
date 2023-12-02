@@ -48,6 +48,7 @@ class SimulasiScreen extends StatefulWidget {
   final String hajjId;
   final String departId;
   final String packageType;
+  final String packageId;
   final String price;
   final String agentId;
 
@@ -55,6 +56,7 @@ class SimulasiScreen extends StatefulWidget {
     required this.hajjId,
     required this.departId,
     required this.packageType,
+    required this.packageId,
     required this.price,
     required this.agentId,
     Key? key,
@@ -68,6 +70,9 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
   late String hajjId;
   late String departId;
   late String packageType;
+  late String packageId;
+  late String pilgrimId;
+  late String agentId;
   late List<Map<String, dynamic>> jamaahList;
 
   @override
@@ -76,9 +81,13 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
     hajjId = widget.hajjId;
     departId = widget.departId;
     packageType = widget.packageType;
+    packageId = widget.packageId;
+    agentId = widget.agentId;
     print('Hajj ID: $hajjId');
     print('Depart ID: $departId');
     print('PackageType: $packageType');
+    print('Package ID: $packageId');
+    print('Agent ID: $agentId');
   }
 
   String? _selectedValue;
@@ -157,13 +166,20 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
     );
   }
 
+  TextEditingController deposit_target = TextEditingController();
   TextEditingController deposit = TextEditingController();
   TextEditingController deposit_plan = TextEditingController();
+  TextEditingController depart_id = TextEditingController();
+  TextEditingController agent_id = TextEditingController();
 
   final websiteUri = Uri.parse('https://smarthajj.coffeelabs.id');
 
-  void login(String email, String password) async {
-    if (email.isEmpty || password.isEmpty) {
+  void login(
+    String deposit,
+    String deposit_plan,
+    String deposit_target,
+  ) async {
+    if (deposit.isEmpty || deposit_plan.isEmpty || deposit_target.isEmpty) {
       showAlert("Login anda tidak valid. Harap isi semua kolom.");
       return;
     }
@@ -179,7 +195,8 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
 
       // Add headers and body to the request
       request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
-      request.write('email=$email&password=$password');
+      request.write(
+          'deposit_target=$deposit_target&deposit=$deposit&deposit_plan=$deposit_plan&depart_id=$departId&agent_id=$agentId');
 
       HttpClientResponse response = await request.close();
 
@@ -263,8 +280,8 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
       String? token = prefs.getString('token');
       String? agentId = prefs.getString('users');
       // Ensure that token is not null before using it
-      if (token == null) {
-        throw Exception('Token not available');
+      if (token == null || hajjId == null) {
+        throw Exception('Token or Hajj ID not available');
       }
 
       HttpClient httpClient = new HttpClient();
@@ -295,6 +312,43 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
       print('Error fetching user data: $e');
       // Provide a more user-friendly error message
       throw Exception('Failed to load user data. Please try again later.');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchDataKeberangkatan() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      if (token == null) {
+        throw Exception('Token not available');
+      }
+
+      final Uri uri = Uri.parse(
+        'https://smarthajj.coffeelabs.id/api/getAllHajj',
+      );
+
+      HttpClient httpClient = HttpClient();
+      httpClient.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+
+      HttpClientRequest request = await httpClient.getUrl(uri);
+      request.headers.add('Authorization', 'Bearer $token');
+
+      HttpClientResponse response = await request.close();
+
+      String responseBody = await response.transform(utf8.decoder).join();
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> keberangkatanList =
+            List<Map<String, dynamic>>.from(jsonDecode(responseBody));
+        return keberangkatanList;
+      } else {
+        throw Exception(
+            'Failed to fetch departure data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching departure data: $e');
+      throw Exception('Failed to fetch departure data');
     }
   }
 
@@ -549,84 +603,90 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.only(top: 12),
                             padding: EdgeInsets.only(top: 5),
                             width: double.infinity,
                             height: 58,
                             decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(80)),
-                              color: defaultColor,
+                              color: sedikitAbu,
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(right: 8),
-                                  child: DropdownButtonFormField<String>(
-                                    icon: Container(
-                                      margin: EdgeInsets.only(right: 16),
-                                      child: Image.asset(
-                                        "assets/home/dropdown.png",
-                                        width: 10,
-                                        height: 10,
-                                      ),
-                                    ),
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                    ),
-                                    value: _selectedValue,
-                                    items: [
-                                      DropdownMenuItem<String>(
-                                        value: 'RAMADHAN 1448 H / 2024 M',
-                                        child: Container(
-                                          margin: EdgeInsets.only(left: 32),
+                            child: FutureBuilder(
+                              future: fetchDataKeberangkatan(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return CircularProgressIndicator(
+                                    color: Colors.transparent,
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                } else if (snapshot.hasData) {
+                                  List<Map<String, dynamic>> keberangkatanList =
+                                      List<Map<String, dynamic>>.from(
+                                          snapshot.data!);
+                                  return Column(
+                                    children: [
+                                      DropdownButton<String>(
+                                        value: _selectedValue,
+                                        items: keberangkatanList
+                                            .asMap()
+                                            .entries
+                                            .map((entry) {
+                                          int index = entry.key;
+                                          Map<String, dynamic> keberangkatan =
+                                              entry.value;
+                                          return DropdownMenuItem<String>(
+                                            value: keberangkatan[
+                                                'depart_id'], // Set the value to "pilgrim_id"
+                                            child: Container(
+                                              margin: EdgeInsets.symmetric(
+                                                  horizontal: 20),
+                                              child: Text(
+                                                '${keberangkatan['year']}',
+                                                style: TextStyle(
+                                                  color: _selectedValue ==
+                                                          keberangkatan[
+                                                              'pilgrim_id']
+                                                      ? abu
+                                                      : null,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? selectedItem) {
+                                          setState(() {
+                                            _selectedValue = selectedItem;
+                                            print(
+                                                'Selected pilgrim_id: $_selectedValue');
+
+                                            // Add any additional logic here based on the selected value
+                                            // For example, you can use a switch statement:
+                                          });
+                                        },
+                                        hint: Container(
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 20),
                                           child: Text(
-                                            'RAMADHAN 1448 H / 2024 M',
+                                            _selectedValue ??
+                                                'Select an option',
                                             style: TextStyle(
-                                              color: _selectedValue ==
-                                                      'RAMADHAN 1448 H / 2024 M'
+                                              color: _selectedValue == null
                                                   ? abu
                                                   : null,
+                                              fontSize: 14,
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      DropdownMenuItem<String>(
-                                        value: 'IDUL ADHA 1448 H / 2024 M',
-                                        child: Container(
-                                          margin: EdgeInsets.only(left: 34),
-                                          child: Text(
-                                            'IDUL ADHA 1448 H / 2024 M',
-                                            style: TextStyle(
-                                              color: _selectedValue ==
-                                                      'IDUL ADHA 1448 H / 2024 M'
-                                                  ? abu
-                                                  : null,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                      )
                                     ],
-                                    onChanged: (String? selectedItem) {
-                                      setState(() {
-                                        _selectedValue = selectedItem;
-                                      });
-                                    },
-                                    hint: Container(
-                                      margin: EdgeInsets.only(left: 20),
-                                      child: Text(
-                                        _selectedValue ?? 'Select an option',
-                                        style: TextStyle(
-                                          color: _selectedValue == null
-                                              ? abu
-                                              : null,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
+                                  );
+                                } else {
+                                  return Text('No data available.');
+                                }
+                              },
                             ),
                           ),
                         ],
@@ -689,8 +749,8 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                       int index = entry.key;
                                       Map<String, dynamic> jamaah = entry.value;
                                       return DropdownMenuItem<String>(
-                                        value: index
-                                            .toString(), // Gunakan indeks sebagai nilai
+                                        value: jamaah[
+                                            'pilgrim_id'], // Set the value to "pilgrim_id"
                                         child: Container(
                                           margin: EdgeInsets.symmetric(
                                               horizontal: 20),
@@ -698,7 +758,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                             '${jamaah['name']} - NIK ${jamaah['nik']}',
                                             style: TextStyle(
                                               color: _selectedValueJamaah ==
-                                                      index.toString()
+                                                      jamaah['pilgrim_id']
                                                   ? abu
                                                   : null,
                                               fontSize: 14,
@@ -710,6 +770,11 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                     onChanged: (String? selectedItem) {
                                       setState(() {
                                         _selectedValueJamaah = selectedItem;
+                                        print(
+                                            'Selected pilgrim_id: $_selectedValueJamaah');
+
+                                        // Add any additional logic here based on the selected value
+                                        // For example, you can use a switch statement:
                                       });
                                     },
                                     hint: Container(

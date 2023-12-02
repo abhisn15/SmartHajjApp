@@ -256,7 +256,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 20, vertical: 24),
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              String? agentId = prefs.getString('agentId');
+                              if (agentId == null) {
+                                // Handle the case where agentId is not available
+                                print('AgentId not available');
+                                return;
+                              }
+
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -265,7 +274,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     departId: widget.product['depart_id'],
                                     packageType: "hajj",
                                     price: widget.product['price'],
-                                    agentId: ['users'].toString(),
+                                    packageId: widget.packageId,
+                                    agentId: agentId,
                                   ),
                                 ),
                               );

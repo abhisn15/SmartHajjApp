@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:SmartHajj/dashboard/informasi/manasikHaji/ArtikelManasikHaji.dart';
 import 'package:flutter/material.dart';
+import 'package:SmartHajj/dashboard/informasi/manasikUmroh/ArtikelManasikUmroh.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ManasikHaji extends StatefulWidget {
   const ManasikHaji({Key? key}) : super(key: key);
@@ -9,62 +13,62 @@ class ManasikHaji extends StatefulWidget {
 }
 
 class _ManasikHajiState extends State<ManasikHaji> {
-  final List<Map<String, dynamic>> listArtikel = [
-    {
-      'id': 1,
-      'penulis': 'Abhi Surya Nugroho',
-      'profile': 'assets/profile/profile.png',
-      'category': 'Perjalanan Haji',
-      'img': 'assets/home/informasi/pergiHaji.jpeg',
-      'judul-artikel':
-          'Wadidawww Sekarang ada yang Menarik di Perjalanan Haji!!',
-      'waktu': '1 Menit Yang Lalu',
-      'tanggal-pembuatan': 'Des 01, 2023'
-    },
-    {
-      'id': 2,
-      'penulis': 'Ilham Rafi',
-      'profile': 'assets/profile/profile.png',
-      'category': 'Perjalanan Haji',
-      'img': 'assets/home/informasi/pergiHaji.jpeg',
-      'judul-artikel': 'Alamak Promo Berkah Ramadhan paket Haji Rekk!!',
-      'waktu': '1 Menit Yang Lalu',
-      'tanggal-pembuatan': 'Des 02, 2023'
-    },
-    {
-      'id': 3,
-      'penulis': 'Abhi Surya Nugroho',
-      'profile': 'assets/profile/profile.png',
-      'category': 'Perjalanan Haji',
-      'img': 'assets/home/informasi/pergiHaji.jpeg',
-      'judul-artikel':
-          'Wadidawww Sekarang ada yang Menarik di Perjalanan Haji!!',
-      'waktu': '1 Menit Yang Lalu',
-      'tanggal-pembuatan': 'Des 03, 2023'
-    },
-    {
-      'id': 4,
-      'penulis': 'Ilham Rafi',
-      'profile': 'assets/profile/profile.png',
-      'category': 'Perjalanan Haji',
-      'img': 'assets/home/informasi/pergiHaji.jpeg',
-      'judul-artikel': 'Alamak Promo Berkah Ramadhan paket Haji Rekk!!',
-      'waktu': '1 Menit Yang Lalu',
-      'tanggal-pembuatan': 'Des 04, 2023'
-    },
-  ];
-
   final primaryColor = Color.fromRGBO(43, 69, 112, 1);
   final defaultColor = Colors.white;
   final abu = Color.fromRGBO(141, 148, 168, 1);
   final sedikitAbu = Color.fromRGBO(244, 244, 244, 1);
   final krems = Color.fromRGBO(238, 226, 223, 1);
 
+  late Future<List<Map<String, dynamic>>> listArtikel;
+
+  @override
+  void initState() {
+    super.initState();
+    listArtikel = fetchData();
+  }
+
+  Future<List<Map<String, dynamic>>> fetchData() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      if (token == null) {
+        throw Exception('Token not available');
+      }
+
+      HttpClient httpClient = new HttpClient();
+      httpClient.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+
+      HttpClientRequest request = await httpClient.getUrl(
+        Uri.parse('https://smarthajj.coffeelabs.id/api/getArticle/2'),
+      );
+
+      request.headers.add('Authorization', 'Bearer $token');
+
+      HttpClientResponse response = await request.close();
+
+      String responseBody = await response.transform(utf8.decoder).join();
+      if (response.statusCode == 200) {
+        final List<Map<String, dynamic>> data =
+            List<Map<String, dynamic>>.from(jsonDecode(responseBody));
+        return data;
+      } else {
+        print('Response Body: $responseBody');
+        print('Response Status Code: ${response.statusCode}');
+        throw Exception('Failed to load user data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+      throw Exception('Failed to load artikel');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(43, 69, 112, 1),
+        backgroundColor: primaryColor,
         title: Align(
           alignment: Alignment.centerLeft,
           child: Text(
@@ -80,88 +84,107 @@ class _ManasikHajiState extends State<ManasikHaji> {
           color: Colors.white,
         ),
       ),
-      body: ListView.builder(
-        itemCount: listArtikel.length,
-        itemBuilder: (context, index) {
-          return Container(
-            margin: EdgeInsets.only(top: 10),
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ArtikelManasikHajiScreen(
-                      artikelId: listArtikel[index]['id'],
-                      listArtikel: listArtikel,
-                    ),
-                  ),
-                );
-              },
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  children: [
-                    Container(
-                      child: Image.asset(
-                        listArtikel[index]['img'],
-                        height: 180,
-                        width: 140 * 1,
-                        fit: BoxFit.cover,
+      body: Container(
+        child: FutureBuilder(
+          future: listArtikel,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (snapshot.data == []) {
+              return Center(child: Text('Data is null'));
+            } else if (snapshot.data == null ||
+                snapshot.data?.isEmpty == true) {
+              return Center(child: Text('Artikel belum tersedia saat ini.'));
+            } else {
+              List<Map<String, dynamic>> artikelList =
+                  snapshot.data as List<Map<String, dynamic>>;
+              return ListView.builder(
+                itemCount: artikelList.length,
+                itemBuilder: (context, index) {
+                  final listArtikel = artikelList[index];
+                  return Container(
+                    margin: EdgeInsets.only(top: 20),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ArtikelManasikHajiScreen(
+                              artikelId: int.parse(listArtikel['article_id']),
+                              listArtikel: artikelList,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            child: Image.network(
+                              "https://smarthajj.coffeelabs.id/storage/${listArtikel['pict']}",
+                              height: 180,
+                              width: 140 * 1,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 140,
+                                child: Text(
+                                  listArtikel['category_name'],
+                                  style: TextStyle(
+                                    color: Colors.orange,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(top: 10),
+                                width: 180,
+                                child: Text(
+                                  listArtikel['headline'],
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              // Container(
+                              //   margin: EdgeInsets.only(top: 10),
+                              //   width: 140,
+                              //   child: Text(
+                              //     listArtikel[index]['waktu'],
+                              //     style: TextStyle(
+                              //       color: abu,
+                              //       fontSize: 10,
+                              //     ),
+                              //   ),
+                              // ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: defaultColor,
+                        minimumSize: Size(double.infinity, 200),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0),
+                        ),
+                        elevation: 0,
                       ),
                     ),
-                    SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 140,
-                          child: Text(
-                            listArtikel[index]['category'],
-                            style: TextStyle(
-                              color: Colors.orange,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          width: 180,
-                          child: Text(
-                            listArtikel[index]['judul-artikel'],
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          width: 140,
-                          child: Text(
-                            listArtikel[index]['waktu'],
-                            style: TextStyle(
-                              color: abu,
-                              fontSize: 10,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                primary: defaultColor,
-                minimumSize: Size(double.infinity, 200),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(0),
-                ),
-                elevation: 0,
-              ),
-            ),
-          );
-        },
+                  );
+                },
+              );
+            }
+          },
+        ),
       ),
     );
   }

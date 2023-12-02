@@ -7,7 +7,11 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({Key? key}) : super(key: key);
+  final String agentId;
+  final Map<String, dynamic> userData;
+  const EditProfileScreen(
+      {Key? key, required this.userData, required this.agentId})
+      : super(key: key);
 
   @override
   _EditProfileState createState() => _EditProfileState();
@@ -30,12 +34,26 @@ class _EditProfileState extends State<EditProfileScreen> {
 
   // Inside your _EditProfileState class
   String _userName = '';
+  String _nomorTelepon = '';
+  String _email = '';
 
 // Add this function to update the _userName variable
   void _updateUserName(String value) {
     setState(() {
       _userName = value;
+      _nomorTelepon = value;
+      _email = value;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Set initial values based on userData
+    _userName = "${widget.userData['name']}";
+    _nomorTelepon = "${widget.userData['phone']}";
+    _email = "${widget.userData['email']}";
   }
 
   // Function to upload the selected image to update the profile picture on the server
@@ -47,17 +65,18 @@ class _EditProfileState extends State<EditProfileScreen> {
       if (_image != null && token != null) {
         var request = http.MultipartRequest(
           'POST',
-          Uri.parse('https://smarthajj.coffeelabs.id/api/update-profile'),
+          Uri.parse(
+              'https://smarthajj.coffeelabs.id/api/edit/${widget.userData['id']}'),
         );
 
         request.headers['Authorization'] = 'Bearer $token';
 
-        request.files.add(
-          await http.MultipartFile.fromPath(
-            'profile_picture',
-            _image!.path,
-          ),
-        );
+        // request.files.add(
+        //   await http.MultipartFile.fromPath(
+        //     'profile_picture',
+        //     _image!.path,
+        //   ),
+        // );
 
         var response = await request.send();
 
@@ -81,10 +100,13 @@ class _EditProfileState extends State<EditProfileScreen> {
 
       if (token != null) {
         var response = await http.post(
-          Uri.parse('https://smarthajj.coffeelabs.id/api/update-profile'),
+          Uri.parse(
+              'https://smarthajj.coffeelabs.id/api/users/edit/${widget.userData['id']}'),
           headers: {'Authorization': 'Bearer $token'},
           body: {
             'name': _userName,
+            'phone': _nomorTelepon,
+            'email': _email,
           },
         );
 
@@ -216,6 +238,54 @@ class _EditProfileState extends State<EditProfileScreen> {
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Enter your name',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 30),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Nomor Telepon"),
+                        SizedBox(height: 5),
+                        TextFormField(
+                          initialValue: _nomorTelepon, // Set the initial value
+                          onChanged:
+                              _updateUserName, // Update the _userName on change
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Enter your telepon',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 30),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Email anda"),
+                        SizedBox(height: 5),
+                        TextFormField(
+                          initialValue: _email, // Set the initial value
+                          onChanged:
+                              _updateUserName, // Update the _userName on change
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Enter your email',
                           ),
                         ),
                       ],

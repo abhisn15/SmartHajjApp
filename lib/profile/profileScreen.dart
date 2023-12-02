@@ -202,13 +202,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           Container(
                             child: ElevatedButton(
-                              onPressed: () {
-                                // Tambahkan logika otentikasi Anda di sini
-                                // Jika otentikasi berhasil, arahkan pengguna ke DashboardScreen
+                              onPressed: () async {
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                String? agentId = prefs.getString('agentId');
+                                if (agentId == null) {
+                                  // Handle the case where agentId is not available
+                                  print('AgentId not available');
+                                  return;
+                                }
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => EditProfileScreen(),
+                                    builder: (context) => EditProfileScreen(
+                                      agentId: agentId,
+                                      userData: userData,
+                                    ),
                                   ),
                                 );
                               },
