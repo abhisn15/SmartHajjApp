@@ -1278,7 +1278,7 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "${DateFormat('yyyy-MM-dd').format(selectedDate ?? DateTime.parse(widget.item['born_date'] ?? DateTime.now()))}",
+                                "${DateFormat('yyyy-MM-dd').format(selectedDate ?? (widget.item['born_date'] is DateTime ? widget.item['born_date'] : DateTime.parse(widget.item['born_date'] ?? DateTime.now().toString())))}",
                                 style: TextStyle(color: abu),
                               ),
                               Image.asset(
