@@ -105,8 +105,11 @@ class ArtikelMaktabScreen extends StatelessWidget {
               ),
               Container(
                   margin: EdgeInsets.only(top: 20, bottom: 20),
-                  child: Image.network(
-                    "https://smarthajj.coffeelabs.id/storage/${selectedArticle['pict']}",
+                  child: Center(
+                    child: Image.network(
+                      "https://smarthajj.coffeelabs.id/storage/${selectedArticle['pict']}",
+                      width: double.infinity,
+                    ),
                   )),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 8, vertical: 10),

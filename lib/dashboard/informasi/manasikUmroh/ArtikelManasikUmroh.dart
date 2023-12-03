@@ -72,28 +72,31 @@ class ArtikelManasikUmrohScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.grey[200],
-                      ),
-                      // child: Image.network(
-                      //   selectedArticle['profile'],
-                      //   width: 60,
-                      // ),
-                    ),
+                        padding: EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: primaryColor,
+                        ),
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/SmartHajj.png',
+                            width: 60,
+                          ),
+                        )),
                     Container(
                       margin: EdgeInsets.only(left: 20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Text(
-                          //   selectedArticle['penulis'],
-                          //   style: TextStyle(
-                          //     color: Colors.black,
-                          //     fontWeight: FontWeight.w500,
-                          //   ),
-                          // ),
-                          // Text(selectedArticle['tanggal_pembuatan']),
+                          Text(
+                            'Admin SmartHajj',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Text('Dec 01, 2023'),
                         ],
                       ),
                     ),
@@ -102,8 +105,11 @@ class ArtikelManasikUmrohScreen extends StatelessWidget {
               ),
               Container(
                   margin: EdgeInsets.only(top: 20, bottom: 20),
-                  child: Image.network(
-                    "https://smarthajj.coffeelabs.id/storage/${selectedArticle['pict']}",
+                  child: Center(
+                    child: Image.network(
+                      "https://smarthajj.coffeelabs.id/storage/${selectedArticle['pict']}",
+                      width: double.infinity,
+                    ),
                   )),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
