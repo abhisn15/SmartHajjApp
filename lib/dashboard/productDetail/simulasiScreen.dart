@@ -5,6 +5,7 @@ import 'package:SmartHajj/dashboard/productDetail/setoranAwalScreen.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -70,6 +71,7 @@ class SimulasiScreen extends StatefulWidget {
 }
 
 class _SimulasiScreenState extends State<SimulasiScreen> {
+  late HttpClientRequest request;
   late String hajjId;
   late String departId;
   late String packageType;
@@ -174,7 +176,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
 
   final websiteUri = Uri.parse('https://smarthajj.coffeelabs.id');
 
-  void login(
+  void payment(
     String deposit,
     String deposit_plan,
     String deposit_target,
@@ -185,13 +187,18 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
     }
 
     try {
+      String? apiCreatePayment = dotenv.env['API_PAYMENT'];
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+      String? agentId = prefs.getString('users');
+
       HttpClient httpClient = new HttpClient();
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
 
-      HttpClientRequest request = await httpClient.postUrl(
-        Uri.parse('https://smarthajj.coffeelabs.id/api/createPayment/'),
-      );
+      if (apiCreatePayment != null) {
+        request = await httpClient.postUrl(Uri.parse(apiCreatePayment));
+      }
 
       // Add headers and body to the request
       request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
@@ -234,48 +241,51 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
     }
   }
 
-  Future<Map<String, dynamic>> fetchData() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('token');
-      String? agentId = prefs.getString('users');
-      // Ensure that token is not null before using it
-      if (token == null) {
-        throw Exception('Token not available');
-      }
+  // Future<Map<String, dynamic>> fetchData() async {
+  //   try {
+  //     String? apiAgentById = dotenv.env['API_AGENTBYID'];
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     String? token = prefs.getString('token');
+  //     String? agentId = prefs.getString('users');
+  //     // Ensure that token is not null before using it
+  //     if (token == null) {
+  //       throw Exception('Token not available');
+  //     }
 
-      HttpClient httpClient = new HttpClient();
-      httpClient.badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+  //     print(apiAgentById);
 
-      HttpClientRequest request = await httpClient.getUrl(
-        Uri.parse(
-            'https://smarthajj.coffeelabs.id/api/getPilgrimByAgent/$agentId'),
-      );
+  //     HttpClient httpClient = new HttpClient();
+  //     httpClient.badCertificateCallback =
+  //         (X509Certificate cert, String host, int port) => true;
 
-      request.headers.add('Authorization', 'Bearer $token');
+  //     if (apiAgentById != null) {
+  //       request = await httpClient.getUrl(Uri.parse(apiAgentById + '$agentId'));
+  //     }
 
-      HttpClientResponse response = await request.close();
+  //     request.headers.add('Authorization', 'Bearer $token');
 
-      String responseBody = await response.transform(utf8.decoder).join();
-      if (response.statusCode == 200) {
-        return jsonDecode(responseBody);
-      } else {
-        print('Response Body: $responseBody');
-        print('Response Status Code: ${response.statusCode}');
-        // Provide a more meaningful error message
-        throw Exception(
-            'Failed to load user data. Status Code: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error fetching user data: $e');
-      // Provide a more user-friendly error message
-      throw Exception('Failed to load user data. Please try again later.');
-    }
-  }
+  //     HttpClientResponse response = await request.close();
+
+  //     String responseBody = await response.transform(utf8.decoder).join();
+  //     if (response.statusCode == 200) {
+  //       return jsonDecode(responseBody);
+  //     } else {
+  //       print('Response Body: $responseBody');
+  //       print('Response Status Code: ${response.statusCode}');
+  //       // Provide a more meaningful error message
+  //       throw Exception(
+  //           'Failed to load user data. Status Code: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching user data: $e');
+  //     // Provide a more user-friendly error message
+  //     throw Exception('Failed to load user data. Please try again later.');
+  //   }
+  // }
 
   Future<List<Map<String, dynamic>>> fetchDataJamaah() async {
     try {
+      String? apiPilgrim = dotenv.env['API_PILGRIM'];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
       String? agentId = prefs.getString('users');
@@ -288,9 +298,9 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
 
-      HttpClientRequest request = await httpClient.getUrl(
-        Uri.parse('https://smarthajj.coffeelabs.id/api/getAllPilgrim'),
-      );
+      if (apiPilgrim != null) {
+        request = await httpClient.getUrl(Uri.parse(apiPilgrim));
+      }
 
       request.headers.add('Authorization', 'Bearer $token');
 
@@ -318,21 +328,25 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
   Future<List<Map<String, dynamic>>> fetchDataKeberangkatan() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? apiProduct = dotenv.env['API_PRODUCT'];
       String? token = prefs.getString('token');
 
       if (token == null) {
         throw Exception('Token not available');
       }
 
-      final Uri uri = Uri.parse(
-        'https://smarthajj.coffeelabs.id/api/getAllHajj',
-      );
+      HttpClient httpClient = new HttpClient();
 
-      HttpClient httpClient = HttpClient();
+      if (apiProduct != null) {
+        request = await httpClient.getUrl(
+          Uri.parse(apiProduct),
+        );
+      }
+
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
 
-      HttpClientRequest request = await httpClient.getUrl(uri);
+      // HttpClientRequest request = await httpClient.getUrl(uri);
       request.headers.add('Authorization', 'Bearer $token');
 
       HttpClientResponse response = await request.close();

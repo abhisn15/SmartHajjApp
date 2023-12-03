@@ -54,6 +54,7 @@ dependencies:
   http_parser: ^4.0.2
   dartx: ^1.2.0
   awesome_dialog: ^3.1.0
+  flutter_dotenv: ^5.1.0
 
 flutter_native_splash:
 android: true
@@ -86,7 +87,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/logo.png
+    - .env
     - assets/icon_app.png
     - assets/SmartHajj.png
     - assets/home/profile.png
@@ -106,7 +107,6 @@ flutter:
     - assets/tabunganUmroh.png
     - assets/icon_dompet_active.png
     - assets/home/dropdown.png
-    - assets/home/harmoni_splash.png
     - assets/home/dropdown_filter.png
     - assets/home/products/tabungan_qurban.png
     - assets/home/products/tabungan_umroh.png
@@ -117,15 +117,6 @@ flutter:
     - assets/home/kategori/tabungan_umroh.png
     - assets/home/kategori/tabungan_haji.png
     - assets/home/informasi/info_pasport.png
-    - assets/home/informasi/pasportUmroh.jpeg
-    - assets/home/informasi/visaUmroh.jpeg
-    - assets/home/informasi/pesawatUmroh.jpeg
-    - assets/home/informasi/hotel.jpeg
-    - assets/home/informasi/maktab.jpeg
-    - assets/home/informasi/pergiUmroh.jpeg
-    - assets/home/informasi/pergiHaji.jpeg
-    - assets/home/informasi/qurbanSapi.jpeg
-    - assets/home/informasi/qurbanKambing.jpeg
     - assets/home/informasi/info_visa.png
     - assets/home/informasi/info_pesawat.png
     - assets/home/informasi/info_hotel.png
@@ -134,7 +125,6 @@ flutter:
     - assets/home/informasi/haji.png
     - assets/home/informasi/info_qurban.png
     - assets/home/dropdown_down.png
-    - assets/jemaah/papakhan.png
     - assets/jemaah/tambah.png
     - assets/jemaah/tanggalLahir.png
 

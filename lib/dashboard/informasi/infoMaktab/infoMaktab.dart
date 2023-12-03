@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:SmartHajj/dashboard/informasi/infoMaktab/ArtikelMaktabScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InfoMaktab extends StatefulWidget {
@@ -18,6 +19,7 @@ class _InfoMaktabState extends State<InfoMaktab> {
   final sedikitAbu = Color.fromRGBO(244, 244, 244, 1);
   final krems = Color.fromRGBO(238, 226, 223, 1);
 
+  late HttpClientRequest request;
   late Future<List<Map<String, dynamic>>> listArtikel;
 
   @override
@@ -28,6 +30,7 @@ class _InfoMaktabState extends State<InfoMaktab> {
 
   Future<List<Map<String, dynamic>>> fetchData() async {
     try {
+      String? apiArtikelMaktab = dotenv.env['API_ARTICLE_MAKTAB'];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
 
@@ -39,9 +42,9 @@ class _InfoMaktabState extends State<InfoMaktab> {
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
 
-      HttpClientRequest request = await httpClient.getUrl(
-        Uri.parse('https://smarthajj.coffeelabs.id/api/getArticle/7'),
-      );
+      if (apiArtikelMaktab != null) {
+        request = await httpClient.getUrl(Uri.parse(apiArtikelMaktab));
+      }
 
       request.headers.add('Authorization', 'Bearer $token');
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:SmartHajj/dashboard/informasi/manasikUmroh/ArtikelManasikUmroh.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ManasikUmroh extends StatefulWidget {
@@ -18,6 +19,7 @@ class _ManasikUmrohState extends State<ManasikUmroh> {
   final sedikitAbu = Color.fromRGBO(244, 244, 244, 1);
   final krems = Color.fromRGBO(238, 226, 223, 1);
 
+  late HttpClientRequest request;
   late Future<List<Map<String, dynamic>>> listArtikel;
 
   @override
@@ -28,6 +30,7 @@ class _ManasikUmrohState extends State<ManasikUmroh> {
 
   Future<List<Map<String, dynamic>>> fetchData() async {
     try {
+      String? apiArtikelUmroh = dotenv.env['API_ARTICLE_UMROH'];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
 
@@ -39,10 +42,9 @@ class _ManasikUmrohState extends State<ManasikUmroh> {
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
 
-      HttpClientRequest request = await httpClient.getUrl(
-        Uri.parse('https://smarthajj.coffeelabs.id/api/getArticle/3'),
-      );
-
+      if (apiArtikelUmroh != null) {
+        request = await httpClient.getUrl(Uri.parse(apiArtikelUmroh));
+      }
       request.headers.add('Authorization', 'Bearer $token');
 
       HttpClientResponse response = await request.close();

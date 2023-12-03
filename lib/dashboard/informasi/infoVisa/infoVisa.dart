@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:SmartHajj/dashboard/informasi/manasikHaji/ArtikelManasikHaji.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InfoVisa extends StatefulWidget {
@@ -18,6 +19,7 @@ class _InfoVisaState extends State<InfoVisa> {
   final sedikitAbu = Color.fromRGBO(244, 244, 244, 1);
   final krems = Color.fromRGBO(238, 226, 223, 1);
 
+  late HttpClientRequest request;
   late Future<List<Map<String, dynamic>>> listArtikel;
 
   @override
@@ -28,6 +30,7 @@ class _InfoVisaState extends State<InfoVisa> {
 
   Future<List<Map<String, dynamic>>> fetchData() async {
     try {
+      String? apiArtikelVisa = dotenv.env['API_ARTICLE_VISA'];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
 
@@ -39,10 +42,9 @@ class _InfoVisaState extends State<InfoVisa> {
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
 
-      HttpClientRequest request = await httpClient.getUrl(
-        Uri.parse('https://smarthajj.coffeelabs.id/api/getArticle/5'),
-      );
-
+      if (apiArtikelVisa != null) {
+        request = await httpClient.getUrl(Uri.parse(apiArtikelVisa));
+      }
       request.headers.add('Authorization', 'Bearer $token');
 
       HttpClientResponse response = await request.close();

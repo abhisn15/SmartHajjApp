@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:SmartHajj/dashboard/topup/topupTabunganScreen.dart';
 import 'package:SmartHajj/dompet/ProgressPaunter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,6 +16,7 @@ class DompetScreen extends StatefulWidget {
 }
 
 class _DompetScreenState extends State<DompetScreen> {
+  late HttpClientRequest request;
   late Future<Map<String, dynamic>> apiData;
 
   @override
@@ -27,6 +29,7 @@ class _DompetScreenState extends State<DompetScreen> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
+      String? apiUser = dotenv.env['API_USER'];
 
       if (token == null) {
         // Handle the case where the token is not available
@@ -38,9 +41,11 @@ class _DompetScreenState extends State<DompetScreen> {
           (X509Certificate cert, String host, int port) => true;
 
       // Use httpClient.get instead of httpClient.getUrl
-      HttpClientRequest request = await httpClient.getUrl(
-        Uri.parse('https://smarthajj.coffeelabs.id/api/user'),
-      );
+      if (apiUser != null) {
+        request = await httpClient.getUrl(
+          Uri.parse(apiUser),
+        );
+      }
 
       // Add token to headers
       request.headers.add('Authorization', 'Bearer $token');

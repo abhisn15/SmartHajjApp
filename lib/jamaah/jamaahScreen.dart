@@ -4,6 +4,7 @@ import 'package:SmartHajj/jamaah/editJamaahScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:SmartHajj/jamaah/detailJamaahScreen.dart';
 import 'package:SmartHajj/jamaah/tambahJamaahScreen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class JamaahScreen extends StatefulWidget {
@@ -14,6 +15,7 @@ class JamaahScreen extends StatefulWidget {
 }
 
 class _JamaahScreenState extends State<JamaahScreen> {
+  late HttpClientRequest request;
   late List<Map<String, dynamic>> daftarJamaah;
 
   @override
@@ -26,6 +28,7 @@ class _JamaahScreenState extends State<JamaahScreen> {
   Future<List<Map<String, dynamic>>> fetchDataJamaah() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? apiPilgrim = dotenv.env['API_PILGRIM'];
       String? token = prefs.getString('token');
       String? agentId = prefs.getString('users');
 
@@ -37,10 +40,9 @@ class _JamaahScreenState extends State<JamaahScreen> {
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
 
-      HttpClientRequest request = await httpClient.getUrl(
-        Uri.parse('https://smarthajj.coffeelabs.id/api/getAllPilgrim'),
-      );
-
+      if (apiPilgrim != null) {
+        request = await httpClient.getUrl(Uri.parse(apiPilgrim));
+      }
       request.headers.add('Authorization', 'Bearer $token');
 
       HttpClientResponse response = await request.close();

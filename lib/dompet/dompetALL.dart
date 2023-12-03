@@ -4,17 +4,19 @@ import 'dart:io';
 import 'package:SmartHajj/dashboard/topup/topupTabunganScreen.dart';
 import 'package:SmartHajj/dompet/ProgressPaunter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class DompetALL extends StatefulWidget {
-  const DompetALL({Key? key}) : super(key: key);
+class DompetAll extends StatefulWidget {
+  const DompetAll({Key? key}) : super(key: key);
 
   @override
-  _DompetALLState createState() => _DompetALLState();
+  _DompetAllState createState() => _DompetAllState();
 }
 
-class _DompetALLState extends State<DompetALL> {
+class _DompetAllState extends State<DompetAll> {
+  late HttpClientRequest request;
   late Future<Map<String, dynamic>> apiData;
 
   @override
@@ -27,6 +29,7 @@ class _DompetALLState extends State<DompetALL> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
+      String? apiUser = dotenv.env['API_USER'];
 
       if (token == null) {
         // Handle the case where the token is not available
@@ -38,9 +41,11 @@ class _DompetALLState extends State<DompetALL> {
           (X509Certificate cert, String host, int port) => true;
 
       // Use httpClient.get instead of httpClient.getUrl
-      HttpClientRequest request = await httpClient.getUrl(
-        Uri.parse('https://smarthajj.coffeelabs.id/api/user'),
-      );
+      if (apiUser != null) {
+        request = await httpClient.getUrl(
+          Uri.parse(apiUser),
+        );
+      }
 
       // Add token to headers
       request.headers.add('Authorization', 'Bearer $token');
@@ -103,9 +108,9 @@ class _DompetALLState extends State<DompetALL> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: primaryColor,
-        title: Container(
-          margin: EdgeInsets.only(right: 50),
-          child: Center(
+        title: Center(
+          child: Container(
+            margin: EdgeInsets.only(right: 50),
             child: Text(
               'DOMPET',
               style: TextStyle(
@@ -215,8 +220,9 @@ class _DompetALLState extends State<DompetALL> {
                 ),
                 DraggableScrollableSheet(
                   initialChildSize: 0.3,
-                  minChildSize:
-                      MediaQuery.of(context).size.width < 400 ? 0.3 : 0.4,
+                  minChildSize: MediaQuery.of(context).size.width < 1000 | 400
+                      ? 0.3
+                      : 0.4,
                   maxChildSize: 1.0,
                   builder: (BuildContext context,
                       ScrollController scrollController) {

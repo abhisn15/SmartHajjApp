@@ -1,4 +1,4 @@
-import 'package:SmartHajj/dompet/dompetALL.dart';
+import 'package:SmartHajj/dompet/dompetAll.dart';
 import 'package:flutter/material.dart';
 
 class CheckoutDP extends StatefulWidget {
@@ -274,7 +274,7 @@ class _CheckoutDPState extends State<CheckoutDP> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => DompetALL()),
+                    MaterialPageRoute(builder: (context) => DompetAll()),
                   );
                 },
                 style: ElevatedButton.styleFrom(

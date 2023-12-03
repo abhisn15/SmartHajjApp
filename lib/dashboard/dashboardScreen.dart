@@ -15,8 +15,10 @@ import 'package:SmartHajj/dashboard/kategori/tabunganHaji.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganLangsung.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganQurban.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganUmroh.dart';
-import 'package:SmartHajj/dompet/dompetALL.dart';
+import 'package:SmartHajj/dompet/dompetAll.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:SmartHajj/dashboard/productDetail/productDetailScreen.dart';
@@ -30,6 +32,7 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  late HttpClientRequest request;
   late Future<Map<String, dynamic>> apiData;
   late Future<List<Map<String, dynamic>>> apiDataProduct;
 
@@ -43,6 +46,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<Map<String, dynamic>> fetchData() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? apiUser = dotenv.env['API_USER'];
       String? token = prefs.getString('token');
 
       if (token == null) {
@@ -50,25 +54,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
         throw Exception('Token not available');
       }
 
-      HttpClient httpClient = new HttpClient();
+      HttpClient httpClient = HttpClient();
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
 
-      HttpClientRequest request = await httpClient.getUrl(
-        Uri.parse('https://smarthajj.coffeelabs.id/api/user'),
-      );
+      if (apiUser != null) {
+        var request = await httpClient.getUrl(
+          Uri.parse(apiUser),
+        );
+        request.headers.add('Authorization', 'Bearer $token');
 
-      request.headers.add('Authorization', 'Bearer $token');
+        var response = await request.close();
+        var responseBody = await utf8.decodeStream(response);
 
-      HttpClientResponse response = await request.close();
-
-      String responseBody = await response.transform(utf8.decoder).join();
-      if (response.statusCode == 200) {
-        return jsonDecode(responseBody);
+        if (response.statusCode == 200) {
+          return jsonDecode(responseBody);
+        } else {
+          print('Response Body: $responseBody');
+          print('Response Status Code: ${response.statusCode}');
+          throw Exception('Failed to load user data: ${response.statusCode}');
+        }
       } else {
-        print('Response Body: $responseBody');
-        print('Response Status Code: ${response.statusCode}');
-        throw Exception('Failed to load user data: ${response.statusCode}');
+        throw Exception('API_USER is not defined in the .env file');
       }
     } catch (e) {
       print('Error fetching user data: $e');
@@ -79,6 +86,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<List<Map<String, dynamic>>> fetchDataProduct() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? apiProduct = dotenv.env['API_PRODUCT'];
       String? token = prefs.getString('token');
       String? agentId = prefs.getString('users');
 
@@ -90,9 +98,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
 
-      HttpClientRequest request = await httpClient.getUrl(
-        Uri.parse('https://smarthajj.coffeelabs.id/api/getAllHajj'),
-      );
+      if (apiProduct != null) {
+        request = await httpClient.getUrl(Uri.parse(apiProduct));
+      }
 
       request.headers.add('Authorization', 'Bearer $token');
 
@@ -323,7 +331,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => DompetALL(),
+                                      builder: (context) => DompetAll(),
                                     ),
                                   );
                                 },

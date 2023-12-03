@@ -6,9 +6,8 @@ import 'package:SmartHajj/auth/loginScreen.dart';
 import 'package:flutter/material.dart';
 // import 'package:SmartHajj/BottomNavigationBar.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:ui';
-
-import 'package:shared_preferences/shared_preferences.dart';
 
 class DaftarScreen extends StatefulWidget {
   @override
@@ -16,6 +15,7 @@ class DaftarScreen extends StatefulWidget {
 }
 
 class _DaftarScreenState extends State<DaftarScreen> {
+  late HttpClientRequest request;
   bool isChecked = false;
   final primaryColor = Color.fromRGBO(43, 69, 112, 1);
 
@@ -52,6 +52,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
     }
 
     try {
+      String? apiSignup = dotenv.env['API_SIGNUP'];
       print(
           'Request Body: name=$name&email=$email&phone=$phone&password=$password&isAgent=1');
 
@@ -59,9 +60,9 @@ class _DaftarScreenState extends State<DaftarScreen> {
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
 
-      HttpClientRequest request = await httpClient.postUrl(
-        Uri.parse('https://smarthajj.coffeelabs.id/api/signUp'),
-      );
+      if (apiSignup != null) {
+        request = await httpClient.postUrl(Uri.parse(apiSignup));
+      }
 
       // Add headers and body to the request
       request.headers.set('Content-Type', 'application/x-www-form-urlencoded');

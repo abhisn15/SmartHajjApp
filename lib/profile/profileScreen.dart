@@ -7,6 +7,7 @@ import 'package:SmartHajj/profile/faqScreen.dart';
 import 'package:SmartHajj/profile/gantiPasswordScreen.dart';
 import 'package:SmartHajj/profile/kebijakanPrivasiScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'editProfileScreen.dart';
@@ -20,6 +21,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  late HttpClientRequest request;
   bool isTargetVisible = false;
   double targetTabunganBorderRadius = 20.0;
   late Future<Map<String, dynamic>> apiData;
@@ -32,6 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<Map<String, dynamic>> fetchData() async {
     try {
+      String? apiUser = dotenv.env['API_USER'];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
 
@@ -45,9 +48,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           (X509Certificate cert, String host, int port) => true;
 
       // Use httpClient.get instead of httpClient.getUrl
-      HttpClientRequest request = await httpClient.getUrl(
-        Uri.parse('https://smarthajj.coffeelabs.id/api/user'),
-      );
+      if (apiUser != null) {
+        request = await httpClient.getUrl(Uri.parse(apiUser));
+      }
 
       // Add token to headers
       request.headers.add('Authorization', 'Bearer $token');
@@ -74,6 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     _logout() async {
       try {
+        String? apiLogout = dotenv.env['API_LOGOUT'];
         SharedPreferences prefs = await SharedPreferences.getInstance();
         String? token = prefs.getString('token');
 
@@ -82,9 +86,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             (X509Certificate cert, String host, int port) => true;
 
         if (token != null) {
-          HttpClientRequest request = await httpClient.postUrl(
-            Uri.parse('https://smarthajj.coffeelabs.id/api/logout'),
-          );
+          if (apiLogout != null) {
+            request = await httpClient.postUrl(Uri.parse(apiLogout));
+          }
 
           request.headers.add('Authorization', 'Bearer $token');
 

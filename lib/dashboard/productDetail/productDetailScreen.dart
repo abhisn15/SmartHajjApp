@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:SmartHajj/dashboard/productDetail/simulasiScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'dart:ui';
 
@@ -25,6 +26,7 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  late HttpClientRequest request;
   late Future<List<Map<String, dynamic>>> productData;
 
   @override
@@ -36,23 +38,27 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Future<List<Map<String, dynamic>>> fetchDataProduct() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? apiProduct = dotenv.env['API_PRODUCT'];
       String? token = prefs.getString('token');
 
       if (token == null) {
         throw Exception('Token not available');
       }
+      HttpClient httpClient = new HttpClient();
+
+      if (apiProduct != null) {
+        request = await httpClient.getUrl(
+          Uri.parse(
+              apiProduct + "/${widget.packageId}" + "/${widget.departId}"),
+        );
+      }
 
       // Print the URI
-      final Uri uri = Uri.parse(
-        "https://smarthajj.coffeelabs.id/api/getHajj/${widget.packageId}/${widget.departId}",
-      );
-      print('Request URI: $uri');
 
-      HttpClient httpClient = new HttpClient();
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
 
-      HttpClientRequest request = await httpClient.getUrl(uri);
+      // HttpClientRequest request = await httpClient.getUrl(uri);
 
       request.headers.add('Authorization', 'Bearer $token');
 

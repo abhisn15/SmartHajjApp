@@ -1,4 +1,3 @@
-import 'package:SmartHajj/dompet/dompetALL.dart';
 import 'package:flutter/material.dart';
 
 class SetoranAwal extends StatefulWidget {
@@ -267,10 +266,10 @@ class _SetoranAwalState extends State<SetoranAwal> {
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => DompetALL()),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => DompetALL()),
+                  // );
                 },
                 style: ElevatedButton.styleFrom(
                   primary: primaryColor,

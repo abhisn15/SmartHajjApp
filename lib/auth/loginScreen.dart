@@ -5,6 +5,7 @@ import 'package:SmartHajj/auth/lupaPasswordScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:SmartHajj/BottomNavigationBar.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:ui';
 
@@ -18,6 +19,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  late HttpClientRequest request;
   void showAlert(String message) {
     showDialog(
       context: context,
@@ -48,13 +50,14 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     try {
+      String? apiLogin = dotenv.env['API_LOGIN'];
       HttpClient httpClient = new HttpClient();
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
 
-      HttpClientRequest request = await httpClient.postUrl(
-        Uri.parse('https://smarthajj.coffeelabs.id/api/login'),
-      );
+      if (apiLogin != null) {
+        request = await httpClient.postUrl(Uri.parse(apiLogin));
+      }
 
       // Add headers and body to the request
       request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
