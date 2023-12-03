@@ -641,7 +641,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             children: [
                               CustomInformationButton(
                                 image: "assets/home/informasi/info_pasport.png",
-                                text: "Info Pasport",
+                                text: "Info Passport",
                                 onPressed: () {
                                   Navigator.push(
                                       context,

@@ -13,7 +13,9 @@ class BottomNavigationJamaah extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: const BottomNavigationBarExample(),
+      title: "SmartHajj",
     );
   }
 }

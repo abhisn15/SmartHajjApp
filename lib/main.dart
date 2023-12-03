@@ -1,4 +1,5 @@
 import 'package:SmartHajj/BottomNavigationBar.dart';
+import 'package:SmartHajj/BottomNavigationJamaah.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: SplashScreen(),
       title: "SmartHajj",
     );
@@ -29,8 +31,8 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    super.initState();
     checkLoginStatus();
+    super.initState();
   }
 
   // Function to check login status

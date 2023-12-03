@@ -1,3 +1,5 @@
+import 'package:SmartHajj/BottomNavigationJamaah.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -290,39 +292,65 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
       }
 
       // Prepare the data to be sent
-      var data = FormData.fromMap({
-        'agent_id': agentId,
-        'name': nameController.text,
-        'f_pic': await MultipartFile.fromFile(
-          image!.path,
-          filename: 'photo.jpg',
-          contentType: MediaType.parse(_getContentType(image)),
-        ),
-        'nik': nikController.text,
-        'phone': phoneNumberController.text,
-        'address': addressController.text,
-        'city': cityController.text,
-        'f_family_card': await MultipartFile.fromFile(
-          kartuKeluargaImage!.path,
-          filename:
-              'kartu_keluarga.jpg', // Modify based on allowed file formats
-          contentType: MediaType.parse(_getContentType(kartuKeluargaImage)),
-          // Modify based on allowed file formats
-        ),
-        'f_passport_number': await MultipartFile.fromFile(
-          passportFile!.path,
-          filename: 'passport.pdf',
-          contentType: MediaType.parse(_getContentTypeFile(passportFile)),
-        ),
-        'f_visa': await MultipartFile.fromFile(
-          visaFile!.path,
-          filename: 'visa.pdf',
-          contentType: MediaType.parse(_getContentTypeFile(visaFile)),
-        ),
-        'father_name': fatherNameController.text,
-        'born_place': bornPlaceController.text,
-        'born_date': placeOfBirthController.text,
-      });
+      var data = FormData();
+
+      data.fields.add(MapEntry('agent_id', agentId));
+      data.fields.add(MapEntry('name', nameController.text));
+      data.fields.add(MapEntry('nik', nikController.text));
+      data.fields.add(MapEntry('phone', phoneNumberController.text));
+      data.fields.add(MapEntry('address', addressController.text));
+      data.fields.add(MapEntry('city', cityController.text));
+      data.fields.add(MapEntry('father_name', fatherNameController.text));
+      data.fields.add(MapEntry('born_place', bornPlaceController.text));
+      data.fields.add(MapEntry('born_date', placeOfBirthController.text));
+
+// Add photo file if available
+      if (image != null) {
+        data.files.add(MapEntry(
+          'f_pic',
+          await MultipartFile.fromFile(
+            image!.path,
+            filename: 'photo.jpg',
+            contentType: MediaType.parse(_getContentType(image)),
+          ),
+        ));
+      }
+
+// Add kartu keluarga file if available
+      if (kartuKeluargaImage != null) {
+        data.files.add(MapEntry(
+          'f_family_card',
+          await MultipartFile.fromFile(
+            kartuKeluargaImage!.path,
+            filename: 'kartu_keluarga.jpg',
+            contentType: MediaType.parse(_getContentType(kartuKeluargaImage)),
+          ),
+        ));
+      }
+
+// Add passport file if available
+      if (passportFile != null) {
+        data.files.add(MapEntry(
+          'f_passport_number',
+          await MultipartFile.fromFile(
+            passportFile!.path,
+            filename: 'passport.pdf',
+            contentType: MediaType.parse(_getContentTypeFile(passportFile)),
+          ),
+        ));
+      }
+
+// Add visa file if available
+      if (visaFile != null) {
+        data.files.add(MapEntry(
+          'f_visa',
+          await MultipartFile.fromFile(
+            visaFile!.path,
+            filename: 'visa.pdf',
+            contentType: MediaType.parse(_getContentTypeFile(visaFile)),
+          ),
+        ));
+      }
 
       // Create Dio instance
       Dio dio = Dio();
@@ -339,31 +367,45 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
         ),
       );
 
-      passportFile = await _pickFile();
-      if (passportFile == null) {
-        print('Passport file is null');
-        return;
-      }
-
-      // Pick and prepare NoVisa file
-      visaFile = await _pickFile();
-      if (visaFile == null) {
-        print('NoVisa file is null');
-        return;
-      }
-
       if (response.statusCode == 200) {
         print('Data saved successfully');
-        _showAlert('Success', 'Data saved successfully');
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.success,
+          animType: AnimType.rightSlide,
+          title: 'Tabungan Jamaah',
+          desc: 'Form Tambah Data berhasil!!',
+          btnOkOnPress: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => BottomNavigationJamaah()));
+          },
+        )..show();
         clearForm();
       } else {
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: 'Tabungan Jamaah',
+          desc: 'Gagal menambah data, coba lagi!',
+          btnOkOnPress: () {},
+        )..show();
         print('Failed to save data. Status code: ${response.statusCode}');
         _showAlert('Error',
             'Failed to save data. Status code: ${response.statusCode}');
       }
     } catch (e) {
       print('Error sending data: $e');
-      _showAlert('Error', 'Error sending data: $e');
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.rightSlide,
+        title: 'Tabungan Jamaah',
+        desc: 'Gagal menambah data, coba lagi nanti!',
+        btnOkOnPress: () {},
+      )..show();
     }
   }
 

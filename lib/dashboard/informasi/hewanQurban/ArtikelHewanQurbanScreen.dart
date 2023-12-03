@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 
-class ArtikelHotelScreen extends StatelessWidget {
+class ArtikelHewanQurbanScreen extends StatelessWidget {
   final int artikelId;
   final List<Map<String, dynamic>> listArtikel;
 
-  ArtikelHotelScreen({
+  ArtikelHewanQurbanScreen({
     required this.artikelId,
     required this.listArtikel,
   });
@@ -28,7 +28,7 @@ class ArtikelHotelScreen extends StatelessWidget {
       // Handle the case where the article with the specified ID is not found
       return Scaffold(
         appBar: AppBar(
-          title: Text("Info Hotel"),
+          title: Text("Hewan Qurban"),
         ),
         body: Center(
           child: Text("Article not found."),
@@ -40,7 +40,7 @@ class ArtikelHotelScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: primaryColor,
         title: Text(
-          "Info Hotel",
+          "Hewan Qurban",
           style: TextStyle(
             color: Colors.white,
             fontSize: 16,
@@ -63,7 +63,7 @@ class ArtikelHotelScreen extends StatelessWidget {
                   selectedArticle['headline'],
                   style: TextStyle(
                     fontSize: 28,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -93,7 +93,7 @@ class ArtikelHotelScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.black,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                           Text('Dec 01, 2023'),

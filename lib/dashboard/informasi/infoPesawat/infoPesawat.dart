@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:SmartHajj/dashboard/informasi/infoPesawat/ArtikelPesawatScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:SmartHajj/dashboard/informasi/manasikUmroh/ArtikelManasikUmroh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InfoPesawat extends StatefulWidget {

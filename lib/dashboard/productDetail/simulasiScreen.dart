@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:SmartHajj/dashboard/productDetail/setoranAwalScreen.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -105,22 +106,19 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
     'Payment Gate Away',
   ];
 
-  final TextEditingController _setoranAwalController = TextEditingController();
-  final TextEditingController _setoranPerBulanController =
-      TextEditingController();
+  final TextEditingController deposit = TextEditingController();
+  final TextEditingController deposit_plan = TextEditingController();
   String _totalSetoran = '';
   String _harganya = '';
 
   void _calculateTotal() {
-    if (_setoranAwalController.text.isNotEmpty &&
-        _setoranPerBulanController.text.isNotEmpty) {
+    if (deposit.text.isNotEmpty && deposit_plan.text.isNotEmpty) {
       try {
         final setoranAwal = NumberFormat.decimalPattern()
-            .parse(_setoranAwalController.text.replaceAll(RegExp('[^0-9]'), ''))
+            .parse(deposit.text.replaceAll(RegExp('[^0-9]'), ''))
             .toInt();
         final setoranPerBulan = NumberFormat.decimalPattern()
-            .parse(_setoranPerBulanController.text
-                .replaceAll(RegExp('[^0-9]'), ''))
+            .parse(deposit_plan.text.replaceAll(RegExp('[^0-9]'), ''))
             .toInt();
         final totalSetoran = setoranAwal + setoranPerBulan;
         final hargaPerkiraan = 35000000;
@@ -167,8 +165,6 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
   }
 
   TextEditingController deposit_target = TextEditingController();
-  TextEditingController deposit = TextEditingController();
-  TextEditingController deposit_plan = TextEditingController();
   TextEditingController depart_id = TextEditingController();
   TextEditingController agent_id = TextEditingController();
 
@@ -484,7 +480,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                             ),
                             child: Center(
                               child: TextField(
-                                controller: _setoranAwalController,
+                                controller: deposit,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
                                   labelText: 'Masukkan Setoran Awal',
@@ -508,8 +504,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                       symbol: 'Rp ',
                                       decimalDigits: 0,
                                     ).format(numericValue);
-                                    _setoranAwalController.value =
-                                        _setoranAwalController.value.copyWith(
+                                    deposit.value = deposit.value.copyWith(
                                       text: formattedValue,
                                       selection: TextSelection.fromPosition(
                                         TextPosition(
@@ -543,7 +538,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                             ),
                             child: Center(
                               child: TextField(
-                                controller: _setoranPerBulanController,
+                                controller: deposit_plan,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
                                   labelText: 'Masukkan Setoran Per Bulan',
@@ -567,9 +562,8 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                       symbol: 'Rp ',
                                       decimalDigits: 0,
                                     ).format(numericValue);
-                                    _setoranPerBulanController.value =
-                                        _setoranPerBulanController.value
-                                            .copyWith(
+                                    deposit_plan.value =
+                                        deposit_plan.value.copyWith(
                                       text: formattedValue,
                                       selection: TextSelection.fromPosition(
                                         TextPosition(
@@ -647,7 +641,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                                 style: TextStyle(
                                                   color: _selectedValue ==
                                                           keberangkatan[
-                                                              'pilgrim_id']
+                                                              'depart_id']
                                                       ? abu
                                                       : null,
                                                   fontSize: 14,
@@ -660,7 +654,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                           setState(() {
                                             _selectedValue = selectedItem;
                                             print(
-                                                'Selected pilgrim_id: $_selectedValue');
+                                                'Selected depart_id: $_selectedValue');
 
                                             // Add any additional logic here based on the selected value
                                             // For example, you can use a switch statement:
@@ -892,6 +886,25 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                         } else if (selectedValue == 'Payment Gate Away') {
                           launchUrl(websiteUri,
                               mode: LaunchMode.externalApplication);
+                        } else if (selectedValue == 'Select an option') {
+                          AwesomeDialog(
+                            context: context,
+                            dialogType: DialogType.warning,
+                            animType: AnimType.rightSlide,
+                            title: 'Pilih Pembayaran',
+                            desc: 'Harap pilih pembayaran yang diinginkan!!',
+                            btnOkOnPress: () {},
+                          )..show();
+                        } else if (_selectedValue == 'Select an option' ||
+                            _selectedValueJamaah == 'Select an option') {
+                          AwesomeDialog(
+                            context: context,
+                            dialogType: DialogType.error,
+                            animType: AnimType.rightSlide,
+                            title: 'Simulasi',
+                            desc: 'Harap isi semua form!!',
+                            btnOkOnPress: () {},
+                          )..show();
                         }
                       },
                       child: Text(
