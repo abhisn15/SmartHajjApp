@@ -51,6 +51,7 @@ class SimulasiScreen extends StatefulWidget {
   final String packageType;
   final String packageId;
   final String price;
+  final String name;
   final String agentId;
 
   const SimulasiScreen({
@@ -59,6 +60,7 @@ class SimulasiScreen extends StatefulWidget {
     required this.packageType,
     required this.packageId,
     required this.price,
+    required this.name,
     required this.agentId,
     Key? key,
   }) : super(key: key);
@@ -74,6 +76,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
   late String packageId;
   late String pilgrimId;
   late String agentId;
+  late String name;
   late List<Map<String, dynamic>> jamaahList;
 
   @override
@@ -84,6 +87,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
     packageType = widget.packageType;
     packageId = widget.packageId;
     agentId = widget.agentId;
+    agentId = widget.name;
     print('Hajj ID: $hajjId');
     print('Depart ID: $departId');
     print('PackageType: $packageType');
@@ -406,7 +410,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                       ),
                       child: Center(
                         child: Text(
-                          "PAKET TABUNGAN UMROH RAMADHAN",
+                          "${widget.name}",
                           style: TextStyle(color: abu),
                         ),
                       ),
@@ -823,6 +827,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                   color: Color.fromRGBO(141, 148, 168, 1),
                 ),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
                       margin: EdgeInsets.only(left: 20, right: 20),
@@ -872,7 +877,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
               ),
               Container(
                 margin: EdgeInsets.only(top: 30),
-                child: Row(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(

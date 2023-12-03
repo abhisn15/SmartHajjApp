@@ -117,7 +117,11 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                     Navigator.pop(context);
                     XFile? image = await _pickImageFromCamera();
                     if (isKartuKeluarga) {
-                      // ... (kode lainnya)
+                      this.kartuKeluargaImage =
+                          image != null ? File(image.path) : null;
+                      // Set value to the controller
+                      familyCardController.text =
+                          kartuKeluargaImage?.path ?? '';
                     } else {
                       setState(() {
                         this.image = image != null ? File(image.path) : null;

@@ -275,6 +275,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     packageType: "hajj",
                                     price: widget.product['price'],
                                     packageId: widget.packageId,
+                                    name: widget.product['name'],
                                     agentId: agentId,
                                   ),
                                 ),

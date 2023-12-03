@@ -214,7 +214,7 @@ class _DompetALLState extends State<DompetALL> {
                   ),
                 ),
                 DraggableScrollableSheet(
-                  initialChildSize: 0.4,
+                  initialChildSize: 0.3,
                   minChildSize:
                       MediaQuery.of(context).size.width < 400 ? 0.3 : 0.4,
                   maxChildSize: 1.0,

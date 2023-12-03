@@ -211,9 +211,10 @@ class _DompetScreenState extends State<DompetScreen> {
                   ),
                 ),
                 DraggableScrollableSheet(
-                  initialChildSize: 0.4,
-                  minChildSize:
-                      MediaQuery.of(context).size.width < 400 ? 0.3 : 0.4,
+                  initialChildSize: 0.3,
+                  minChildSize: MediaQuery.of(context).size.width < 1000 | 400
+                      ? 0.3
+                      : 0.4,
                   maxChildSize: 1.0,
                   builder: (BuildContext context,
                       ScrollController scrollController) {
