@@ -3,6 +3,11 @@
 <plist version="1.0">
 <dict>
 <key>LSApplicationQueriesSchemes</key>
+<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+</dict>
 <array>
     <string>http</string>
     <string>https</string>

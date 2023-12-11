@@ -24,6 +24,14 @@ class TambahJamaahScreen extends StatefulWidget {
 
 class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
   late String agentId;
+  final List<String> items = [
+    'BCA',
+    'BNI',
+    'BRI',
+    'PERMATA',
+  ];
+  String? selectedValue;
+  final primaryColor = Color.fromRGBO(43, 69, 112, 1);
 
   @override
   void initState() {
@@ -52,6 +60,7 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
   TextEditingController fatherNameController = TextEditingController();
   TextEditingController bornPlaceController = TextEditingController();
   TextEditingController placeOfBirthController = TextEditingController();
+  TextEditingController bankController = TextEditingController();
 
   Future pickImageFromCamera() async {
     final pickedImage =
@@ -263,6 +272,7 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
       print('Tanggal Lahir: ${placeOfBirthController.text}');
       print('Passport File Path: ${passportFile?.path}');
       print('Visa File Path: ${visaFile?.path}');
+      print('Pilihan Bank: ${bankController.text}');
       if (nameController.text.isEmpty ||
           nikController.text.isEmpty ||
           phoneNumberController.text.isEmpty ||
@@ -274,7 +284,8 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
           image == null ||
           kartuKeluargaImage == null ||
           passportFile == null ||
-          visaFile == null) {
+          visaFile == null ||
+          bankController == null) {
         List<String> emptyFields = [];
         if (nameController.text.isEmpty) emptyFields.add('Name');
         if (nikController.text.isEmpty) emptyFields.add('NIK');
@@ -290,6 +301,7 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
         if (kartuKeluargaImage == null) emptyFields.add('Kartu Keluarga Image');
         if (passportFile == null) emptyFields.add('Passport File');
         if (visaFile == null) emptyFields.add('Visa File');
+        if (bankController == null) emptyFields.add('Bank');
 
         throw Exception(
             'Please fill in all required fields: ${emptyFields.join(', ')}');
@@ -389,13 +401,14 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
         clearForm();
       } else {
         AwesomeDialog(
-          context: context,
-          dialogType: DialogType.error,
-          animType: AnimType.rightSlide,
-          title: 'Tabungan Jamaah',
-          desc: 'Gagal menambah data, coba lagi!',
-          btnOkOnPress: () {},
-        )..show();
+            context: context,
+            dialogType: DialogType.error,
+            animType: AnimType.rightSlide,
+            title: 'Tabungan Jamaah',
+            desc: 'Gagal menambah data, coba lagi!',
+            btnOkOnPress: () {},
+            btnOkColor: Colors.red)
+          ..show();
         print('Failed to save data. Status code: ${response.statusCode}');
         _showAlert('Error',
             'Failed to save data. Status code: ${response.statusCode}');
@@ -403,14 +416,21 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
     } catch (e) {
       print('Error sending data: $e');
       AwesomeDialog(
-        context: context,
-        dialogType: DialogType.error,
-        animType: AnimType.rightSlide,
-        title: 'Tabungan Jamaah',
-        desc: 'Gagal menambah data, coba lagi nanti!',
-        btnOkOnPress: () {},
-      )..show();
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: 'Tabungan Jamaah',
+          desc: 'Gagal menambah data, coba lagi nanti!',
+          btnOkOnPress: () {},
+          btnOkColor: Colors.red)
+        ..show();
     }
+  }
+
+  void dispose() {
+    // Hapus controller pada saat widget di-dipose
+    bankController.dispose();
+    super.dispose();
   }
 
   void clearForm() {
@@ -1213,6 +1233,83 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                         ),
                       ),
                     ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 20),
+                  child: Row(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 24, bottom: 20),
+                        child: Text(
+                          "Pilih Pembayaran",
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 30),
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                    color: Color.fromRGBO(141, 148, 168, 1),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 20, right: 20),
+                        child: Image.asset("assets/home/topup.png"),
+                      ),
+                      DropdownButton<String>(
+                        hint: Text(
+                          'Select an option',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                        dropdownColor: abu,
+                        icon: Container(
+                          margin: EdgeInsets.only(left: 80 * 1),
+                          child: Image.asset("assets/home/dropdown_down.png"),
+                        ),
+                        items: items
+                            .map(
+                              (String item) => DropdownMenuItem<String>(
+                                value: item,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      item,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                        width:
+                                            10), // Beri jarak antara gambar dan teks
+                                  ],
+                                ),
+                              ),
+                            )
+                            .toList(),
+                        value: selectedValue,
+                        onChanged: (String? value) {
+                          setState(() {
+                            selectedValue = value ?? '';
+                          });
+                        },
+                      ),
+                    ],
                   ),
                 ),
                 Container(

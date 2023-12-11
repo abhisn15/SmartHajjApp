@@ -1,14 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
+import 'package:SmartHajj/BottomNavigationDompet.dart';
+import 'package:SmartHajj/BottomNavigationJamaah.dart';
 import 'package:SmartHajj/dashboard/productDetail/setoranAwalScreen.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
+import 'package:midtrans_sdk/midtrans_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class NumberTextInputFormatter extends TextInputFormatter {
   @override
@@ -47,20 +53,14 @@ class NumberTextInputFormatter extends TextInputFormatter {
 }
 
 class SimulasiScreen extends StatefulWidget {
-  final String hajjId;
-  final String departId;
-  final String packageType;
   final String packageId;
-  final String price;
+  final String categoryId;
   final String name;
   final String agentId;
 
   const SimulasiScreen({
-    required this.hajjId,
-    required this.departId,
-    required this.packageType,
     required this.packageId,
-    required this.price,
+    required this.categoryId,
     required this.name,
     required this.agentId,
     Key? key,
@@ -70,34 +70,30 @@ class SimulasiScreen extends StatefulWidget {
   _SimulasiScreenState createState() => _SimulasiScreenState();
 }
 
+class DropdownItem {
+  final String value;
+  final String tanggal; // Additional data
+
+  DropdownItem(this.value, this.tanggal);
+}
+
 class _SimulasiScreenState extends State<SimulasiScreen> {
   late HttpClientRequest request;
-  late String hajjId;
-  late String departId;
-  late String packageType;
-  late String packageId;
-  late String pilgrimId;
-  late String agentId;
-  late String name;
   late List<Map<String, dynamic>> jamaahList;
+  MidtransSDK? _midtrans;
 
   @override
   void initState() {
     super.initState();
-    hajjId = widget.hajjId;
-    departId = widget.departId;
-    packageType = widget.packageType;
-    packageId = widget.packageId;
-    agentId = widget.agentId;
-    agentId = widget.name;
-    print('Hajj ID: $hajjId');
-    print('Depart ID: $departId');
-    print('PackageType: $packageType');
-    print('Package ID: $packageId');
-    print('Agent ID: $agentId');
+    // initSDK();
+    widget.name;
+    print('Package ID: ${widget.packageId}');
+    print('category ID: ${widget.categoryId}');
+    print('Agent ID: ${widget.agentId}');
   }
 
-  String? _selectedValue;
+  String? hargaPerkiraan;
+  String? departId;
   String? _selectedValueJamaah;
   String? selectedValue;
 
@@ -112,50 +108,12 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
     'Payment Gate Away',
   ];
 
-  final TextEditingController deposit = TextEditingController();
-  final TextEditingController deposit_plan = TextEditingController();
-  String _totalSetoran = '';
-  String _harganya = '';
-
-  void _calculateTotal() {
-    if (deposit.text.isNotEmpty && deposit_plan.text.isNotEmpty) {
-      try {
-        final setoranAwal = NumberFormat.decimalPattern()
-            .parse(deposit.text.replaceAll(RegExp('[^0-9]'), ''))
-            .toInt();
-        final setoranPerBulan = NumberFormat.decimalPattern()
-            .parse(deposit_plan.text.replaceAll(RegExp('[^0-9]'), ''))
-            .toInt();
-        final totalSetoran = setoranAwal + setoranPerBulan;
-        final hargaPerkiraan = 35000000;
-        final harganya = hargaPerkiraan - totalSetoran;
-
-        setState(() {
-          _totalSetoran = NumberFormat.currency(
-            locale: 'id_ID',
-            symbol: 'Rp ',
-            decimalDigits: 0,
-          ).format(totalSetoran);
-
-          _harganya = NumberFormat.currency(
-            locale: 'id_ID',
-            symbol: 'Rp ',
-            decimalDigits: 0,
-          ).format(harganya);
-        });
-      } catch (e) {
-        print("Error: $e");
-        // Handle the error, for example, by showing a message to the user
-      }
-    }
-  }
-
   void showAlert(String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Login"),
+          title: Text("Pembayaran"),
           content: Text(message),
           actions: [
             TextButton(
@@ -170,74 +128,204 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
     );
   }
 
-  TextEditingController deposit_target = TextEditingController();
-  TextEditingController depart_id = TextEditingController();
-  TextEditingController agent_id = TextEditingController();
+  // void initSDK() async {
+  //   _midtrans = await MidtransSDK.init(
+  //     config: MidtransConfig(
+  //       clientKey: dotenv.env['MIDTRANS_CLIENT_KEY'] ?? "",
+  //       merchantBaseUrl: dotenv.env['MIDTRANS_MERCHANT_BASE_URL'] ?? "",
+  //       colorTheme: ColorTheme(
+  //         colorPrimary: Theme.of(context).colorScheme.secondary,
+  //         colorPrimaryDark: Theme.of(context).colorScheme.secondary,
+  //         colorSecondary: Theme.of(context).colorScheme.secondary,
+  //       ),
+  //     ),
+  //   );
+  //   _midtrans?.setUIKitCustomSetting(
+  //     skipCustomerDetailsPages: true,
+  //   );
+  //   _midtrans!.setTransactionFinishedCallback((result) {
+  //     print(result.toJson());
+  //   });
+  // }
+
+  // @override
+  // void dispose() {
+  //   _midtrans?.removeTransactionFinishedCallback();
+  //   super.dispose();
+  // }
+
+  // TextEditingController agentIdController = TextEditingController();
+  TextEditingController departIdController = TextEditingController();
+  TextEditingController pilgrimIdController = TextEditingController();
+  // TextEditingController packageIdController = TextEditingController();
+  // TextEditingController packageTypeController = TextEditingController();
+  TextEditingController depositController = TextEditingController();
+  TextEditingController depositPlanController = TextEditingController();
+  TextEditingController depositTargetController = TextEditingController();
+
+  // void initSDK() async {
+  //   _midtrans = await MidtransSDK.init(
+  //     config: MidtransConfig(
+  //       clientKey: "SB-Mid-client-_kHzYvGWAnLEg5CF",
+  //       merchantBaseUrl: "G251390999",
+  //       colorTheme: ColorTheme(
+  //         colorPrimary: Theme.of(context).colorScheme.secondary,
+  //         colorPrimaryDark: Theme.of(context).colorScheme.secondary,
+  //         colorSecondary: Theme.of(context).colorScheme.secondary,
+  //       ),
+  //     ),
+  //   );
+  //   _midtrans?.setUIKitCustomSetting(
+  //     skipCustomerDetailsPages: true,
+  //   );
+  //   _midtrans!.setTransactionFinishedCallback((result) {
+  //     print(result.toJson());
+  //   });
+  // }
+
+  // @override
+  // void dispose() {
+  //   _midtrans?.removeTransactionFinishedCallback();
+  //   super.dispose();
+  // }
 
   final websiteUri = Uri.parse('https://smarthajj.coffeelabs.id');
 
-  void payment(
-    String deposit,
-    String deposit_plan,
-    String deposit_target,
-  ) async {
-    if (deposit.isEmpty || deposit_plan.isEmpty || deposit_target.isEmpty) {
-      showAlert("Login anda tidak valid. Harap isi semua kolom.");
-      return;
-    }
-
+  Future<void> sendFormData() async {
     try {
-      String? apiCreatePayment = dotenv.env['API_PAYMENT'];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
-      String? agentId = prefs.getString('users');
 
-      HttpClient httpClient = new HttpClient();
-      httpClient.badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-
-      if (apiCreatePayment != null) {
-        request = await httpClient.postUrl(Uri.parse(apiCreatePayment));
+      if (token == null) {
+        throw Exception('Token not available');
       }
 
-      // Add headers and body to the request
-      request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
-      request.write(
-          'deposit_target=$deposit_target&deposit=$deposit&deposit_plan=$deposit_plan&depart_id=$departId&agent_id=$agentId');
+      print('Agent ID: ${widget.agentId}');
+      print('Depart ID: ${departIdController.text}');
+      print('Pilgrim ID: ${pilgrimIdController.text}');
+      print('Package ID: ${widget.packageId}');
+      print('Category ID: ${widget.categoryId}');
+      print('Deposit : ${depositController.text}');
+      print('Deposit Plan : ${depositPlanController.text}');
+      print('Deposit Target : ${depositTargetController.text}');
+      if (departIdController.text.isEmpty ||
+          pilgrimIdController.text.isEmpty ||
+          depositController.text.isEmpty ||
+          depositPlanController.text.isEmpty ||
+          depositTargetController.text.isEmpty) {
+        List<String> emptyFields = [];
+        if (departIdController.text.isEmpty) emptyFields.add('Depart ID');
+        if (pilgrimIdController.text.isEmpty) emptyFields.add('Pilgrim ID');
+        if (depositController.text.isEmpty) emptyFields.add('Deposit');
+        if (depositPlanController.text.isEmpty) emptyFields.add('Deposit Plan');
+        if (depositTargetController.text.isEmpty)
+          emptyFields.add('Deposit Target');
 
-      HttpClientResponse response = await request.close();
+        throw Exception(
+            'Please fill in all required fields: ${emptyFields.join(', ')}');
+      }
+
+      // Prepare the data to be sent
+      var data = FormData();
+
+      data.fields.add(MapEntry('agent_id', "${widget.agentId}"));
+      data.fields.add(MapEntry('depart_id', departIdController.text));
+      data.fields.add(MapEntry('pilgrim_id', pilgrimIdController.text));
+      data.fields.add(MapEntry('package_id', "${widget.packageId}"));
+      data.fields.add(MapEntry('package_type', "${widget.categoryId}"));
+      data.fields.add(MapEntry('deposit', depositController.text));
+      data.fields.add(MapEntry('deposit_plan', depositPlanController.text));
+      data.fields.add(MapEntry('deposit_target', "$hargaPerkiraan"));
+      // Create Dio instance
+      Dio dio = Dio();
+
+      // Make the POST request using Dio
+      var response = await dio.post(
+        'https://smarthajj.coffeelabs.id/api/createPayment',
+        data: data,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
 
       if (response.statusCode == 200) {
-        // Reading response data
-        String responseBody = await response.transform(utf8.decoder).join();
-        var data = jsonDecode(responseBody);
-        print(data['token']);
-        print(data['users']);
-        print('Login successfully');
-        showAlert("Login Berhasil!");
+        var responseData = response.data;
+        print('Snap Token: ${responseData['data']}');
 
-        // Navigate to Dashboard on successful login
-        // Navigator.pushAndRemoveUntil(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => BottomNavigation(),
-        //   ),
-        //   (route) => false,
+        // Start the payment flow using Midtrans SDK
+        // _midtrans?.startPaymentUiFlow(
+        //   token: responseData['data'],
         // );
+        // print(_midtrans);
 
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('token', data['token']);
-        prefs.setString('agentId', data['users'].toString());
-        return;
+        // Assume that the payment is successful for now
+        // You should handle the actual payment status using Midtrans SDK events or callbacks
+        print('Payment process initiated successfully');
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.success,
+          animType: AnimType.rightSlide,
+          title: 'Transaksi Sukses',
+          desc: 'Silahkan Cek Halaman Dompet untuk keterangan lebih lanjut',
+          btnOkOnPress: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BottomNavigationDompet(),
+              ),
+            );
+          },
+        )..show();
       } else {
-        print('Login Failed: ${response.statusCode}');
-        showAlert("Login anda tidak valid. Silakan coba lagi.");
-        return;
+        // Handle the case where the API response status code is not 200
+        print(
+            'Error: API Response - ${response.statusCode}, ${response.statusMessage}');
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: 'Transaksi Gagal',
+          desc: 'Terdapat error saat melakukan transaksi',
+          btnOkOnPress: () {},
+          btnOkColor: Colors.red,
+        )..show();
       }
+    } on DioException catch (e) {
+      // Something happened in setting up or sending the request that triggered an Error
+      if (e.response != null) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx and is also not 304.
+        print('DioError - Response Data: ${e.response!.data}');
+        print('DioError - Status: ${e.response!.statusCode}');
+      } else {
+        // Something went wrong in setting up or sending the request
+        print('DioError - Request: ${e.requestOptions}');
+        print('DioError - Message: ${e.message}');
+      }
+      AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: 'Transaksi Gagal',
+          desc: 'Terdapat error saat melakukan transaksi',
+          btnOkOnPress: () {},
+          btnOkColor: Colors.red)
+        ..show();
     } catch (e) {
-      print('Error during login: $e');
-      showAlert("Login anda tidak valid. Terjadi Kesalahan.");
-      return;
+      // Handle generic exceptions
+      print('Error: $e');
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.rightSlide,
+        title: 'Transaksi Gagal',
+        desc: 'Terdapat error saat melakukan transaksi',
+        btnOkOnPress: () {},
+        btnOkColor: Colors.red,
+      )..show();
     }
   }
 
@@ -290,7 +378,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
       String? token = prefs.getString('token');
       String? agentId = prefs.getString('users');
       // Ensure that token is not null before using it
-      if (token == null || hajjId == null) {
+      if (token == null || widget.packageId == null) {
         throw Exception('Token or Hajj ID not available');
       }
 
@@ -328,7 +416,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
   Future<List<Map<String, dynamic>>> fetchDataKeberangkatan() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? apiProduct = dotenv.env['API_PRODUCT'];
+      String? apiDepart = dotenv.env['API_DEPART'];
       String? token = prefs.getString('token');
 
       if (token == null) {
@@ -337,9 +425,9 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
 
       HttpClient httpClient = new HttpClient();
 
-      if (apiProduct != null) {
+      if (apiDepart != null) {
         request = await httpClient.getUrl(
-          Uri.parse(apiProduct),
+          Uri.parse("$apiDepart" + "/${widget.packageId}"),
         );
       }
 
@@ -365,6 +453,50 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
       throw Exception('Failed to fetch departure data');
     }
   }
+
+  Future<List<Map<String, dynamic>>> fetchDataHarga() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? apiProduct = dotenv.env['API_DEPART'];
+      String? token = prefs.getString('token');
+
+      if (token == null) {
+        throw Exception('Token not available');
+      }
+
+      HttpClient httpClient = new HttpClient();
+
+      if (apiProduct != null) {
+        request = await httpClient.getUrl(
+          Uri.parse("$apiProduct" + "/${widget.packageId}" + "/$departId"),
+        );
+      }
+
+      httpClient.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+
+      // HttpClientRequest request = await httpClient.getUrl(uri);
+      request.headers.add('Authorization', 'Bearer $token');
+
+      HttpClientResponse response = await request.close();
+
+      String responseBody = await response.transform(utf8.decoder).join();
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> keberangkatanList =
+            List<Map<String, dynamic>>.from(jsonDecode(responseBody));
+        return keberangkatanList;
+      } else {
+        throw Exception(
+            'Failed to fetch departure data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching departure data: $e');
+      throw Exception('Failed to fetch departure data');
+    }
+  }
+
+  String _totalSetoran = '';
+  String _harganya = '';
 
   @override
   Widget build(BuildContext context) {
@@ -441,6 +573,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                       ),
                     ),
                     Container(
+                      alignment: Alignment.center,
                       margin: EdgeInsets.only(top: 12, left: 20, right: 20),
                       width: double.infinity,
                       height: 58,
@@ -449,12 +582,18 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                         color: sedikitAbu,
                       ),
                       child: Center(
-                        child: Text(
-                          _harganya,
+                        child: TextField(
+                          controller: depositTargetController,
+                          readOnly: true,
+                          textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: abu,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500),
+                            fontSize: 20,
+                            color: Color.fromRGBO(43, 69, 112, 1),
+                            fontWeight: FontWeight.w700,
+                          ),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                          ),
                         ),
                       ),
                     ),
@@ -498,7 +637,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                             ),
                             child: Center(
                               child: TextField(
-                                controller: deposit,
+                                controller: depositController,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
                                   labelText: 'Masukkan Setoran Awal',
@@ -512,25 +651,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                 inputFormatters: [
                                   FilteringTextInputFormatter.digitsOnly,
                                 ],
-                                onChanged: (value) {
-                                  _calculateTotal();
-                                  if (value.isNotEmpty) {
-                                    final numericValue = int.parse(value);
-                                    final formattedValue =
-                                        NumberFormat.currency(
-                                      locale: 'id',
-                                      symbol: 'Rp ',
-                                      decimalDigits: 0,
-                                    ).format(numericValue);
-                                    deposit.value = deposit.value.copyWith(
-                                      text: formattedValue,
-                                      selection: TextSelection.fromPosition(
-                                        TextPosition(
-                                            offset: formattedValue.length),
-                                      ),
-                                    );
-                                  }
-                                },
+                                onChanged: (value) {},
                               ),
                             ),
                           ),
@@ -556,7 +677,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                             ),
                             child: Center(
                               child: TextField(
-                                controller: deposit_plan,
+                                controller: depositPlanController,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
                                   labelText: 'Masukkan Setoran Per Bulan',
@@ -570,41 +691,23 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                 inputFormatters: [
                                   FilteringTextInputFormatter.digitsOnly,
                                 ],
-                                onChanged: (value) {
-                                  _calculateTotal();
-                                  if (value.isNotEmpty) {
-                                    final numericValue = int.parse(value);
-                                    final formattedValue =
-                                        NumberFormat.currency(
-                                      locale: 'id',
-                                      symbol: 'Rp ',
-                                      decimalDigits: 0,
-                                    ).format(numericValue);
-                                    deposit_plan.value =
-                                        deposit_plan.value.copyWith(
-                                      text: formattedValue,
-                                      selection: TextSelection.fromPosition(
-                                        TextPosition(
-                                            offset: formattedValue.length),
-                                      ),
-                                    );
-                                  }
-                                },
+                                onChanged: (value) {},
                               ),
                             ),
                           ),
+                          // Container(
+                          //   margin: EdgeInsets.symmetric(vertical: 20),
+                          //   child: Text(
+                          //     "Uang akan terkumpul setelah 7 Bulan",
+                          //     style: TextStyle(
+                          //       color: krems,
+                          //       fontWeight: FontWeight.w700,
+                          //       fontSize: 16,
+                          //     ),
+                          //   ),
+                          // ),
                           Container(
-                            margin: EdgeInsets.symmetric(vertical: 20),
-                            child: Text(
-                              "Uang akan terkumpul setelah 7 Bulan",
-                              style: TextStyle(
-                                color: krems,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                          Container(
+                            margin: EdgeInsets.only(top: 16),
                             child: Text(
                               "Perkiraan Keberangkatan",
                               style: TextStyle(
@@ -640,7 +743,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                   return Column(
                                     children: [
                                       DropdownButton<String>(
-                                        value: _selectedValue,
+                                        value: departId,
                                         items: keberangkatanList
                                             .asMap()
                                             .entries
@@ -649,15 +752,14 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                           Map<String, dynamic> keberangkatan =
                                               entry.value;
                                           return DropdownMenuItem<String>(
-                                            value: keberangkatan[
-                                                'depart_id'], // Set the value to "pilgrim_id"
+                                            value: keberangkatan['depart_id'],
                                             child: Container(
                                               margin: EdgeInsets.symmetric(
                                                   horizontal: 20),
                                               child: Text(
-                                                '${keberangkatan['year']}',
+                                                '${keberangkatan['tanggal']}',
                                                 style: TextStyle(
-                                                  color: _selectedValue ==
+                                                  color: departId ==
                                                           keberangkatan[
                                                               'depart_id']
                                                       ? abu
@@ -670,29 +772,47 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                         }).toList(),
                                         onChanged: (String? selectedItem) {
                                           setState(() {
-                                            _selectedValue = selectedItem;
-                                            print(
-                                                'Selected depart_id: $_selectedValue');
+                                            departId = selectedItem;
+                                            Map<String, dynamic>?
+                                                selectedKeberangkatan =
+                                                keberangkatanList.firstWhere(
+                                                    (keberangkatan) =>
+                                                        keberangkatan[
+                                                            'depart_id'] ==
+                                                        departId,
+                                                    orElse: () =>
+                                                        Map<String, dynamic>());
 
-                                            // Add any additional logic here based on the selected value
-                                            // For example, you can use a switch statement:
+                                            hargaPerkiraan =
+                                                selectedKeberangkatan?['price'];
+                                            // deposit_target = hargaPerkiraan;
+
+                                            depositTargetController.text =
+                                                "$hargaPerkiraan";
+                                            departIdController.text =
+                                                "$departId";
+
+                                            print(
+                                                'Selected depart_id: $departId');
+                                            print(
+                                                'Updated hargaPerkiraan: $hargaPerkiraan');
+                                            // print(
+                                            //     'Updated deposit_target: $deposit_target');
                                           });
                                         },
                                         hint: Container(
                                           margin: EdgeInsets.symmetric(
                                               horizontal: 20),
                                           child: Text(
-                                            _selectedValue ??
-                                                'Select an option',
+                                            departId ?? 'Select an option',
                                             style: TextStyle(
-                                              color: _selectedValue == null
-                                                  ? abu
-                                                  : null,
+                                              color:
+                                                  departId == null ? abu : null,
                                               fontSize: 14,
                                             ),
                                           ),
                                         ),
-                                      )
+                                      ),
                                     ],
                                   );
                                 } else {
@@ -814,81 +934,81 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                   ],
                 ),
               ),
-              Container(
-                margin: EdgeInsets.only(top: 20),
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(left: 24, bottom: 20),
-                      child: Text(
-                        "Pilih Pembayaran",
-                        style: TextStyle(
-                          color: primaryColor,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 30),
-                padding: EdgeInsets.symmetric(vertical: 10),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                  color: Color.fromRGBO(141, 148, 168, 1),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(left: 20, right: 20),
-                      child: Image.asset("assets/home/topup.png"),
-                    ),
-                    DropdownButton<String>(
-                      hint: Text(
-                        'Select an option',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: defaultColor,
-                        ),
-                      ),
-                      dropdownColor: abu,
-                      icon: Container(
-                          margin: EdgeInsets.only(left: 80 * 1),
-                          child: Image.asset("assets/home/dropdown_down.png")),
-                      items: items
-                          .map((String item) => DropdownMenuItem<String>(
-                                value: item,
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      item,
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          color: selectedValue == Text(item)
-                                              ? Colors.white
-                                              : Colors.white),
-                                    ),
-                                    SizedBox(
-                                        width:
-                                            10), // Beri jarak antara gambar dan teks
-                                  ],
-                                ),
-                              ))
-                          .toList(),
-                      value: selectedValue,
-                      onChanged: (String? value) {
-                        setState(() {
-                          selectedValue = value;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
+              // Container(
+              //   margin: EdgeInsets.only(top: 20),
+              //   child: Row(
+              //     children: [
+              //       Container(
+              //         margin: EdgeInsets.only(left: 24, bottom: 20),
+              //         child: Text(
+              //           "Pilih Pembayaran",
+              //           style: TextStyle(
+              //             color: primaryColor,
+              //             fontWeight: FontWeight.w500,
+              //             fontSize: 16,
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              // Container(
+              //   margin: EdgeInsets.symmetric(horizontal: 30),
+              //   padding: EdgeInsets.symmetric(vertical: 10),
+              //   width: double.infinity,
+              //   decoration: BoxDecoration(
+              //     borderRadius: BorderRadius.all(Radius.circular(5)),
+              //     color: Color.fromRGBO(141, 148, 168, 1),
+              //   ),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.center,
+              //     children: [
+              //       Container(
+              //         margin: EdgeInsets.only(left: 20, right: 20),
+              //         child: Image.asset("assets/home/topup.png"),
+              //       ),
+              //       DropdownButton<String>(
+              //         hint: Text(
+              //           'Select an option',
+              //           style: TextStyle(
+              //             fontSize: 14,
+              //             color: defaultColor,
+              //           ),
+              //         ),
+              //         dropdownColor: abu,
+              //         icon: Container(
+              //             margin: EdgeInsets.only(left: 80 * 1),
+              //             child: Image.asset("assets/home/dropdown_down.png")),
+              //         items: items
+              //             .map((String item) => DropdownMenuItem<String>(
+              //                   value: item,
+              //                   child: Row(
+              //                     children: [
+              //                       Text(
+              //                         item,
+              //                         style: TextStyle(
+              //                             fontSize: 14,
+              //                             color: selectedValue == Text(item)
+              //                                 ? Colors.white
+              //                                 : Colors.white),
+              //                       ),
+              //                       SizedBox(
+              //                           width:
+              //                               10), // Beri jarak antara gambar dan teks
+              //                     ],
+              //                   ),
+              //                 ))
+              //             .toList(),
+              //         value: selectedValue,
+              //         onChanged: (String? value) {
+              //           setState(() {
+              //             selectedValue = value;
+              //           });
+              //         },
+              //       ),
+              //     ],
+              //   ),
+              // ),
               Container(
                 margin: EdgeInsets.only(top: 30),
                 child: Column(
@@ -896,35 +1016,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        if (selectedValue == 'Bank Transfer') {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => SetoranAwalScreen(),
-                            ),
-                          );
-                        } else if (selectedValue == 'Payment Gate Away') {
-                          launchUrl(websiteUri,
-                              mode: LaunchMode.externalApplication);
-                        } else if (selectedValue == 'Select an option') {
-                          AwesomeDialog(
-                            context: context,
-                            dialogType: DialogType.warning,
-                            animType: AnimType.rightSlide,
-                            title: 'Pilih Pembayaran',
-                            desc: 'Harap pilih pembayaran yang diinginkan!!',
-                            btnOkOnPress: () {},
-                          )..show();
-                        } else if (_selectedValue == 'Select an option' ||
-                            _selectedValueJamaah == 'Select an option') {
-                          AwesomeDialog(
-                            context: context,
-                            dialogType: DialogType.error,
-                            animType: AnimType.rightSlide,
-                            title: 'Simulasi',
-                            desc: 'Harap isi semua form!!',
-                            btnOkOnPress: () {},
-                          )..show();
-                        }
+                        // Navigator.push(context, Context)
                       },
                       child: Text(
                         "MULAI SETORAN AWAL",
@@ -950,4 +1042,31 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
       ),
     );
   }
+}
+
+WebViewController? _webViewController;
+final controller = WebViewController()
+  ..setJavaScriptMode(JavaScriptMode.unrestricted)
+  ..setBackgroundColor(const Color(0x00000000))
+  ..setNavigationDelegate(
+    NavigationDelegate(
+      onProgress: (int progress) {
+        // Update loading bar.
+      },
+      onPageStarted: (String url) {},
+      onPageFinished: (String url) {},
+      onWebResourceError: (WebResourceError error) {},
+    ),
+  )
+  ..loadRequest(Uri.parse('https://flutter.dev'));
+
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+      appBar: AppBar(
+        title: Text('Your App'),
+      ),
+      body: WebViewWidget(
+        controller: controller,
+      ));
 }

@@ -13,13 +13,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ProductDetailScreen extends StatefulWidget {
   final Map<String, dynamic> product;
   final String packageId;
-  final String departId;
 
-  ProductDetailScreen({
-    required this.product,
-    required this.packageId,
-    required this.departId,
-  });
+  ProductDetailScreen({required this.product, required this.packageId});
 
   @override
   _ProductDetailScreenState createState() => _ProductDetailScreenState();
@@ -33,12 +28,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   void initState() {
     super.initState();
     productData = fetchDataProduct();
+    print(widget.packageId);
   }
 
   Future<List<Map<String, dynamic>>> fetchDataProduct() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? apiProduct = dotenv.env['API_PRODUCT'];
+      String? apiProduct = dotenv.env['API_PRODUCT_ID'];
       String? token = prefs.getString('token');
 
       if (token == null) {
@@ -48,8 +44,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
       if (apiProduct != null) {
         request = await httpClient.getUrl(
-          Uri.parse(
-              apiProduct + "/${widget.packageId}" + "/${widget.departId}"),
+          Uri.parse(apiProduct + "/${widget.packageId}"),
         );
       }
 
@@ -140,17 +135,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           ),
                         ),
                         SizedBox(height: 10),
-                        Text(
-                          NumberFormat.currency(
-                            locale: 'id_ID',
-                            symbol: 'Rp ',
-                          ).format(double.parse(widget.product["price"])),
-                          style: TextStyle(
-                            fontSize: 24,
-                            color: Color.fromRGBO(43, 69, 112, 1),
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                        // Text(
+                        //   NumberFormat.currency(
+                        //     locale: 'id_ID',
+                        //     symbol: 'Rp ',
+                        //   ).format(double.parse("200000")),
+                        //   style: TextStyle(
+                        //     fontSize: 24,
+                        //     color: Color.fromRGBO(43, 69, 112, 1),
+                        //     fontWeight: FontWeight.w700,
+                        //   ),
+                        // ),
                         SizedBox(height: 20),
                         Container(
                           margin: EdgeInsets.symmetric(horizontal: 20),
@@ -271,16 +266,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 print('AgentId not available');
                                 return;
                               }
-
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => SimulasiScreen(
-                                    hajjId: widget.product["hajj_id"],
-                                    departId: widget.product['depart_id'],
-                                    packageType: "hajj",
-                                    price: widget.product['price'],
-                                    packageId: widget.packageId,
+                                    categoryId: '1',
+                                    packageId: widget.product['packages_id'],
                                     name: widget.product['name'],
                                     agentId: agentId,
                                   ),

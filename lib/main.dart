@@ -44,17 +44,15 @@ class _SplashScreenState extends State<SplashScreen> {
     // Delay for 3 seconds for splash screen visibility
     await Future.delayed(Duration(seconds: 3));
 
-    if (token != null && agentId != null) {
-      // If both token and agentId are found, navigate to HomeScreen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => BottomNavigation()),
-      );
-    } else {
-      // If no token or agentId, navigate to LoginScreen
+    if (token == null && agentId == null) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => BottomNavigation()),
       );
     }
   }

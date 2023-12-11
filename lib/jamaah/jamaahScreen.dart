@@ -151,7 +151,8 @@ class _JamaahScreenState extends State<JamaahScreen> {
 
                         return Container(
                           margin: const EdgeInsets.only(bottom: 20.0),
-                          padding: const EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.only(
+                              left: 20.0, top: 10, bottom: 10, right: 20),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20.0),
                             color: backgroundColor,
@@ -176,15 +177,29 @@ class _JamaahScreenState extends State<JamaahScreen> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Text(
-                                    item["nik"],
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: textColor,
-                                      fontWeight: FontWeight.bold,
+                                  Container(
+                                    width: 200,
+                                    child: Text(
+                                      "NIK: ${item['nik']}",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: textColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(height: 5),
+                                  Container(
+                                    width: 200,
+                                    child: Text(
+                                      "VA: ${item['']}",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: textColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
                                   Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -226,7 +241,7 @@ class _JamaahScreenState extends State<JamaahScreen> {
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         style: ElevatedButton.styleFrom(
-                                          minimumSize: Size(85, 25),
+                                          minimumSize: Size(95, 25),
                                           primary:
                                               Color.fromRGBO(43, 69, 112, 1),
                                           shape: RoundedRectangleBorder(
@@ -265,7 +280,7 @@ class _JamaahScreenState extends State<JamaahScreen> {
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         style: ElevatedButton.styleFrom(
-                                          minimumSize: Size(85, 24),
+                                          minimumSize: Size(95, 24),
                                           primary: primaryColor,
                                           shape: RoundedRectangleBorder(
                                             borderRadius:

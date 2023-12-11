@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:SmartHajj/Dashboard/CustomCategoryButton.dart';
 import 'package:SmartHajj/Dashboard/CustomInformationButton.dart';
+import 'package:SmartHajj/dashboard/checkoutDP.dart';
 import 'package:SmartHajj/dashboard/informasi/hewanQurban/hewanQurban.dart';
 import 'package:SmartHajj/dashboard/informasi/infoHotel/infoHotel.dart';
 import 'package:SmartHajj/dashboard/informasi/infoMaktab/infoMaktab.dart';
@@ -35,12 +36,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   late HttpClientRequest request;
   late Future<Map<String, dynamic>> apiData;
   late Future<List<Map<String, dynamic>>> apiDataProduct;
+  late Future<List<Map<String, dynamic>>> apiDataProductId;
 
   @override
   void initState() {
     super.initState();
     apiData = fetchData(); // Call your user API function
     apiDataProduct = fetchDataProduct(); // Call your product API function
+    apiDataProductId = fetchDataProductId(); // Call your product API function
+    print(apiDataProductId);
   }
 
   Future<Map<String, dynamic>> fetchData() async {
@@ -87,6 +91,43 @@ class _DashboardScreenState extends State<DashboardScreen> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? apiProduct = dotenv.env['API_PRODUCT'];
+      String? token = prefs.getString('token');
+      String? agentId = prefs.getString('users');
+
+      if (token == null) {
+        throw Exception('Token not available');
+      }
+
+      HttpClient httpClient = new HttpClient();
+      httpClient.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+
+      if (apiProduct != null) {
+        request = await httpClient.getUrl(Uri.parse(apiProduct));
+      }
+
+      request.headers.add('Authorization', 'Bearer $token');
+
+      HttpClientResponse response = await request.close();
+
+      String responseBody = await response.transform(utf8.decoder).join();
+      if (response.statusCode == 200) {
+        return List<Map<String, dynamic>>.from(jsonDecode(responseBody));
+      } else {
+        print('Response Body: $responseBody');
+        print('Response Status Code: ${response.statusCode}');
+        throw Exception('Failed to load product data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching product data: $e');
+      throw Exception('Failed to load product data');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchDataProductId() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? apiProduct = dotenv.env['API_PRODUCT_ID'];
       String? token = prefs.getString('token');
       String? agentId = prefs.getString('users');
 
@@ -342,7 +383,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   ),
                                   child: Column(
                                     children: [
-                                      Image.asset("assets/home/topup.png"),
+                                      Image.asset(
+                                        "assets/home/topup.png",
+                                        color: const Color.fromARGB(
+                                            255, 219, 219, 219),
+                                      ),
                                       Text(
                                         'Topup',
                                         style: TextStyle(
@@ -397,7 +442,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                               Padding(
                                 padding: EdgeInsets.only(right: 20.0),
-                                child: Image.asset('assets/home/dropdown.png'),
+                                child: Image.asset(
+                                  'assets/home/dropdown.png',
+                                  color: primaryColor,
+                                ),
                               ),
                             ],
                           ),
@@ -487,6 +535,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     itemCount: productList.length,
                                     itemBuilder: (context, index) {
                                       final product = productList[index];
+                                      final productId =
+                                          product['package_id'].toString();
                                       return Container(
                                         margin: EdgeInsets.only(
                                           left: 20,
@@ -506,9 +556,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                 builder: (context) =>
                                                     ProductDetailScreen(
                                                   product: product,
-                                                  packageId: product['hajj_id'],
-                                                  departId:
-                                                      product['depart_id'],
+                                                  packageId: productId,
+                                                  // departId:
+                                                  //     product['depart_id'],
                                                 ),
                                               ),
                                             );
@@ -525,6 +575,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               Container(
                                                 child: Image.network(
                                                   'https://smarthajj.coffeelabs.id/storage/${product["image"]}',
+                                                  width: 160,
+                                                  height: 190,
                                                   fit: BoxFit.cover,
                                                 ),
                                               ),
@@ -535,24 +587,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: <Widget>[
-                                                    Text(
-                                                      product["name"],
-                                                      style: TextStyle(
-                                                        fontSize: 16,
-                                                        color:
-                                                            Color(0xFF2B4570),
-                                                        fontWeight:
-                                                            FontWeight.w800,
+                                                    Container(
+                                                      width: 150,
+                                                      alignment:
+                                                          Alignment.center,
+                                                      child: Text(
+                                                        product["name"],
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Color(0xFF2B4570),
+                                                          fontWeight:
+                                                              FontWeight.w800,
+                                                        ),
                                                       ),
                                                     ),
-                                                    Text(
-                                                      "Berangkat ${product['date']}-${product['month']}-${product['year']}",
-                                                      style: TextStyle(
-                                                        fontSize: 14.0,
-                                                        color: Color.fromRGBO(
-                                                            141, 148, 168, 1),
-                                                      ),
-                                                    ),
+                                                    // Text(
+                                                    //   "Berangkat ${product['date']}-${product['month']}-${product['year']}",
+                                                    //   style: TextStyle(
+                                                    //     fontSize: 14.0,
+                                                    //     color: Color.fromRGBO(
+                                                    //         141, 148, 168, 1),
+                                                    //   ),
+                                                    // ),
                                                   ],
                                                 ),
                                               ),
@@ -583,7 +640,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               CustomCategoryButton(
                                 image:
                                     "assets/home/kategori/berangkat_langsung.png",
-                                text: "Tabungan Langsung",
+                                text: "Berangkat Langsung",
                                 onPressed: () {
                                   Navigator.push(
                                     context,

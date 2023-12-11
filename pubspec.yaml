@@ -55,6 +55,8 @@ dependencies:
   dartx: ^1.2.0
   awesome_dialog: ^3.1.0
   flutter_dotenv: ^5.1.0
+  midtrans_sdk: ^0.4.0
+  webview_flutter: ^4.4.2
 
 flutter_native_splash:
 android: true
