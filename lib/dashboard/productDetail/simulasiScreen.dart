@@ -251,9 +251,31 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
         ),
       );
 
+      WebViewController? _webViewController;
+      final controller = WebViewController();
+
       if (response.statusCode == 200) {
         var responseData = response.data;
         print('Snap Token: ${responseData['data']}');
+
+        WebViewController? _webViewController;
+        final controller = WebViewController();
+
+        _webViewController = controller
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..setBackgroundColor(const Color(0x00000000))
+          ..setNavigationDelegate(
+            NavigationDelegate(
+              onProgress: (int progress) {
+                // Update loading bar.
+              },
+              onPageStarted: (String url) {},
+              onPageFinished: (String url) {},
+              onWebResourceError: (WebResourceError error) {},
+            ),
+          )
+          ..loadRequest(Uri.parse(
+              'https://smarthajj.coffeelabs.id/payment/mobile/${responseData['data']}'));
 
         // Start the payment flow using Midtrans SDK
         // _midtrans?.startPaymentUiFlow(
@@ -264,21 +286,21 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
         // Assume that the payment is successful for now
         // You should handle the actual payment status using Midtrans SDK events or callbacks
         print('Payment process initiated successfully');
-        AwesomeDialog(
-          context: context,
-          dialogType: DialogType.success,
-          animType: AnimType.rightSlide,
-          title: 'Transaksi Sukses',
-          desc: 'Silahkan Cek Halaman Dompet untuk keterangan lebih lanjut',
-          btnOkOnPress: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BottomNavigationDompet(),
-              ),
-            );
-          },
-        )..show();
+        // AwesomeDialog(
+        //   context: context,
+        //   dialogType: DialogType.success,
+        //   animType: AnimType.rightSlide,
+        //   title: 'Transaksi Sukses',
+        //   desc: 'Silahkan Cek Halaman Dompet untuk keterangan lebih lanjut',
+        //   btnOkOnPress: () {
+        //     Navigator.push(
+        //       context,
+        //       MaterialPageRoute(
+        //         builder: (context) => BottomNavigationDompet(),
+        //       ),
+        //     );
+        //   },
+        // )..show();
       } else {
         // Handle the case where the API response status code is not 200
         print(
@@ -852,85 +874,99 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                 child: Column(
                   children: [
                     Container(
-                        padding: EdgeInsets.only(top: 5),
-                        width: double.infinity,
-                        height: 58,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(80)),
-                          color: sedikitAbu,
-                        ),
-                        child: FutureBuilder(
-                          future: fetchDataJamaah(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return CircularProgressIndicator(
-                                color: sedikitAbu,
-                              );
-                            } else if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            } else if (snapshot.hasData) {
-                              jamaahList = List<Map<String, dynamic>>.from(
-                                  snapshot.data!);
-                              return Column(
-                                children: [
-                                  DropdownButton<String>(
-                                    value: _selectedValueJamaah,
-                                    items:
-                                        jamaahList.asMap().entries.map((entry) {
-                                      int index = entry.key;
-                                      Map<String, dynamic> jamaah = entry.value;
-                                      return DropdownMenuItem<String>(
-                                        value: jamaah[
-                                            'pilgrim_id'], // Set the value to "pilgrim_id"
-                                        child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(top: 5),
+                            width: double.infinity,
+                            height: 58,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(80)),
+                              color: sedikitAbu,
+                            ),
+                            child: FutureBuilder(
+                              future: fetchDataJamaah(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return CircularProgressIndicator(
+                                    color: sedikitAbu,
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                } else if (snapshot.hasData) {
+                                  jamaahList = List<Map<String, dynamic>>.from(
+                                      snapshot.data!);
+
+                                  return Column(
+                                    children: [
+                                      DropdownButton<String>(
+                                        value: _selectedValueJamaah,
+                                        items: jamaahList
+                                            .asMap()
+                                            .entries
+                                            .map((entry) {
+                                          int index = entry.key;
+                                          Map<String, dynamic> jamaah =
+                                              entry.value;
+                                          return DropdownMenuItem<String>(
+                                            value: jamaah['pilgrim_id'],
+                                            child: Container(
+                                              margin: EdgeInsets.symmetric(
+                                                  horizontal: 20),
+                                              child: Text(
+                                                '${jamaah['name']} - NIK ${jamaah['nik']}',
+                                                style: TextStyle(
+                                                  color: _selectedValueJamaah ==
+                                                          jamaah['pilgrim_id']
+                                                      ? abu
+                                                      : null,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? selectedItem) {
+                                          setState(() {
+                                            _selectedValueJamaah = selectedItem;
+                                            pilgrimIdController.text =
+                                                _selectedValueJamaah ?? '';
+                                            print(
+                                                'Selected pilgrim_id: $_selectedValueJamaah');
+                                            // Add any additional logic here based on the selected value
+                                            // For example, you can use a switch statement:
+                                          });
+                                        },
+                                        hint: Container(
                                           margin: EdgeInsets.symmetric(
                                               horizontal: 20),
                                           child: Text(
-                                            '${jamaah['name']} - NIK ${jamaah['nik']}',
+                                            _selectedValueJamaah ??
+                                                'Select an option',
                                             style: TextStyle(
-                                              color: _selectedValueJamaah ==
-                                                      jamaah['pilgrim_id']
-                                                  ? abu
-                                                  : null,
+                                              color:
+                                                  _selectedValueJamaah == null
+                                                      ? abu
+                                                      : null,
                                               fontSize: 14,
                                             ),
                                           ),
                                         ),
-                                      );
-                                    }).toList(),
-                                    onChanged: (String? selectedItem) {
-                                      setState(() {
-                                        _selectedValueJamaah = selectedItem;
-                                        print(
-                                            'Selected pilgrim_id: $_selectedValueJamaah');
-
-                                        // Add any additional logic here based on the selected value
-                                        // For example, you can use a switch statement:
-                                      });
-                                    },
-                                    hint: Container(
-                                      margin:
-                                          EdgeInsets.symmetric(horizontal: 20),
-                                      child: Text(
-                                        _selectedValueJamaah ??
-                                            'Select an option',
-                                        style: TextStyle(
-                                          color: _selectedValueJamaah == null
-                                              ? abu
-                                              : null,
-                                          fontSize: 14,
-                                        ),
                                       ),
-                                    ),
-                                  )
-                                ],
-                              );
-                            } else {
-                              return Text('No data available.');
-                            }
-                          },
-                        )),
+                                    ],
+                                  );
+                                } else {
+                                  return Text('No data available.');
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -1015,9 +1051,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                      onPressed: () {
-                        // Navigator.push(context, Context)
-                      },
+                      onPressed: sendFormData,
                       child: Text(
                         "MULAI SETORAN AWAL",
                         style: TextStyle(
@@ -1042,31 +1076,4 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
       ),
     );
   }
-}
-
-WebViewController? _webViewController;
-final controller = WebViewController()
-  ..setJavaScriptMode(JavaScriptMode.unrestricted)
-  ..setBackgroundColor(const Color(0x00000000))
-  ..setNavigationDelegate(
-    NavigationDelegate(
-      onProgress: (int progress) {
-        // Update loading bar.
-      },
-      onPageStarted: (String url) {},
-      onPageFinished: (String url) {},
-      onWebResourceError: (WebResourceError error) {},
-    ),
-  )
-  ..loadRequest(Uri.parse('https://flutter.dev'));
-
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-      appBar: AppBar(
-        title: Text('Your App'),
-      ),
-      body: WebViewWidget(
-        controller: controller,
-      ));
 }
