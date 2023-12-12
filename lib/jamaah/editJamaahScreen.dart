@@ -32,6 +32,13 @@ class EditJamaahScreen extends StatefulWidget {
 
 class _EditJamaahScreenState extends State<EditJamaahScreen> {
   late Map<String, dynamic> pilgrimData;
+  final List<String> items = [
+    'BCA',
+    'BNI',
+    'BRI',
+    'PERMATA',
+  ];
+  String? selectedValue;
   late String agentId;
 
   @override
@@ -45,15 +52,22 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
     print('Agent ID: ${widget.agentId}');
     // Set values to controllers from widget.item with null-aware operators
     nameController.text = widget.item['name'] ?? '';
+    photoController.text =
+        "https://smarthajj.coffeelabs.id/storage/${widget.item['f_pic']}";
+    familyCardController.text =
+        "https://smarthajj.coffeelabs.id/storage/${widget.item['f_family_card']}";
     nikController.text = widget.item['nik'] ?? '';
     phoneNumberController.text = widget.item['phone'] ?? '';
     addressController.text = widget.item['address'] ?? '';
     cityController.text = widget.item['city'] ?? '';
-    passportNoController.text = widget.item['f_passport_number'] ?? '';
-    visaNoController.text = widget.item['f_visa'] ?? '';
+    passportNoController.text =
+        "https://smarthajj.coffeelabs.id/storage/${widget.item['f_passport_number']}";
+    visaNoController.text =
+        "https://smarthajj.coffeelabs.id/storage/${widget.item['f_visa']}";
     fatherNameController.text = widget.item['father_name'] ?? '';
     bornPlaceController.text = widget.item['born_place'] ?? '';
     placeOfBirthController.text = widget.item['born_date'] ?? '';
+    // bankController.text = widget.item['bank_type'] ?? '';
 
     // Fetch Jamaah data when the screen is initialized
   }
@@ -79,6 +93,7 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
   TextEditingController fatherNameController = TextEditingController();
   TextEditingController bornPlaceController = TextEditingController();
   TextEditingController placeOfBirthController = TextEditingController();
+  // TextEditingController bankController = TextEditingController();
 
   Future pickImageFromCamera() async {
     final pickedImage =
@@ -197,7 +212,8 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
             TextButton(
               child: Text('OK'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => BottomNavigationJamaah()));
               },
             ),
           ],
@@ -267,7 +283,8 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
 
       var data = FormData();
 
-      data.fields.add(MapEntry('agentId', agentId));
+      data.fields.add(MapEntry('agent_id', agentId));
+      data.fields.add(MapEntry('pilgrim_id', widget.pilgrimId));
       data.fields.add(MapEntry('name', nameController.text));
       data.fields.add(MapEntry('nik', nikController.text));
       data.fields.add(MapEntry('phone', phoneNumberController.text));
@@ -276,6 +293,7 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
       data.fields.add(MapEntry('father_name', fatherNameController.text));
       data.fields.add(MapEntry('born_place', bornPlaceController.text));
       data.fields.add(MapEntry('born_date', placeOfBirthController.text));
+      // data.fields.add(MapEntry('bank_type', bankController.text));
 
       if (image != null) {
         data.files.add(MapEntry(
@@ -334,43 +352,6 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
       print('Passport File Path: ${passportFile?.path}');
       print('Visa File Path: ${visaFile?.path}');
 
-      if (nameController.text.isEmpty ||
-          nikController.text.isEmpty ||
-          phoneNumberController.text.isEmpty ||
-          addressController.text.isEmpty ||
-          cityController.text.isEmpty ||
-          fatherNameController.text.isEmpty ||
-          bornPlaceController.text.isEmpty ||
-          placeOfBirthController.text.isEmpty ||
-          image == null ||
-          kartuKeluargaImage == null ||
-          passportFile == null ||
-          visaFile == null) {
-        List<String> emptyFields = [];
-        if (nameController.text.isEmpty) emptyFields.add('Name');
-        if (nikController.text.isEmpty) emptyFields.add('NIK');
-        if (phoneNumberController.text.isEmpty) emptyFields.add('Phone Number');
-        if (addressController.text.isEmpty) emptyFields.add('Address');
-        if (cityController.text.isEmpty) emptyFields.add('City');
-        if (fatherNameController.text.isEmpty)
-          emptyFields.add('Father\'s Name');
-        if (bornPlaceController.text.isEmpty) emptyFields.add('Born Place');
-        if (placeOfBirthController.text.isEmpty)
-          emptyFields.add('Place of Birth');
-        if (image == null) emptyFields.add('Photo');
-        if (kartuKeluargaImage == null) emptyFields.add('Kartu Keluarga Image');
-        if (passportFile == null) emptyFields.add('Passport File');
-        if (visaFile == null) emptyFields.add('Visa File');
-
-        throw Exception(
-            'Please fill in all required fields: ${emptyFields.join(', ')}');
-      }
-
-      print('uploadPhoto: ${image?.path}');
-      print('Kartu Keluarga Image Path: ${kartuKeluargaImage?.path}');
-      print('Passport File Path: ${passportFile?.path}');
-      print('Visa File Path: ${visaFile?.path}');
-
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -401,7 +382,7 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
 
       // Make the POST request using Dio
       var response = await dio.post(
-        'https://smarthajj.coffeelabs.id/api/update/${widget.item['pilgrim_id']}',
+        'https://smarthajj.coffeelabs.id/api/updatePilgrim',
         data: data,
         options: Options(
           headers: {
@@ -480,6 +461,46 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
       'born_place': bornPlaceController.text,
       'born_date': placeOfBirthController.text,
     });
+  }
+
+  Future<void> deleteJamaah() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      print(token);
+
+      if (token == null) {
+        throw Exception('Token not available');
+      }
+
+      var data = FormData();
+
+      data.fields.add(MapEntry('pilgrim_id', widget.pilgrimId));
+      Dio dio = Dio();
+
+      // Make the POST request using Dio
+      var response = await dio.post(
+        'https://smarthajj.coffeelabs.id/api/deletePilgrim',
+        data: data,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        print('Data deleted successfully');
+        _showAlert('Success', 'Data berhasil dihapus');
+      } else {
+        print('Failed to delete data. Status code: ${response.statusCode}');
+        _showAlert('Error',
+            'Failed to delete data. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   void clearForm() {
@@ -1294,6 +1315,67 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
                   ),
                 ),
                 Container(
+                  margin: EdgeInsets.symmetric(horizontal: 30),
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                    color: Color.fromRGBO(141, 148, 168, 1),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 20, right: 20),
+                        child: Image.asset("assets/home/topup.png"),
+                      ),
+                      DropdownButton<String>(
+                        hint: Text(
+                          widget.item['bank_type'].toString(),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                        dropdownColor: abu,
+                        icon: Container(
+                          margin: EdgeInsets.only(left: 80 * 1),
+                          child: Image.asset("assets/home/dropdown_down.png"),
+                        ),
+                        items: items
+                            .map(
+                              (String item) => DropdownMenuItem<String>(
+                                value: item,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      item,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                        width:
+                                            10), // Beri jarak antara gambar dan teks
+                                  ],
+                                ),
+                              ),
+                            )
+                            .toList(),
+                        value: selectedValue,
+                        onChanged: (String? value) {
+                          setState(() {
+                            // bankController.text = selectedValue.toString();
+                            selectedValue = value ?? '';
+                            print(selectedValue);
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
                   padding:
                       EdgeInsets.only(left: 20, right: 20, bottom: 0, top: 30),
                   child: ElevatedButton(
@@ -1319,9 +1401,7 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
                   margin: EdgeInsets.only(bottom: 20),
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: ElevatedButton(
-                    onPressed: () {
-                      clearForm();
-                    },
+                    onPressed: deleteJamaah,
                     style: ElevatedButton.styleFrom(
                       primary: Color.fromRGBO(245, 137, 77, 1),
                       shape: RoundedRectangleBorder(

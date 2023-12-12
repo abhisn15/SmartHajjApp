@@ -1,6 +1,5 @@
 import 'dart:io';
-
-import 'package:SmartHajj/dompet/dompetAll.dart';
+import 'package:SmartHajj/BottomNavigationDompet.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -315,7 +314,7 @@ class _SetoranAwalScreenState extends State<SetoranAwalScreen> {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) =>
-                          DompetAll(), // Ganti dengan DompetScreen() jika ingin langsung ke halaman DompetScreen
+                          BottomNavigationDompet(), // Ganti dengan DompetScreen() jika ingin langsung ke halaman DompetScreen
                     ),
                   );
                 },

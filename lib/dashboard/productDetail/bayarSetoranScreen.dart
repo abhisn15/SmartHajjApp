@@ -79,7 +79,7 @@ class _BayaranSetoranScreenState extends State<BayaranSetoranScreen> {
                 Container(
                   clipBehavior: Clip.none,
                   padding: EdgeInsets.only(bottom: 15),
-                  child: Image.asset('assets/dompet/profile.png'),
+                  child: Image.asset('assets/home/profile.jpg'),
                 ),
                 Text(
                   'PAPA KHAN',

@@ -177,6 +177,7 @@ class _JamaahScreenState extends State<JamaahScreen> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
+                                  const SizedBox(height: 5),
                                   Container(
                                     width: 200,
                                     child: Text(
@@ -188,11 +189,10 @@ class _JamaahScreenState extends State<JamaahScreen> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: 5),
                                   Container(
                                     width: 200,
                                     child: Text(
-                                      "VA: ${item['']}",
+                                      "VA: ${item['va_number']}",
                                       style: TextStyle(
                                         fontSize: 16,
                                         color: textColor,

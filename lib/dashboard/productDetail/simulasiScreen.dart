@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:SmartHajj/BottomNavigationDompet.dart';
-import 'package:SmartHajj/BottomNavigationJamaah.dart';
-import 'package:SmartHajj/dashboard/productDetail/setoranAwalScreen.dart';
+import 'package:SmartHajj/dashboard/productDetail/SnapToken.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +11,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:midtrans_sdk/midtrans_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class NumberTextInputFormatter extends TextInputFormatter {
   @override
@@ -87,6 +83,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
     super.initState();
     // initSDK();
     widget.name;
+    pilgrimIdController = TextEditingController();
     print('Package ID: ${widget.packageId}');
     print('category ID: ${widget.categoryId}');
     print('Agent ID: ${widget.agentId}');
@@ -251,31 +248,42 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
         ),
       );
 
-      WebViewController? _webViewController;
-      final controller = WebViewController();
+      // WebViewController? _webViewController;
+      // final controller = WebViewController();
 
       if (response.statusCode == 200) {
         var responseData = response.data;
         print('Snap Token: ${responseData['data']}');
 
-        WebViewController? _webViewController;
-        final controller = WebViewController();
+        var paymentUrl = Uri.parse(
+            'https://smarthajj.coffeelabs.id/payment/mobile/${responseData['data']}');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  SnapToken(paymentUrl: paymentUrl.toString())),
+        );
 
-        _webViewController = controller
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..setBackgroundColor(const Color(0x00000000))
-          ..setNavigationDelegate(
-            NavigationDelegate(
-              onProgress: (int progress) {
-                // Update loading bar.
-              },
-              onPageStarted: (String url) {},
-              onPageFinished: (String url) {},
-              onWebResourceError: (WebResourceError error) {},
-            ),
-          )
-          ..loadRequest(Uri.parse(
-              'https://smarthajj.coffeelabs.id/payment/mobile/${responseData['data']}'));
+        // Open the URL using url_launcher
+
+        // WebViewController? _webViewController;
+        // final controller = WebViewController();
+
+        // _webViewController = controller
+        //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        //   ..setBackgroundColor(const Color(0x00000000))
+        //   ..setNavigationDelegate(
+        //     NavigationDelegate(
+        //       onProgress: (int progress) {
+        //         // Update loading bar.
+        //       },
+        //       onPageStarted: (String url) {},
+        //       onPageFinished: (String url) {},
+        //       onWebResourceError: (WebResourceError error) {},
+        //     ),
+        //   )
+        //   ..loadRequest(Uri.parse(
+        //       'https://smarthajj.coffeelabs.id/payment/mobile/${responseData['data']}'));
 
         // Start the payment flow using Midtrans SDK
         // _midtrans?.startPaymentUiFlow(
@@ -286,6 +294,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
         // Assume that the payment is successful for now
         // You should handle the actual payment status using Midtrans SDK events or callbacks
         print('Payment process initiated successfully');
+
         // AwesomeDialog(
         //   context: context,
         //   dialogType: DialogType.success,
@@ -897,20 +906,18 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                 } else if (snapshot.hasError) {
                                   return Text('Error: ${snapshot.error}');
                                 } else if (snapshot.hasData) {
-                                  jamaahList = List<Map<String, dynamic>>.from(
-                                      snapshot.data!);
+                                  List<Map<String, dynamic>> jamaahList =
+                                      List<Map<String, dynamic>>.from(
+                                          snapshot.data!);
+
+                                  // Hapus duplikat dari jamaahList
+                                  jamaahList = jamaahList.toSet().toList();
 
                                   return Column(
                                     children: [
                                       DropdownButton<String>(
                                         value: _selectedValueJamaah,
-                                        items: jamaahList
-                                            .asMap()
-                                            .entries
-                                            .map((entry) {
-                                          int index = entry.key;
-                                          Map<String, dynamic> jamaah =
-                                              entry.value;
+                                        items: jamaahList.map((jamaah) {
                                           return DropdownMenuItem<String>(
                                             value: jamaah['pilgrim_id'],
                                             child: Container(
@@ -933,7 +940,9 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                           setState(() {
                                             _selectedValueJamaah = selectedItem;
                                             pilgrimIdController.text =
-                                                _selectedValueJamaah ?? '';
+                                                _selectedValueJamaah
+                                                        ?.toString() ??
+                                                    '';
                                             print(
                                                 'Selected pilgrim_id: $_selectedValueJamaah');
                                             // Add any additional logic here based on the selected value

@@ -142,8 +142,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           Container(
                             padding: EdgeInsets.only(bottom: 15),
-                            child: Image.asset(
-                              'assets/profile/profile.png',
+                            child: ClipOval(
+                              child: Image.asset(
+                                'assets/home/profile.jpg',
+                                width: 130,
+                              ),
                             ),
                           ),
                           Text(

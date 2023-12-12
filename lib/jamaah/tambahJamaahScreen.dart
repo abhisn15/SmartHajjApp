@@ -301,7 +301,7 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
         if (kartuKeluargaImage == null) emptyFields.add('Kartu Keluarga Image');
         if (passportFile == null) emptyFields.add('Passport File');
         if (visaFile == null) emptyFields.add('Visa File');
-        if (bankController == null) emptyFields.add('Bank');
+        if (bankController == null) emptyFields.add('bank_type');
 
         throw Exception(
             'Please fill in all required fields: ${emptyFields.join(', ')}');
@@ -319,6 +319,7 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
       data.fields.add(MapEntry('father_name', fatherNameController.text));
       data.fields.add(MapEntry('born_place', bornPlaceController.text));
       data.fields.add(MapEntry('born_date', placeOfBirthController.text));
+      data.fields.add(MapEntry('bank_type', bankController.text));
 
 // Add photo file if available
       if (image != null) {
@@ -1011,7 +1012,6 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                                         FilePickerResult? result =
                                             await FilePicker.platform
                                                 .pickFiles();
-
                                         if (result != null &&
                                             result.files.isNotEmpty) {
                                           String? filePath =
@@ -1244,7 +1244,7 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                         child: Text(
                           "Pilih Pembayaran",
                           style: TextStyle(
-                            color: primaryColor,
+                            color: Colors.black,
                             fontWeight: FontWeight.w500,
                             fontSize: 16,
                           ),
@@ -1306,6 +1306,8 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                         onChanged: (String? value) {
                           setState(() {
                             selectedValue = value ?? '';
+                            bankController.text = value.toString();
+                            print(selectedValue);
                           });
                         },
                       ),

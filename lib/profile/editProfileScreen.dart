@@ -19,7 +19,7 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfileScreen> {
   File? _image;
-  final String defaultProfileImagePath = 'assets/profile/profile.png';
+  final String defaultProfileImagePath = 'assets/home/profile.jpg';
 
   // Function to pick an image from the gallery or camera
   Future _pickImage(ImageSource source) async {

@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
+import 'package:SmartHajj/BottomNavigationDompet.dart';
 import 'package:SmartHajj/Dashboard/CustomCategoryButton.dart';
 import 'package:SmartHajj/Dashboard/CustomInformationButton.dart';
 import 'package:SmartHajj/dashboard/checkoutDP.dart';
@@ -16,13 +18,14 @@ import 'package:SmartHajj/dashboard/kategori/tabunganHaji.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganLangsung.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganQurban.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganUmroh.dart';
-import 'package:SmartHajj/dompet/dompetAll.dart';
+import 'package:dio/dio.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:SmartHajj/dashboard/productDetail/productDetailScreen.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -35,15 +38,18 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   late HttpClientRequest request;
   late Future<Map<String, dynamic>> apiData;
+  late Future<Map<String, dynamic>> apiSaldo;
   late Future<List<Map<String, dynamic>>> apiDataProduct;
   late Future<List<Map<String, dynamic>>> apiDataProductId;
+  int? selectedTotal;
 
   @override
   void initState() {
     super.initState();
     apiData = fetchData(); // Call your user API function
+    apiSaldo = fetchDataSaldo(); // Call your user API function
     apiDataProduct = fetchDataProduct(); // Call your product API function
-    apiDataProductId = fetchDataProductId(); // Call your product API function
+    apiDataProductId = fetchDataProductId();
     print(apiDataProductId);
   }
 
@@ -121,6 +127,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
     } catch (e) {
       print('Error fetching product data: $e');
       throw Exception('Failed to load product data');
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchDataSaldo() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+      String? agentId = prefs.getString('agentId');
+
+      if (token == null || agentId == null) {
+        throw Exception('Token or Agent ID not available');
+      }
+
+      Dio dio = Dio();
+      dio.options.headers['Authorization'] = 'Bearer $token';
+
+      Response response = await dio.get(
+        'https://smarthajj.coffeelabs.id/api/getPayment/$agentId',
+      );
+
+      print('Dio Response Status Code: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        var responseData = response.data as Map<String, dynamic>;
+        setState(() {
+          // Assuming 'total' is meant to be a String
+          selectedTotal = (responseData['total']);
+        });
+        print('Dio Response Data: ${responseData['data']}');
+        return response.data;
+      } else {
+        throw Exception('Failed to load user data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+      throw Exception('Failed to load user data');
     }
   }
 
@@ -269,7 +311,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             children: <Widget>[
                               Padding(
                                 padding: EdgeInsets.only(left: 24.0),
-                                child: Image.asset('assets/home/profile.png'),
+                                child: ClipOval(
+                                  child: Image.asset(
+                                    'assets/home/profile.jpg',
+                                    width: 70,
+                                  ),
+                                ),
                               ),
                               Padding(
                                 padding:
@@ -313,6 +360,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ],
                       ),
                     ),
+
                     Container(
                       width: double.infinity,
                       height: 100.0,
@@ -331,38 +379,72 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 25.0,
-                                  left: 30.0,
-                                ),
-                                child: Text(
-                                  "SALDO TOTAL",
-                                  style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 12.0,
-                                  left: 30.0,
-                                ),
-                                child: Text(
-                                  "Rp. 100.000,00",
-                                  style: TextStyle(
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
+                          FutureBuilder(
+                            future: apiSaldo,
+                            builder: (context,
+                                AsyncSnapshot<Map<String, dynamic>> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                    child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                // Print detailed error information
+                                print('Error Details: ${snapshot.error}');
+                                print('Stack Trace: ${snapshot.stackTrace}');
+                                return Center(
+                                    child: Text('Error: ${snapshot.error}'));
+                              } else if (snapshot.data == null ||
+                                  snapshot.data!.isEmpty) {
+                                return Center(
+                                    child: Text('Data is null or empty'));
+                              } else {
+                                // Print the complete response
+                                print('Complete Response: ${snapshot.data}');
+
+                                int? totalSaldo =
+                                    snapshot.data!['total'] as int?;
+                                String formattedTotalSaldo =
+                                    NumberFormat.currency(
+                                            locale: 'id_ID',
+                                            symbol: 'Rp ',
+                                            decimalDigits: 0)
+                                        .format(totalSaldo);
+
+                                if (totalSaldo == null) {
+                                  return Center(
+                                      child: Text('Total saldo is null'));
+                                }
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 25.0, left: 30.0),
+                                      child: Text(
+                                        "SALDO TOTAL",
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 12.0, left: 30.0),
+                                      child: Text(
+                                        formattedTotalSaldo,
+                                        style: TextStyle(
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+                            },
                           ),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -372,7 +454,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => DompetAll(),
+                                      builder: (context) =>
+                                          BottomNavigationDompet(),
                                     ),
                                   );
                                 },
