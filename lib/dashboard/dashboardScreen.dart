@@ -41,6 +41,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   late Future<Map<String, dynamic>> apiSaldo;
   late Future<List<Map<String, dynamic>>> apiDataProduct;
   late Future<List<Map<String, dynamic>>> apiDataProductId;
+  late Future<List<Map<String, dynamic>>> futureData;
+  TextEditingController searchController = TextEditingController();
+  List<Map<String, dynamic>> allData = [];
+  List<Map<String, dynamic>> filteredData = [];
+  int currentPage = 0;
+  int itemsPerPage = 3; // Number of items per page
   int? selectedTotal;
 
   @override
@@ -51,6 +57,85 @@ class _DashboardScreenState extends State<DashboardScreen> {
     apiDataProduct = fetchDataProduct(); // Call your product API function
     apiDataProductId = fetchDataProductId();
     print(apiDataProductId);
+    futureData = fetchDataJamaah();
+    futureData.then((data) {
+      allData = data;
+      filteredData = allData;
+    });
+  }
+
+  void filterSearchResults(String query) {
+    if (query.isNotEmpty) {
+      List<Map<String, dynamic>> dummyListData = [];
+      allData.forEach((item) {
+        if (item['name']
+            .toString()
+            .toLowerCase()
+            .contains(query.toLowerCase())) {
+          dummyListData.add(item);
+        }
+      });
+      setState(() {
+        filteredData = dummyListData;
+        currentPage = 0;
+      });
+    } else {
+      setState(() {
+        filteredData = allData;
+        currentPage = 0;
+      });
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchDataJamaah() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? apiPilgrim = dotenv.env['API_PILGRIM'];
+      String? token = prefs.getString('token');
+      String? agentId = prefs.getString('users');
+
+      if (token == null) {
+        throw Exception('Token not available');
+      }
+
+      HttpClient httpClient = new HttpClient();
+      httpClient.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+
+      if (apiPilgrim != null) {
+        request = await httpClient.getUrl(Uri.parse(apiPilgrim));
+      }
+      request.headers.add('Authorization', 'Bearer $token');
+
+      HttpClientResponse response = await request.close();
+
+      String responseBody = await response.transform(utf8.decoder).join();
+
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> fetchedData =
+            List<Map<String, dynamic>>.from(jsonDecode(responseBody));
+        return fetchedData;
+      } else if (response.statusCode == 429) {
+        // Handle rate limiting: wait for the specified duration and retry
+        int retryAfterSeconds =
+            int.tryParse(response.headers.value('Retry-After') ?? '5') ?? 5;
+        print('Rate limited. Retrying after $retryAfterSeconds seconds.');
+        await Future.delayed(Duration(seconds: retryAfterSeconds));
+        return fetchDataJamaah(); // Retry the request
+      } else if (response.statusCode == 401) {
+        // Handle unauthorized access (token expired, invalid, etc.)
+        print('Unauthorized access: ${response.statusCode}');
+        // Perform actions such as logging out the user or requesting a new token
+        throw Exception('Unauthorized access: ${response.statusCode}');
+      } else {
+        print('Response Body: $responseBody');
+        print('Response Status Code: ${response.statusCode}');
+        throw Exception('Failed to load Jamaah data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching Jamaah data: $e');
+      throw Exception('Failed to load Jamaah data');
+    }
   }
 
   Future<Map<String, dynamic>> fetchData() async {
@@ -277,6 +362,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController _searchController = TextEditingController();
     return Scaffold(
       body: FutureBuilder(
           future: apiData,
@@ -516,7 +602,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Text(
-                                "TARGET TABUNGAN",
+                                "TOTAL TABUNGAN",
                                 style: TextStyle(
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.bold,
@@ -542,7 +628,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           right: 24.0,
                           left: 24.0,
                         ),
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.only(
+                            left: 16.0, right: 16.0, bottom: 16.0),
                         width: double.infinity,
                         decoration: BoxDecoration(
                           color: Color.fromRGBO(238, 226, 223, 1),
@@ -551,16 +638,294 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             bottomRight: Radius.circular(20.0),
                           ),
                         ),
-                        child: Row(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Text(
-                              "Rp. 100.000.000,00",
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
+                            FutureBuilder(
+                              future: apiSaldo,
+                              builder: (context,
+                                  AsyncSnapshot<Map<String, dynamic>>
+                                      snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                      child: CircularProgressIndicator());
+                                } else if (snapshot.hasError) {
+                                  // Print detailed error information
+                                  print('Error Details: ${snapshot.error}');
+                                  print('Stack Trace: ${snapshot.stackTrace}');
+                                  return Center(
+                                      child: Text('Error: ${snapshot.error}'));
+                                } else if (snapshot.data == null ||
+                                    snapshot.data!.isEmpty) {
+                                  return Center(
+                                      child: Text('Data is null or empty'));
+                                } else {
+                                  // Print the complete response
+                                  print('Complete Response: ${snapshot.data}');
+
+                                  int? totalSaldo =
+                                      snapshot.data!['total'] as int?;
+                                  String formattedTotalSaldo =
+                                      NumberFormat.currency(
+                                              locale: 'id_ID',
+                                              symbol: 'Rp ',
+                                              decimalDigits: 0)
+                                          .format(totalSaldo);
+
+                                  if (totalSaldo == null) {
+                                    return Center(
+                                        child: Text('Total saldo is null'));
+                                  }
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          formattedTotalSaldo,
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(
+                                            top: 30, bottom: 15),
+                                        child: Center(
+                                            child: Text(
+                                          'TABUNGAN SAAT INI',
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black,
+                                          ),
+                                        )),
+                                      ),
+                                      TextField(
+                                        onChanged: (value) {
+                                          filterSearchResults(value);
+                                        },
+                                        controller: searchController,
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          fillColor: Colors.white,
+                                          hintText: 'Search...',
+                                          contentPadding: EdgeInsets.symmetric(
+                                              vertical: 0,
+                                              horizontal: 0), // Adjust padding
+
+                                          // Add a search icon or button to the search bar
+                                          prefixIcon: IconButton(
+                                            icon: Icon(Icons.search),
+                                            onPressed: () {
+                                              // Perform the search here
+                                            },
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        height: 200,
+                                        child: Expanded(
+                                            child: FutureBuilder<
+                                                    List<Map<String, dynamic>>>(
+                                                future: fetchDataJamaah(),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    // If the Future is still running, display a loading indicator
+                                                    return Center(
+                                                        child:
+                                                            CircularProgressIndicator());
+                                                  } else if (snapshot
+                                                      .hasError) {
+                                                    // If an error occurred, display the error message
+                                                    return Center(
+                                                        child: Text(
+                                                            'Error: ${snapshot.error}'));
+                                                  } else if (snapshot.data ==
+                                                      null) {
+                                                    return Center(
+                                                        child: Text(
+                                                            'Data is null'));
+                                                  } else {
+                                                    int startIndex =
+                                                        currentPage *
+                                                            itemsPerPage;
+                                                    int endIndex = startIndex +
+                                                        itemsPerPage;
+                                                    endIndex = endIndex >
+                                                            filteredData.length
+                                                        ? filteredData.length
+                                                        : endIndex;
+                                                    List<Map<String, dynamic>>
+                                                        pagedData =
+                                                        filteredData.sublist(
+                                                            startIndex,
+                                                            endIndex);
+
+                                                    return ListView.builder(
+                                                        itemCount:
+                                                            pagedData.length,
+                                                        itemBuilder:
+                                                            (context, index) {
+                                                          final item =
+                                                              pagedData[index];
+                                                          Color
+                                                              backgroundColor =
+                                                              Color.fromRGBO(
+                                                                  238,
+                                                                  226,
+                                                                  223,
+                                                                  1);
+                                                          Color textColor =
+                                                              primaryColor;
+                                                          var deposit = double
+                                                                  .tryParse(item[
+                                                                          'deposit']
+                                                                      .toString()) ??
+                                                              0.0;
+                                                          String formattedDeposit =
+                                                              NumberFormat.currency(
+                                                                      locale:
+                                                                          'id',
+                                                                      symbol:
+                                                                          'Rp ',
+                                                                      decimalDigits:
+                                                                          0)
+                                                                  .format(
+                                                                      deposit);
+                                                          return Column(
+                                                            children: [
+                                                              Container(
+                                                                margin: EdgeInsets
+                                                                    .only(
+                                                                        bottom:
+                                                                            12),
+                                                                height: 50,
+                                                                width: double
+                                                                    .infinity,
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                        vertical:
+                                                                            10,
+                                                                        horizontal:
+                                                                            20),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  border: Border
+                                                                      .all(
+                                                                    color: const Color
+                                                                        .fromARGB(
+                                                                        255,
+                                                                        0,
+                                                                        0,
+                                                                        0), // Color of the border
+                                                                    width:
+                                                                        1, // Width of the border
+                                                                  ),
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10.0),
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                                child:
+                                                                    Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .centerLeft,
+                                                                  child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceAround,
+                                                                    children: [
+                                                                      Text(item[
+                                                                          'name']),
+                                                                      Text(
+                                                                          formattedDeposit),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        });
+                                                  }
+                                                })),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          // Tombol panah kiri
+                                          Visibility(
+                                            visible: currentPage > 0,
+                                            child: IconButton(
+                                              icon: Icon(Icons.arrow_back),
+                                              onPressed: () {
+                                                if (currentPage > 0) {
+                                                  setState(() {
+                                                    currentPage--;
+                                                  });
+                                                }
+                                              },
+                                            ),
+                                          ),
+
+                                          // Nomor halaman di tengah
+                                          Container(
+                                            margin: EdgeInsets.only(
+                                              left: currentPage > 0
+                                                  ? 0
+                                                  : 48, // Tambahkan padding kiri jika panah kiri tidak ada
+                                              right: (currentPage + 1) *
+                                                          itemsPerPage <
+                                                      filteredData.length
+                                                  ? 0
+                                                  : 48, // Tambahkan padding kanan jika panah kanan tidak ada
+                                            ),
+                                            child: Container(
+                                              margin:
+                                                  EdgeInsets.only(right: 10),
+                                              child: Text(
+                                                  'Halaman ${currentPage + 1} dari ${(filteredData.length / itemsPerPage).ceil()}'),
+                                            ),
+                                          ),
+
+                                          // Tombol panah kanan
+                                          Visibility(
+                                            visible: (currentPage + 1) *
+                                                    itemsPerPage <
+                                                filteredData.length,
+                                            child: IconButton(
+                                              icon: Icon(Icons.arrow_forward),
+                                              onPressed: () {
+                                                if ((currentPage + 1) *
+                                                        itemsPerPage <
+                                                    filteredData.length) {
+                                                  setState(() {
+                                                    currentPage++;
+                                                  });
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                }
+                              },
                             ),
                           ],
                         ),

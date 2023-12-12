@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:SmartHajj/BottomNavigationProfile.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,20 +19,10 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfileScreen> {
   File? _image;
-  final String defaultProfileImagePath = 'assets/home/profile.jpg';
 
   // Function to pick an image from the gallery or camera
-  Future _pickImage(ImageSource source) async {
-    final pickedImage = await ImagePicker().pickImage(source: source);
-
-    if (pickedImage != null) {
-      setState(() {
-        _image = File(pickedImage.path);
-      });
-    }
-  }
-
   // Inside your _EditProfileState class
+  String agentId = '';
   String _userName = '';
   String _nomorTelepon = '';
   String _email = '';
@@ -41,7 +31,17 @@ class _EditProfileState extends State<EditProfileScreen> {
   void _updateUserName(String value) {
     setState(() {
       _userName = value;
+    });
+  }
+
+  void _updatePhone(String value) {
+    setState(() {
       _nomorTelepon = value;
+    });
+  }
+
+  void _updateEmail(String value) {
+    setState(() {
       _email = value;
     });
   }
@@ -51,45 +51,10 @@ class _EditProfileState extends State<EditProfileScreen> {
     super.initState();
 
     // Set initial values based on userData
-    _userName = "${widget.userData['name']}";
-    _nomorTelepon = "${widget.userData['phone']}";
-    _email = "${widget.userData['email']}";
-  }
-
-  // Function to upload the selected image to update the profile picture on the server
-  Future<void> _uploadImage() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('token');
-
-      if (_image != null && token != null) {
-        var request = http.MultipartRequest(
-          'POST',
-          Uri.parse(
-              'https://smarthajj.coffeelabs.id/api/edit/${widget.userData['id']}'),
-        );
-
-        request.headers['Authorization'] = 'Bearer $token';
-
-        // request.files.add(
-        //   await http.MultipartFile.fromPath(
-        //     'profile_picture',
-        //     _image!.path,
-        //   ),
-        // );
-
-        var response = await request.send();
-
-        if (response.statusCode == 200) {
-          print('Profile picture updated successfully');
-        } else {
-          print(
-              'Failed to update profile picture. Status code: ${response.statusCode}');
-        }
-      }
-    } catch (e) {
-      print('Error during profile picture update: $e');
-    }
+    agentId = widget.agentId;
+    _userName = widget.userData['name'];
+    _nomorTelepon = widget.userData['phone'];
+    _email = widget.userData['email'];
   }
 
   // Function to update the user profile on the server
@@ -97,13 +62,14 @@ class _EditProfileState extends State<EditProfileScreen> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
+      String? agentId = prefs.getString('users');
 
       if (token != null) {
         var response = await http.post(
-          Uri.parse(
-              'https://smarthajj.coffeelabs.id/api/users/edit/${widget.userData['id']}'),
+          Uri.parse('https://smarthajj.coffeelabs.id/api/editUser'),
           headers: {'Authorization': 'Bearer $token'},
           body: {
+            'user_id': widget.agentId,
             'name': _userName,
             'phone': _nomorTelepon,
             'email': _email,
@@ -112,6 +78,30 @@ class _EditProfileState extends State<EditProfileScreen> {
 
         if (response.statusCode == 200) {
           print('Profile updated successfully');
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Ubah Data Successfully!"),
+                content: Text("Data kamu berhasil diubah"),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                      Navigator.pushReplacement(
+                        // Navigate to login screen
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BottomNavigationProfile(),
+                        ),
+                      );
+                    },
+                    child: Text("OK"),
+                  ),
+                ],
+              );
+            },
+          );
         } else {
           print(
               'Failed to update profile. Status code: ${response.statusCode}');
@@ -124,7 +114,6 @@ class _EditProfileState extends State<EditProfileScreen> {
 
   // Function to handle saving both profile picture and profile update
   Future<void> _saveChanges() async {
-    await _uploadImage();
     await _updateProfile();
   }
 
@@ -155,72 +144,7 @@ class _EditProfileState extends State<EditProfileScreen> {
           margin: EdgeInsets.symmetric(vertical: 30, horizontal: 30),
           child: Column(
             children: [
-              Center(
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.grey[200],
-                  ),
-                  child: _image != null
-                      ? ClipOval(
-                          child: Image.file(
-                            _image!,
-                            width: 120,
-                            height: 120,
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                      : ClipOval(
-                          child: Image.asset(
-                            defaultProfileImagePath,
-                            width: 120,
-                            height: 120,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                ),
-              ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return SafeArea(
-                        child: Wrap(
-                          children: [
-                            ListTile(
-                              leading: Icon(Icons.photo_library),
-                              title: Text('Gallery'),
-                              onTap: () {
-                                _pickImage(ImageSource.gallery);
-                                Navigator.pop(context);
-                              },
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.camera_alt),
-                              title: Text('Camera'),
-                              onTap: () {
-                                _pickImage(ImageSource.camera);
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                },
-                child: Text(
-                  'Ubah Gambar',
-                  style: TextStyle(color: Colors.white),
-                ),
-                style: ElevatedButton.styleFrom(
-                  primary: primaryColor, // Set the background color here
-                ),
-              ),
               Container(
                 margin: EdgeInsets.symmetric(vertical: 30),
                 child: Align(
@@ -258,7 +182,7 @@ class _EditProfileState extends State<EditProfileScreen> {
                         TextFormField(
                           initialValue: _nomorTelepon, // Set the initial value
                           onChanged:
-                              _updateUserName, // Update the _userName on change
+                              _updatePhone, // Update the _userName on change
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Enter your telepon',
@@ -282,7 +206,7 @@ class _EditProfileState extends State<EditProfileScreen> {
                         TextFormField(
                           initialValue: _email, // Set the initial value
                           onChanged:
-                              _updateUserName, // Update the _userName on change
+                              _updateEmail, // Update the _userName on change
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Enter your email',

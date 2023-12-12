@@ -183,7 +183,7 @@ class _JamaahScreenState extends State<JamaahScreen> {
                                     child: Text(
                                       "NIK: ${item['nik']}",
                                       style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 15,
                                         color: textColor,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -194,7 +194,7 @@ class _JamaahScreenState extends State<JamaahScreen> {
                                     child: Text(
                                       "VA: ${item['va_number']}",
                                       style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 15,
                                         color: textColor,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -241,7 +241,7 @@ class _JamaahScreenState extends State<JamaahScreen> {
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         style: ElevatedButton.styleFrom(
-                                          minimumSize: Size(95, 25),
+                                          minimumSize: Size(75, 25),
                                           primary:
                                               Color.fromRGBO(43, 69, 112, 1),
                                           shape: RoundedRectangleBorder(
@@ -280,7 +280,7 @@ class _JamaahScreenState extends State<JamaahScreen> {
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         style: ElevatedButton.styleFrom(
-                                          minimumSize: Size(95, 24),
+                                          minimumSize: Size(85, 24),
                                           primary: primaryColor,
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
