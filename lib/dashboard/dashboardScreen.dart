@@ -90,9 +90,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<List<Map<String, dynamic>>> fetchDataJamaah() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? apiPilgrim = dotenv.env['API_PILGRIM'];
+      String? apiPilgrim = dotenv.env['API_AGENTBYID'];
       String? token = prefs.getString('token');
-      String? agentId = prefs.getString('users');
+      String? agentId = prefs.getString('agentId');
 
       if (token == null) {
         throw Exception('Token not available');
@@ -103,18 +103,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
           (X509Certificate cert, String host, int port) => true;
 
       if (apiPilgrim != null) {
-        request = await httpClient.getUrl(Uri.parse(apiPilgrim));
+        request = await httpClient.getUrl(Uri.parse("$apiPilgrim$agentId"));
       }
       request.headers.add('Authorization', 'Bearer $token');
 
       HttpClientResponse response = await request.close();
+      print(response);
 
       String responseBody = await response.transform(utf8.decoder).join();
 
       if (response.statusCode == 200) {
-        List<Map<String, dynamic>> fetchedData =
-            List<Map<String, dynamic>>.from(jsonDecode(responseBody));
-        return fetchedData;
+        Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
+        List<dynamic> fetchedData =
+            jsonResponse['data']; // Access the 'data' key
+        return fetchedData.cast<Map<String, dynamic>>();
       } else if (response.statusCode == 429) {
         // Handle rate limiting: wait for the specified duration and retry
         int retryAfterSeconds =
@@ -752,10 +754,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                         child: Text(
                                                             'Error: ${snapshot.error}'));
                                                   } else if (snapshot.data ==
-                                                      null) {
+                                                          null ||
+                                                      snapshot.data!.isEmpty) {
                                                     return Center(
                                                         child: Text(
-                                                            'Data is null'));
+                                                      'Tidak ada tabungan saat ini!',
+                                                      style: TextStyle(
+                                                          color: Colors.black),
+                                                    ));
                                                   } else {
                                                     int startIndex =
                                                         currentPage *

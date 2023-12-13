@@ -170,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: emailController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        labelText: 'Email, Username, atau Nomor Telepon',
+                        labelText: 'Email',
                         labelStyle: TextStyle(fontSize: 14.0),
                         contentPadding: EdgeInsets.symmetric(
                           vertical: 18.0,

@@ -1,3 +1,5 @@
+import 'package:SmartHajj/BottomNavigationBar.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -13,9 +15,27 @@ class SnapToken extends StatefulWidget {
 class _SnapTokenState extends State<SnapToken> {
   @override
   Widget build(BuildContext context) {
+    String? message;
     final controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
+      ..addJavaScriptChannel("FlutterChannel",
+          onMessageReceived: (JavaScriptMessage message) {
+        print("Message received: ${message.message}");
+        if (message.message == 'success') {
+          AwesomeDialog(
+            context: context,
+            dialogType: DialogType.success,
+            animType: AnimType.rightSlide,
+            title: 'Berhasil!',
+            desc: 'Proses menabung anda Sukses!',
+            btnOkOnPress: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => BottomNavigation()));
+            },
+          )..show();
+        }
+      })
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {

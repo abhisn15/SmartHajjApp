@@ -125,66 +125,11 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
     );
   }
 
-  // void initSDK() async {
-  //   _midtrans = await MidtransSDK.init(
-  //     config: MidtransConfig(
-  //       clientKey: dotenv.env['MIDTRANS_CLIENT_KEY'] ?? "",
-  //       merchantBaseUrl: dotenv.env['MIDTRANS_MERCHANT_BASE_URL'] ?? "",
-  //       colorTheme: ColorTheme(
-  //         colorPrimary: Theme.of(context).colorScheme.secondary,
-  //         colorPrimaryDark: Theme.of(context).colorScheme.secondary,
-  //         colorSecondary: Theme.of(context).colorScheme.secondary,
-  //       ),
-  //     ),
-  //   );
-  //   _midtrans?.setUIKitCustomSetting(
-  //     skipCustomerDetailsPages: true,
-  //   );
-  //   _midtrans!.setTransactionFinishedCallback((result) {
-  //     print(result.toJson());
-  //   });
-  // }
-
-  // @override
-  // void dispose() {
-  //   _midtrans?.removeTransactionFinishedCallback();
-  //   super.dispose();
-  // }
-
-  // TextEditingController agentIdController = TextEditingController();
   TextEditingController departIdController = TextEditingController();
   TextEditingController pilgrimIdController = TextEditingController();
-  // TextEditingController packageIdController = TextEditingController();
-  // TextEditingController packageTypeController = TextEditingController();
   TextEditingController depositController = TextEditingController();
   TextEditingController depositPlanController = TextEditingController();
   TextEditingController depositTargetController = TextEditingController();
-
-  // void initSDK() async {
-  //   _midtrans = await MidtransSDK.init(
-  //     config: MidtransConfig(
-  //       clientKey: "SB-Mid-client-_kHzYvGWAnLEg5CF",
-  //       merchantBaseUrl: "G251390999",
-  //       colorTheme: ColorTheme(
-  //         colorPrimary: Theme.of(context).colorScheme.secondary,
-  //         colorPrimaryDark: Theme.of(context).colorScheme.secondary,
-  //         colorSecondary: Theme.of(context).colorScheme.secondary,
-  //       ),
-  //     ),
-  //   );
-  //   _midtrans?.setUIKitCustomSetting(
-  //     skipCustomerDetailsPages: true,
-  //   );
-  //   _midtrans!.setTransactionFinishedCallback((result) {
-  //     print(result.toJson());
-  //   });
-  // }
-
-  // @override
-  // void dispose() {
-  //   _midtrans?.removeTransactionFinishedCallback();
-  //   super.dispose();
-  // }
 
   final websiteUri = Uri.parse('https://smarthajj.coffeelabs.id');
 
@@ -248,68 +193,19 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
         ),
       );
 
-      // WebViewController? _webViewController;
-      // final controller = WebViewController();
-
       if (response.statusCode == 200) {
         var responseData = response.data;
         print('Snap Token: ${responseData['data']}');
 
         var paymentUrl = Uri.parse(
-            'https://smarthajj.coffeelabs.id/payment/mobile/${responseData['data']}');
+            'https://smarthajj.coffeelabs.id/pay/mobile/${responseData['data']}');
         Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) =>
                   SnapToken(paymentUrl: paymentUrl.toString())),
         );
-
-        // Open the URL using url_launcher
-
-        // WebViewController? _webViewController;
-        // final controller = WebViewController();
-
-        // _webViewController = controller
-        //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        //   ..setBackgroundColor(const Color(0x00000000))
-        //   ..setNavigationDelegate(
-        //     NavigationDelegate(
-        //       onProgress: (int progress) {
-        //         // Update loading bar.
-        //       },
-        //       onPageStarted: (String url) {},
-        //       onPageFinished: (String url) {},
-        //       onWebResourceError: (WebResourceError error) {},
-        //     ),
-        //   )
-        //   ..loadRequest(Uri.parse(
-        //       'https://smarthajj.coffeelabs.id/payment/mobile/${responseData['data']}'));
-
-        // Start the payment flow using Midtrans SDK
-        // _midtrans?.startPaymentUiFlow(
-        //   token: responseData['data'],
-        // );
-        // print(_midtrans);
-
-        // Assume that the payment is successful for now
-        // You should handle the actual payment status using Midtrans SDK events or callbacks
         print('Payment process initiated successfully');
-
-        // AwesomeDialog(
-        //   context: context,
-        //   dialogType: DialogType.success,
-        //   animType: AnimType.rightSlide,
-        //   title: 'Transaksi Sukses',
-        //   desc: 'Silahkan Cek Halaman Dompet untuk keterangan lebih lanjut',
-        //   btnOkOnPress: () {
-        //     Navigator.push(
-        //       context,
-        //       MaterialPageRoute(
-        //         builder: (context) => BottomNavigationDompet(),
-        //       ),
-        //     );
-        //   },
-        // )..show();
       } else {
         // Handle the case where the API response status code is not 200
         print(
@@ -359,48 +255,6 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
       )..show();
     }
   }
-
-  // Future<Map<String, dynamic>> fetchData() async {
-  //   try {
-  //     String? apiAgentById = dotenv.env['API_AGENTBYID'];
-  //     SharedPreferences prefs = await SharedPreferences.getInstance();
-  //     String? token = prefs.getString('token');
-  //     String? agentId = prefs.getString('users');
-  //     // Ensure that token is not null before using it
-  //     if (token == null) {
-  //       throw Exception('Token not available');
-  //     }
-
-  //     print(apiAgentById);
-
-  //     HttpClient httpClient = new HttpClient();
-  //     httpClient.badCertificateCallback =
-  //         (X509Certificate cert, String host, int port) => true;
-
-  //     if (apiAgentById != null) {
-  //       request = await httpClient.getUrl(Uri.parse(apiAgentById + '$agentId'));
-  //     }
-
-  //     request.headers.add('Authorization', 'Bearer $token');
-
-  //     HttpClientResponse response = await request.close();
-
-  //     String responseBody = await response.transform(utf8.decoder).join();
-  //     if (response.statusCode == 200) {
-  //       return jsonDecode(responseBody);
-  //     } else {
-  //       print('Response Body: $responseBody');
-  //       print('Response Status Code: ${response.statusCode}');
-  //       // Provide a more meaningful error message
-  //       throw Exception(
-  //           'Failed to load user data. Status Code: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching user data: $e');
-  //     // Provide a more user-friendly error message
-  //     throw Exception('Failed to load user data. Please try again later.');
-  //   }
-  // }
 
   Future<List<Map<String, dynamic>>> fetchDataJamaah() async {
     try {

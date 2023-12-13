@@ -77,12 +77,12 @@ class _EditProfileState extends State<EditProfileScreen> {
         );
 
         if (response.statusCode == 200) {
-          print('Profile updated successfully');
+          print('Profile berhasil diupdate');
           showDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text("Ubah Data Successfully!"),
+                title: Text("Ubah Data Berhasil!"),
                 content: Text("Data kamu berhasil diubah"),
                 actions: [
                   TextButton(

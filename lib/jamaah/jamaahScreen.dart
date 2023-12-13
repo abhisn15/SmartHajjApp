@@ -28,9 +28,9 @@ class _JamaahScreenState extends State<JamaahScreen> {
   Future<List<Map<String, dynamic>>> fetchDataJamaah() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? apiPilgrim = dotenv.env['API_PILGRIM'];
+      String? apiPilgrim = dotenv.env['API_AGENTBYID'];
       String? token = prefs.getString('token');
-      String? agentId = prefs.getString('users');
+      String? agentId = prefs.getString('agentId');
 
       if (token == null) {
         throw Exception('Token not available');
@@ -41,18 +41,20 @@ class _JamaahScreenState extends State<JamaahScreen> {
           (X509Certificate cert, String host, int port) => true;
 
       if (apiPilgrim != null) {
-        request = await httpClient.getUrl(Uri.parse(apiPilgrim));
+        request = await httpClient.getUrl(Uri.parse("$apiPilgrim$agentId"));
       }
       request.headers.add('Authorization', 'Bearer $token');
 
       HttpClientResponse response = await request.close();
+      print(response);
 
       String responseBody = await response.transform(utf8.decoder).join();
 
       if (response.statusCode == 200) {
-        List<Map<String, dynamic>> fetchedData =
-            List<Map<String, dynamic>>.from(jsonDecode(responseBody));
-        return fetchedData;
+        Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
+        List<dynamic> fetchedData =
+            jsonResponse['data']; // Access the 'data' key
+        return fetchedData.cast<Map<String, dynamic>>();
       } else if (response.statusCode == 429) {
         // Handle rate limiting: wait for the specified duration and retry
         int retryAfterSeconds =
@@ -137,8 +139,12 @@ class _JamaahScreenState extends State<JamaahScreen> {
                   } else if (snapshot.hasError) {
                     // If an error occurred, display the error message
                     return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (snapshot.data == null) {
-                    return Center(child: Text('Data is null'));
+                  } else if (snapshot.data == null || snapshot.data!.isEmpty) {
+                    return Center(
+                        child: Text(
+                      'Belum ada Jamaah!',
+                      style: TextStyle(color: Colors.black),
+                    ));
                   } else {
                     List<Map<String, dynamic>> jamaahList = snapshot.data!;
                     return ListView.builder(
@@ -269,7 +275,8 @@ class _JamaahScreenState extends State<JamaahScreen> {
                                               builder: (context) =>
                                                   EditJamaahScreen(
                                                 agentId: agentId,
-                                                pilgrimId: item["pilgrim_id"],
+                                                pilgrimId: item['data']
+                                                    ["pilgrim_id"],
                                                 item: item,
                                               ),
                                             ),

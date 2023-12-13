@@ -21,7 +21,7 @@ class CustomCategoryButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           primary: Colors.transparent,
           elevation: 0,
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 0),
         ),
         child: Column(
           children: <Widget>[
@@ -33,7 +33,7 @@ class CustomCategoryButton extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(5.5),
               child: Container(
-                width: 52.0,
+                width: 75.0,
                 child: Text(
                   text,
                   style: TextStyle(

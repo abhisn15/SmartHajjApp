@@ -21,7 +21,7 @@ class CustomInformationButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           primary: Colors.transparent,
           elevation: 0,
-          padding: EdgeInsets.symmetric(horizontal: 2),
+          padding: EdgeInsets.symmetric(horizontal: 0),
         ),
         child: Column(
           children: <Widget>[

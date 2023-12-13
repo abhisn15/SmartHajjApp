@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:SmartHajj/dashboard/productDetail/SnapToken.dart';
 import 'package:SmartHajj/dashboard/topup/topupTabunganScreen.dart';
 import 'package:SmartHajj/dompet/ProgressPaunter.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -32,12 +34,104 @@ class _DompetScreenState extends State<DompetScreen> {
     apiJamaah = fetchDataJamaah(); // Call your API function
   }
 
+  Future<void> sendFormData() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      if (token == null) {
+        throw Exception('Token not available');
+      }
+
+      // Prepare the data to be sent
+      var data = FormData();
+
+      data.fields.add(MapEntry('saving_id', ''));
+      data.fields.add(MapEntry('pilgrim_id', ''));
+      // Create Dio instance
+      Dio dio = Dio();
+
+      // Make the POST request using Dio
+      var response = await dio.post(
+        'https://smarthajj.coffeelabs.id/api/topupPayment',
+        data: data,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = response.data;
+        print('Snap Token: ${responseData['data']}');
+
+        var paymentUrl = Uri.parse(
+            'https://smarthajj.coffeelabs.id/pay/mobile/${responseData['data']}');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  SnapToken(paymentUrl: paymentUrl.toString())),
+        );
+        print('Payment process initiated successfully');
+      } else {
+        // Handle the case where the API response status code is not 200
+        print(
+            'Error: API Response - ${response.statusCode}, ${response.statusMessage}');
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: 'Transaksi Gagal',
+          desc: 'Terdapat error saat melakukan transaksi',
+          btnOkOnPress: () {},
+          btnOkColor: Colors.red,
+        )..show();
+      }
+    } on DioException catch (e) {
+      // Something happened in setting up or sending the request that triggered an Error
+      if (e.response != null) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx and is also not 304.
+        print('DioError - Response Data: ${e.response!.data}');
+        print('DioError - Status: ${e.response!.statusCode}');
+      } else {
+        // Something went wrong in setting up or sending the request
+        print('DioError - Request: ${e.requestOptions}');
+        print('DioError - Message: ${e.message}');
+      }
+      AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: 'Transaksi Gagal',
+          desc: 'Terdapat error saat melakukan transaksi',
+          btnOkOnPress: () {},
+          btnOkColor: Colors.red)
+        ..show();
+    } catch (e) {
+      // Handle generic exceptions
+      print('Error: $e');
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.rightSlide,
+        title: 'Transaksi Gagal',
+        desc: 'Terdapat error saat melakukan transaksi',
+        btnOkOnPress: () {},
+        btnOkColor: Colors.red,
+      )..show();
+    }
+  }
+
   Future<List<Map<String, dynamic>>> fetchDataJamaah() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? apiPilgrim = dotenv.env['API_PILGRIM'];
+      String? apiPilgrim = dotenv.env['API_AGENTBYID'];
       String? token = prefs.getString('token');
-      String? agentId = prefs.getString('users');
+      String? agentId = prefs.getString('agentId');
 
       if (token == null) {
         throw Exception('Token not available');
@@ -48,18 +142,20 @@ class _DompetScreenState extends State<DompetScreen> {
           (X509Certificate cert, String host, int port) => true;
 
       if (apiPilgrim != null) {
-        request = await httpClient.getUrl(Uri.parse(apiPilgrim));
+        request = await httpClient.getUrl(Uri.parse("$apiPilgrim$agentId"));
       }
       request.headers.add('Authorization', 'Bearer $token');
 
       HttpClientResponse response = await request.close();
+      print(response);
 
       String responseBody = await response.transform(utf8.decoder).join();
 
       if (response.statusCode == 200) {
-        List<Map<String, dynamic>> fetchedData =
-            List<Map<String, dynamic>>.from(jsonDecode(responseBody));
-        return fetchedData;
+        Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
+        List<dynamic> fetchedData =
+            jsonResponse['data']; // Access the 'data' key
+        return fetchedData.cast<Map<String, dynamic>>();
       } else if (response.statusCode == 429) {
         // Handle rate limiting: wait for the specified duration and retry
         int retryAfterSeconds =
@@ -344,112 +440,6 @@ class _DompetScreenState extends State<DompetScreen> {
                           margin: EdgeInsets.only(top: 24),
                           child: Image.asset('assets/dompet/info.png'),
                         ),
-                        FutureBuilder(
-                          future: apiSaldo,
-                          builder: (context,
-                              AsyncSnapshot<Map<String, dynamic>> snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
-                            } else if (snapshot.hasError) {
-                              // Print detailed error information
-                              print('Error Details: ${snapshot.error}');
-                              print('Stack Trace: ${snapshot.stackTrace}');
-                              return Center(
-                                  child: Text('Error: ${snapshot.error}'));
-                            } else if (snapshot.data == null ||
-                                snapshot.data!.isEmpty) {
-                              return Center(
-                                  child: Text('Data is null or empty'));
-                            } else {
-                              // Print the complete response
-                              print('Complete Response: ${snapshot.data}');
-
-                              int? totalSaldo = snapshot.data!['total'] as int?;
-                              String formattedTotalSaldo =
-                                  NumberFormat.currency(
-                                          locale: 'id_ID',
-                                          symbol: 'Rp ',
-                                          decimalDigits: 0)
-                                      .format(totalSaldo);
-
-                              if (totalSaldo == null) {
-                                return Center(
-                                    child: Text('Total saldo is null'));
-                              }
-                              return Container(
-                                margin: EdgeInsets.only(top: 16),
-                                child: ListTile(
-                                  title: Container(
-                                    margin: EdgeInsets.only(left: 5),
-                                    child: Text(
-                                      'Total Saldo Tabungan',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                  subtitle: Container(
-                                    margin: EdgeInsets.only(
-                                      top: 15,
-                                      left: 5,
-                                      right: 5,
-                                      bottom: 10,
-                                    ),
-                                    padding: EdgeInsets.all(10),
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(2)),
-                                      color: Color.fromRGBO(77, 101, 172, 1),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.only(bottom: 5),
-                                          child: Text(
-                                            formattedTotalSaldo,
-                                            style: TextStyle(
-                                              fontSize: 32,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            textAlign: TextAlign.left,
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(
-                                              top: 5, bottom: 5),
-                                          width: double.infinity,
-                                          height: 4,
-                                          color: Colors.green,
-                                          child: Container(
-                                            child: CustomPaint(
-                                              painter: ProgressPainter(),
-                                            ),
-                                          ),
-                                        ),
-                                        Text(
-                                          "Dari Target Rp 0",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Color.fromRGBO(
-                                                250, 208, 208, 1),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          textAlign: TextAlign.left,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                        ),
                       ],
                     ),
                   ),
@@ -499,9 +489,14 @@ class _DompetScreenState extends State<DompetScreen> {
                                               return Center(
                                                   child: Text(
                                                       'Error: ${snapshot.error}'));
-                                            } else if (snapshot.data == null) {
+                                            } else if (snapshot.data == null ||
+                                                snapshot.data!.isEmpty) {
                                               return Center(
-                                                  child: Text('Data is null'));
+                                                  child: Text(
+                                                'Jamaah tidak tersedia!',
+                                                style: TextStyle(
+                                                    color: Colors.black),
+                                              ));
                                             } else {
                                               List<Map<String, dynamic>>
                                                   jamaahList = snapshot.data!;
@@ -524,13 +519,14 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                       left: 5),
                                                               child: Column(
                                                                 children: [
-                                                                  Text(
-                                                                    '____',
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w800,
+                                                                  Container(
+                                                                    child: Text(
+                                                                      '____',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.w800,
+                                                                      ),
                                                                     ),
                                                                   ),
                                                                   Row(
@@ -597,8 +593,9 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                         bottom:
                                                                             5),
                                                                     child: Text(
-                                                                      item[
-                                                                          'deposit'],
+                                                                      item['deposit']
+                                                                              ?.toString() ??
+                                                                          'Rp 0',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               26,
@@ -711,17 +708,8 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                           30),
                                                               child:
                                                                   ElevatedButton(
-                                                                onPressed: () {
-                                                                  Navigator
-                                                                      .push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder:
-                                                                          (context) =>
-                                                                              TopupTabunganScreen(),
-                                                                    ),
-                                                                  );
-                                                                },
+                                                                onPressed:
+                                                                    sendFormData,
                                                                 style:
                                                                     ButtonStyle(
                                                                   minimumSize:
