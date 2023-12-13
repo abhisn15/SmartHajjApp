@@ -90,7 +90,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<List<Map<String, dynamic>>> fetchDataJamaah() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? apiPilgrim = dotenv.env['API_AGENTBYID'];
+      String? apiPilgrim = dotenv.env['API_PAYMENTBYID'];
       String? token = prefs.getString('token');
       String? agentId = prefs.getString('agentId');
 
@@ -139,6 +139,59 @@ class _DashboardScreenState extends State<DashboardScreen> {
       throw Exception('Failed to load Jamaah data');
     }
   }
+
+  // Future<List<Map<String, dynamic>>> fetchDataJamaah() async {
+  //   try {
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     String? apiPilgrim = dotenv.env['API_AGENTBYID'];
+  //     String? token = prefs.getString('token');
+  //     String? agentId = prefs.getString('agentId');
+
+  //     if (token == null) {
+  //       throw Exception('Token not available');
+  //     }
+
+  //     HttpClient httpClient = new HttpClient();
+  //     httpClient.badCertificateCallback =
+  //         (X509Certificate cert, String host, int port) => true;
+
+  //     if (apiPilgrim != null) {
+  //       request = await httpClient.getUrl(Uri.parse("$apiPilgrim$agentId"));
+  //     }
+  //     request.headers.add('Authorization', 'Bearer $token');
+
+  //     HttpClientResponse response = await request.close();
+  //     print(response);
+
+  //     String responseBody = await response.transform(utf8.decoder).join();
+
+  //     if (response.statusCode == 200) {
+  //       Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
+  //       List<dynamic> fetchedData =
+  //           jsonResponse['data']; // Access the 'data' key
+  //       return fetchedData.cast<Map<String, dynamic>>();
+  //     } else if (response.statusCode == 429) {
+  //       // Handle rate limiting: wait for the specified duration and retry
+  //       int retryAfterSeconds =
+  //           int.tryParse(response.headers.value('Retry-After') ?? '5') ?? 5;
+  //       print('Rate limited. Retrying after $retryAfterSeconds seconds.');
+  //       await Future.delayed(Duration(seconds: retryAfterSeconds));
+  //       return fetchDataJamaah(); // Retry the request
+  //     } else if (response.statusCode == 401) {
+  //       // Handle unauthorized access (token expired, invalid, etc.)
+  //       print('Unauthorized access: ${response.statusCode}');
+  //       // Perform actions such as logging out the user or requesting a new token
+  //       throw Exception('Unauthorized access: ${response.statusCode}');
+  //     } else {
+  //       print('Response Body: $responseBody');
+  //       print('Response Status Code: ${response.statusCode}');
+  //       throw Exception('Failed to load Jamaah data: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching Jamaah data: $e');
+  //     throw Exception('Failed to load Jamaah data');
+  //   }
+  // }
 
   Future<Map<String, dynamic>> fetchData() async {
     try {
@@ -737,8 +790,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         height: 200,
                                         child: Expanded(
                                             child: FutureBuilder<
-                                                    List<Map<String, dynamic>>>(
-                                                future: fetchDataJamaah(),
+                                                    Map<String, dynamic>>(
+                                                future: apiSaldo,
                                                 builder: (context, snapshot) {
                                                   if (snapshot
                                                           .connectionState ==
@@ -856,7 +909,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                                             .spaceAround,
                                                                     children: [
                                                                       Text(item[
-                                                                          'name']),
+                                                                              'pilgrim_name'] ??
+                                                                          ''),
                                                                       Text(
                                                                           formattedDeposit),
                                                                     ],

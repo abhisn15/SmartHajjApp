@@ -258,10 +258,10 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
 
   Future<List<Map<String, dynamic>>> fetchDataJamaah() async {
     try {
-      String? apiPilgrim = dotenv.env['API_PILGRIM'];
+      String? apiPilgrim = dotenv.env['API_AGENTBYID'];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
-      String? agentId = prefs.getString('users');
+      String? agentId = prefs.getString('agentId');
       // Ensure that token is not null before using it
       if (token == null || widget.packageId == null) {
         throw Exception('Token or Hajj ID not available');
@@ -272,7 +272,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
           (X509Certificate cert, String host, int port) => true;
 
       if (apiPilgrim != null) {
-        request = await httpClient.getUrl(Uri.parse(apiPilgrim));
+        request = await httpClient.getUrl(Uri.parse("$apiPilgrim$agentId"));
       }
 
       request.headers.add('Authorization', 'Bearer $token');
@@ -281,9 +281,10 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
 
       String responseBody = await response.transform(utf8.decoder).join();
       if (response.statusCode == 200) {
-        // Update jamaahList here
-        jamaahList = List<Map<String, dynamic>>.from(jsonDecode(responseBody));
-        return jamaahList;
+        Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
+        List<dynamic> jamaahList =
+            jsonResponse['data']; // Access the 'data' key
+        return jamaahList.cast<Map<String, dynamic>>();
       } else {
         print('Response Body: $responseBody');
         print('Response Status Code: ${response.statusCode}');
@@ -761,8 +762,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                   return Text('Error: ${snapshot.error}');
                                 } else if (snapshot.hasData) {
                                   List<Map<String, dynamic>> jamaahList =
-                                      List<Map<String, dynamic>>.from(
-                                          snapshot.data!);
+                                      snapshot.data!;
 
                                   // Hapus duplikat dari jamaahList
                                   jamaahList = jamaahList.toSet().toList();

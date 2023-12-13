@@ -28,7 +28,7 @@ class _SnapTokenState extends State<SnapToken> {
             dialogType: DialogType.success,
             animType: AnimType.rightSlide,
             title: 'Berhasil!',
-            desc: 'Proses menabung anda Sukses!',
+            desc: 'Proses transaksi anda Sukses!',
             btnOkOnPress: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => BottomNavigation()));

@@ -34,21 +34,30 @@ class _DompetScreenState extends State<DompetScreen> {
     apiJamaah = fetchDataJamaah(); // Call your API function
   }
 
+  Future<void> storeSelectedJamaah(String savingsId, String pilgrimId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selectedSavingsId', savingsId);
+    await prefs.setString('selectedPilgrimId', pilgrimId);
+  }
+
   Future<void> sendFormData() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
+      String? savingsId = prefs.getString('selectedSavingsId');
+      String? pilgrimId = prefs.getString('selectedPilgrimId');
+      print("saving: $savingsId");
+      print("pilgrim: $pilgrimId");
 
-      if (token == null) {
-        throw Exception('Token not available');
+      if (token == null || savingsId == null || pilgrimId == null) {
+        print("Required data is missing");
+        return;
       }
 
-      // Prepare the data to be sent
-      var data = FormData();
-
-      data.fields.add(MapEntry('saving_id', ''));
-      data.fields.add(MapEntry('pilgrim_id', ''));
-      // Create Dio instance
+      var data = FormData.fromMap({
+        'saving_id': savingsId,
+        'pilgrim_id': pilgrimId,
+      });
       Dio dio = Dio();
 
       // Make the POST request using Dio
@@ -129,7 +138,7 @@ class _DompetScreenState extends State<DompetScreen> {
   Future<List<Map<String, dynamic>>> fetchDataJamaah() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? apiPilgrim = dotenv.env['API_AGENTBYID'];
+      String? apiPilgrim = dotenv.env['API_PAYMENTBYID'];
       String? token = prefs.getString('token');
       String? agentId = prefs.getString('agentId');
 
@@ -500,6 +509,7 @@ class _DompetScreenState extends State<DompetScreen> {
                                             } else {
                                               List<Map<String, dynamic>>
                                                   jamaahList = snapshot.data!;
+
                                               return ListView.builder(
                                                   controller: scrollController,
                                                   itemCount: jamaahList.length,
@@ -509,6 +519,24 @@ class _DompetScreenState extends State<DompetScreen> {
                                                     // Build your list items
                                                     var item =
                                                         jamaahList[index];
+                                                    double depositValue =
+                                                        double.tryParse(item[
+                                                                        'deposit']
+                                                                    ?.toString() ??
+                                                                '0') ??
+                                                            0.0;
+
+                                                    // Mengonversi depositValue ke format Rupiah
+                                                    String formattedDeposit =
+                                                        NumberFormat.currency(
+                                                                locale: 'id_ID',
+                                                                symbol: 'Rp ',
+                                                                decimalDigits:
+                                                                    0 // Gunakan 2 desimal untuk format rupiah
+                                                                )
+                                                            .format(
+                                                                depositValue);
+
                                                     return ListTile(
                                                       title: index ==
                                                               0 // Check if it's the first item
@@ -593,9 +621,7 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                         bottom:
                                                                             5),
                                                                     child: Text(
-                                                                      item['deposit']
-                                                                              ?.toString() ??
-                                                                          'Rp 0',
+                                                                      formattedDeposit,
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               26,
@@ -656,7 +682,8 @@ class _DompetScreenState extends State<DompetScreen> {
                                                             Row(
                                                               children: [
                                                                 Text(
-                                                                  item['name'],
+                                                                  item[
+                                                                      'pilgrim_name'],
                                                                   style:
                                                                       TextStyle(
                                                                     fontSize:
@@ -700,53 +727,68 @@ class _DompetScreenState extends State<DompetScreen> {
                                                             //             .w400,
                                                             //   ),
                                                             // ),
-                                                            Container(
-                                                              margin: EdgeInsets
-                                                                  .only(
-                                                                      left: 30,
-                                                                      right:
-                                                                          30),
-                                                              child:
-                                                                  ElevatedButton(
-                                                                onPressed:
-                                                                    sendFormData,
-                                                                style:
-                                                                    ButtonStyle(
-                                                                  minimumSize:
-                                                                      MaterialStateProperty
-                                                                          .all(
-                                                                    Size(
-                                                                        double
-                                                                            .infinity,
-                                                                        30),
-                                                                  ),
-                                                                  backgroundColor:
-                                                                      MaterialStateProperty
-                                                                          .all(
+                                                            ListTile(
+                                                                onTap: () {
+                                                                  storeSelectedJamaah(
+                                                                    item['savings_id']
+                                                                        .toString(),
+                                                                    item['pilgrim_id']
+                                                                        .toString(),
+                                                                  );
+                                                                },
+                                                                subtitle:
+                                                                    Container(
+                                                                  margin: EdgeInsets
+                                                                      .only(
+                                                                          left:
+                                                                              30,
+                                                                          right:
+                                                                              30),
+                                                                  child:
+                                                                      ElevatedButton(
+                                                                    onPressed:
+                                                                        () async {
+                                                                      // Simpan ID yang dipilih sebelum mengirim formulir
+                                                                      await storeSelectedJamaah(
+                                                                        item['savings_id']
+                                                                            .toString(),
+                                                                        item['pilgrim_id']
+                                                                            .toString(),
+                                                                      );
+                                                                      sendFormData();
+                                                                    },
+                                                                    style:
+                                                                        ButtonStyle(
+                                                                      minimumSize:
+                                                                          MaterialStateProperty
+                                                                              .all(
+                                                                        Size(
+                                                                            double.infinity,
+                                                                            30),
+                                                                      ),
+                                                                      backgroundColor:
+                                                                          MaterialStateProperty.all(
                                                                               primaryColor),
-                                                                  shape:
-                                                                      MaterialStateProperty
+                                                                      shape: MaterialStateProperty
                                                                           .all(
-                                                                    RoundedRectangleBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              20),
+                                                                        RoundedRectangleBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(20),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    child: Text(
+                                                                      "Tambah Saldo",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontWeight:
+                                                                            FontWeight.w600,
+                                                                      ),
                                                                     ),
                                                                   ),
-                                                                ),
-                                                                child: Text(
-                                                                  "Tambah Saldo",
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            )
+                                                                )),
                                                           ],
                                                         ),
                                                       ),
