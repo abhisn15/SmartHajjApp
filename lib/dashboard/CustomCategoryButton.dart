@@ -14,7 +14,8 @@ class CustomCategoryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 90.0,
+      width: 90,
+      height: 100.0,
       margin: const EdgeInsets.only(left: 0, top: 20.0),
       child: ElevatedButton(
         onPressed: onPressed,
@@ -27,13 +28,13 @@ class CustomCategoryButton extends StatelessWidget {
           children: <Widget>[
             Image.asset(
               image,
-              width: 46,
-              height: 46,
+              width: 60,
+              height: 50,
             ),
             Padding(
               padding: const EdgeInsets.all(5.5),
               child: Container(
-                width: 75.0,
+                width: 60.0,
                 child: Text(
                   text,
                   style: TextStyle(

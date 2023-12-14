@@ -68,7 +68,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (query.isNotEmpty) {
       List<Map<String, dynamic>> dummyListData = [];
       allData.forEach((item) {
-        if (item['name']
+        if (item['pilgrim_name']
             .toString()
             .toLowerCase()
             .contains(query.toLowerCase())) {
@@ -139,59 +139,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       throw Exception('Failed to load Jamaah data');
     }
   }
-
-  // Future<List<Map<String, dynamic>>> fetchDataJamaah() async {
-  //   try {
-  //     SharedPreferences prefs = await SharedPreferences.getInstance();
-  //     String? apiPilgrim = dotenv.env['API_AGENTBYID'];
-  //     String? token = prefs.getString('token');
-  //     String? agentId = prefs.getString('agentId');
-
-  //     if (token == null) {
-  //       throw Exception('Token not available');
-  //     }
-
-  //     HttpClient httpClient = new HttpClient();
-  //     httpClient.badCertificateCallback =
-  //         (X509Certificate cert, String host, int port) => true;
-
-  //     if (apiPilgrim != null) {
-  //       request = await httpClient.getUrl(Uri.parse("$apiPilgrim$agentId"));
-  //     }
-  //     request.headers.add('Authorization', 'Bearer $token');
-
-  //     HttpClientResponse response = await request.close();
-  //     print(response);
-
-  //     String responseBody = await response.transform(utf8.decoder).join();
-
-  //     if (response.statusCode == 200) {
-  //       Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
-  //       List<dynamic> fetchedData =
-  //           jsonResponse['data']; // Access the 'data' key
-  //       return fetchedData.cast<Map<String, dynamic>>();
-  //     } else if (response.statusCode == 429) {
-  //       // Handle rate limiting: wait for the specified duration and retry
-  //       int retryAfterSeconds =
-  //           int.tryParse(response.headers.value('Retry-After') ?? '5') ?? 5;
-  //       print('Rate limited. Retrying after $retryAfterSeconds seconds.');
-  //       await Future.delayed(Duration(seconds: retryAfterSeconds));
-  //       return fetchDataJamaah(); // Retry the request
-  //     } else if (response.statusCode == 401) {
-  //       // Handle unauthorized access (token expired, invalid, etc.)
-  //       print('Unauthorized access: ${response.statusCode}');
-  //       // Perform actions such as logging out the user or requesting a new token
-  //       throw Exception('Unauthorized access: ${response.statusCode}');
-  //     } else {
-  //       print('Response Body: $responseBody');
-  //       print('Response Status Code: ${response.statusCode}');
-  //       throw Exception('Failed to load Jamaah data: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching Jamaah data: $e');
-  //     throw Exception('Failed to load Jamaah data');
-  //   }
-  // }
 
   Future<Map<String, dynamic>> fetchData() async {
     try {
@@ -788,140 +735,133 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       ),
                                       Container(
                                         height: 200,
-                                        child: Expanded(
-                                            child: FutureBuilder<
-                                                    Map<String, dynamic>>(
-                                                future: apiSaldo,
-                                                builder: (context, snapshot) {
-                                                  if (snapshot
-                                                          .connectionState ==
-                                                      ConnectionState.waiting) {
-                                                    // If the Future is still running, display a loading indicator
-                                                    return Center(
-                                                        child:
-                                                            CircularProgressIndicator());
-                                                  } else if (snapshot
-                                                      .hasError) {
-                                                    // If an error occurred, display the error message
-                                                    return Center(
-                                                        child: Text(
-                                                            'Error: ${snapshot.error}'));
-                                                  } else if (snapshot.data ==
-                                                          null ||
-                                                      snapshot.data!.isEmpty) {
-                                                    return Center(
-                                                        child: Text(
-                                                      'Tidak ada tabungan saat ini!',
-                                                      style: TextStyle(
-                                                          color: Colors.black),
-                                                    ));
-                                                  } else {
-                                                    int startIndex =
-                                                        currentPage *
-                                                            itemsPerPage;
-                                                    int endIndex = startIndex +
-                                                        itemsPerPage;
-                                                    endIndex = endIndex >
-                                                            filteredData.length
-                                                        ? filteredData.length
-                                                        : endIndex;
-                                                    List<Map<String, dynamic>>
-                                                        pagedData =
-                                                        filteredData.sublist(
-                                                            startIndex,
-                                                            endIndex);
-
-                                                    return ListView.builder(
-                                                        itemCount:
-                                                            pagedData.length,
-                                                        itemBuilder:
-                                                            (context, index) {
-                                                          final item =
-                                                              pagedData[index];
-                                                          Color
-                                                              backgroundColor =
-                                                              Color.fromRGBO(
-                                                                  238,
-                                                                  226,
-                                                                  223,
-                                                                  1);
-                                                          Color textColor =
-                                                              primaryColor;
-                                                          var deposit = double
-                                                                  .tryParse(item[
-                                                                          'deposit']
-                                                                      .toString()) ??
-                                                              0.0;
-                                                          String formattedDeposit =
-                                                              NumberFormat.currency(
-                                                                      locale:
-                                                                          'id',
-                                                                      symbol:
-                                                                          'Rp ',
-                                                                      decimalDigits:
-                                                                          0)
-                                                                  .format(
-                                                                      deposit);
-                                                          return Column(
-                                                            children: [
-                                                              Container(
-                                                                margin: EdgeInsets
-                                                                    .only(
-                                                                        bottom:
-                                                                            12),
-                                                                height: 50,
-                                                                width: double
-                                                                    .infinity,
-                                                                padding: EdgeInsets
-                                                                    .symmetric(
-                                                                        vertical:
-                                                                            10,
-                                                                        horizontal:
-                                                                            20),
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  border: Border
-                                                                      .all(
-                                                                    color: const Color
-                                                                        .fromARGB(
-                                                                        255,
-                                                                        0,
-                                                                        0,
-                                                                        0), // Color of the border
-                                                                    width:
-                                                                        1, // Width of the border
-                                                                  ),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              10.0),
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
+                                        child: Column(
+                                          children: [
+                                            Expanded(
+                                                child:
+                                                    FutureBuilder<
+                                                            Map<String,
+                                                                dynamic>>(
+                                                        future: apiSaldo,
+                                                        builder: (context,
+                                                            snapshot) {
+                                                          if (snapshot
+                                                                  .connectionState ==
+                                                              ConnectionState
+                                                                  .waiting) {
+                                                            // If the Future is still running, display a loading indicator
+                                                            return Center(
                                                                 child:
-                                                                    Container(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .centerLeft,
-                                                                  child: Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .spaceAround,
-                                                                    children: [
-                                                                      Text(item[
-                                                                              'pilgrim_name'] ??
-                                                                          ''),
-                                                                      Text(
-                                                                          formattedDeposit),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          );
-                                                        });
-                                                  }
-                                                })),
+                                                                    CircularProgressIndicator());
+                                                          } else if (snapshot
+                                                              .hasError) {
+                                                            // If an error occurred, display the error message
+                                                            return Center(
+                                                                child: Text(
+                                                                    'Error: ${snapshot.error}'));
+                                                          } else if (snapshot
+                                                                      .data ==
+                                                                  null ||
+                                                              selectedTotal ==
+                                                                  0) {
+                                                            return Container(
+                                                              child: Center(
+                                                                  child: Text(
+                                                                'Belum ada Jamaah yang menabung!',
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .black),
+                                                              )),
+                                                            );
+                                                          } else {
+                                                            int startIndex =
+                                                                currentPage *
+                                                                    itemsPerPage;
+                                                            int endIndex =
+                                                                startIndex +
+                                                                    itemsPerPage;
+                                                            endIndex = endIndex >
+                                                                    filteredData
+                                                                        .length
+                                                                ? filteredData
+                                                                    .length
+                                                                : endIndex;
+                                                            List<
+                                                                    Map<String,
+                                                                        dynamic>>
+                                                                pagedData =
+                                                                filteredData.sublist(
+                                                                    startIndex,
+                                                                    endIndex);
+
+                                                            return ListView
+                                                                .builder(
+                                                                    itemCount:
+                                                                        pagedData
+                                                                            .length,
+                                                                    itemBuilder:
+                                                                        (context,
+                                                                            index) {
+                                                                      final item =
+                                                                          pagedData[
+                                                                              index];
+                                                                      Color
+                                                                          backgroundColor =
+                                                                          Color.fromRGBO(
+                                                                              238,
+                                                                              226,
+                                                                              223,
+                                                                              1);
+                                                                      Color
+                                                                          textColor =
+                                                                          primaryColor;
+                                                                      var deposit =
+                                                                          double.tryParse(item['deposit'].toString()) ??
+                                                                              0.0;
+                                                                      String formattedDeposit = NumberFormat.currency(
+                                                                              locale: 'id',
+                                                                              symbol: 'Rp ',
+                                                                              decimalDigits: 0)
+                                                                          .format(deposit);
+                                                                      return Column(
+                                                                        children: [
+                                                                          Container(
+                                                                            margin:
+                                                                                EdgeInsets.only(bottom: 12),
+                                                                            height:
+                                                                                50,
+                                                                            width:
+                                                                                double.infinity,
+                                                                            padding:
+                                                                                EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                                                            decoration:
+                                                                                BoxDecoration(
+                                                                              border: Border.all(
+                                                                                color: const Color.fromARGB(255, 0, 0, 0), // Color of the border
+                                                                                width: 1, // Width of the border
+                                                                              ),
+                                                                              borderRadius: BorderRadius.circular(10.0),
+                                                                              color: Colors.white,
+                                                                            ),
+                                                                            child:
+                                                                                Container(
+                                                                              alignment: Alignment.centerLeft,
+                                                                              child: Row(
+                                                                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                                                children: [
+                                                                                  Text(item['pilgrim_name'] ?? ''),
+                                                                                  Text(formattedDeposit),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      );
+                                                                    });
+                                                          }
+                                                        })),
+                                          ],
+                                        ),
                                       ),
                                       Row(
                                         mainAxisAlignment:

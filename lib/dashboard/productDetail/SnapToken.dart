@@ -30,7 +30,7 @@ class _SnapTokenState extends State<SnapToken> {
             title: 'Berhasil!',
             desc: 'Proses transaksi anda Sukses!',
             btnOkOnPress: () {
-              Navigator.push(context,
+              Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => BottomNavigation()));
             },
           )..show();
@@ -56,7 +56,9 @@ class _SnapTokenState extends State<SnapToken> {
       )
       ..loadRequest(Uri.parse(widget.paymentUrl.toString()));
     return Scaffold(
-      appBar: AppBar(title: const Text('SmartHajj')),
+      appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Center(child: const Text('SmartHajj'))),
       body: WebViewWidget(controller: controller),
     );
   }

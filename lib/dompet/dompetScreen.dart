@@ -78,7 +78,7 @@ class _DompetScreenState extends State<DompetScreen> {
 
         var paymentUrl = Uri.parse(
             'https://smarthajj.coffeelabs.id/pay/mobile/${responseData['data']}');
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
               builder: (context) =>
@@ -502,7 +502,7 @@ class _DompetScreenState extends State<DompetScreen> {
                                                 snapshot.data!.isEmpty) {
                                               return Center(
                                                   child: Text(
-                                                'Jamaah tidak tersedia!',
+                                                'Belum ada Jamaah yang menabung!',
                                                 style: TextStyle(
                                                     color: Colors.black),
                                               ));

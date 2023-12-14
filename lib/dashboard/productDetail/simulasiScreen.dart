@@ -199,7 +199,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
 
         var paymentUrl = Uri.parse(
             'https://smarthajj.coffeelabs.id/pay/mobile/${responseData['data']}');
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
               builder: (context) =>
@@ -833,81 +833,6 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                   ],
                 ),
               ),
-              // Container(
-              //   margin: EdgeInsets.only(top: 20),
-              //   child: Row(
-              //     children: [
-              //       Container(
-              //         margin: EdgeInsets.only(left: 24, bottom: 20),
-              //         child: Text(
-              //           "Pilih Pembayaran",
-              //           style: TextStyle(
-              //             color: primaryColor,
-              //             fontWeight: FontWeight.w500,
-              //             fontSize: 16,
-              //           ),
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              // Container(
-              //   margin: EdgeInsets.symmetric(horizontal: 30),
-              //   padding: EdgeInsets.symmetric(vertical: 10),
-              //   width: double.infinity,
-              //   decoration: BoxDecoration(
-              //     borderRadius: BorderRadius.all(Radius.circular(5)),
-              //     color: Color.fromRGBO(141, 148, 168, 1),
-              //   ),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.center,
-              //     children: [
-              //       Container(
-              //         margin: EdgeInsets.only(left: 20, right: 20),
-              //         child: Image.asset("assets/home/topup.png"),
-              //       ),
-              //       DropdownButton<String>(
-              //         hint: Text(
-              //           'Select an option',
-              //           style: TextStyle(
-              //             fontSize: 14,
-              //             color: defaultColor,
-              //           ),
-              //         ),
-              //         dropdownColor: abu,
-              //         icon: Container(
-              //             margin: EdgeInsets.only(left: 80 * 1),
-              //             child: Image.asset("assets/home/dropdown_down.png")),
-              //         items: items
-              //             .map((String item) => DropdownMenuItem<String>(
-              //                   value: item,
-              //                   child: Row(
-              //                     children: [
-              //                       Text(
-              //                         item,
-              //                         style: TextStyle(
-              //                             fontSize: 14,
-              //                             color: selectedValue == Text(item)
-              //                                 ? Colors.white
-              //                                 : Colors.white),
-              //                       ),
-              //                       SizedBox(
-              //                           width:
-              //                               10), // Beri jarak antara gambar dan teks
-              //                     ],
-              //                   ),
-              //                 ))
-              //             .toList(),
-              //         value: selectedValue,
-              //         onChanged: (String? value) {
-              //           setState(() {
-              //             selectedValue = value;
-              //           });
-              //         },
-              //       ),
-              //     ],
-              //   ),
-              // ),
               Container(
                 margin: EdgeInsets.only(top: 30),
                 child: Column(
