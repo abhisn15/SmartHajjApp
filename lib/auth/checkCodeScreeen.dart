@@ -26,7 +26,9 @@ class _CheckCodeScreenState extends State<CheckCodeScreen> {
           content: Text(message),
           actions: [
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
               child: Text("OK"),
             ),
           ],
@@ -73,12 +75,11 @@ class _CheckCodeScreenState extends State<CheckCodeScreen> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
-                      // Navigate to sendMail screen
-                      context,
+                    Navigator.of(context).pushAndRemoveUntil(
+                      // Navigate to login screen and remove all previous routes
                       MaterialPageRoute(
-                        builder: (context) => ResetPasswordScreen(),
-                      ),
+                          builder: (context) => ResetPasswordScreen()),
+                      (Route<dynamic> route) => false,
                     );
                   },
                   child: Text("OK"),
@@ -193,45 +194,6 @@ class _CheckCodeScreenState extends State<CheckCodeScreen> {
                     style: TextStyle(
                       fontSize: 24.0,
                       color: Color.fromRGBO(43, 69, 112, 1),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 30.0),
-                child: Text(
-                  'Belum punya akun? Klik di bawah.',
-                  style: TextStyle(
-                    color: Colors.black,
-                    decoration: TextDecoration.none,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  bottom: 10.0,
-                  top: 5.0,
-                ),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DaftarScreen(),
-                        ),
-                      );
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.only(bottom: 30.0),
-                      child: Text(
-                        'Daftar Disini',
-                        style: TextStyle(
-                          color: Color.fromRGBO(43, 69, 112, 1),
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
                     ),
                   ),
                 ),

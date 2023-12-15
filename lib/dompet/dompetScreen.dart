@@ -809,13 +809,24 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                       child:
                                                                           ElevatedButton(
                                                                         onPressed:
-                                                                            () async {
+                                                                            () {
+                                                                          AwesomeDialog(
+                                                                              context: context,
+                                                                              dialogType: DialogType.question,
+                                                                              animType: AnimType.rightSlide,
+                                                                              title: 'Apakah anda yakin untuk melakukan Topup?',
+                                                                              btnOkOnPress: () async {
+                                                                                await storeSelectedJamaah(
+                                                                                  item['savings_id'].toString(),
+                                                                                  item['pilgrim_id'].toString(),
+                                                                                );
+                                                                                sendFormData();
+                                                                              },
+                                                                              btnCancelOnPress: () {},
+                                                                              btnOkColor: Colors.green[600],
+                                                                              btnCancelColor: Colors.red)
+                                                                            ..show();
                                                                           // Simpan ID yang dipilih sebelum mengirim formulir
-                                                                          await storeSelectedJamaah(
-                                                                            item['savings_id'].toString(),
-                                                                            item['pilgrim_id'].toString(),
-                                                                          );
-                                                                          sendFormData();
                                                                         },
                                                                         style:
                                                                             ButtonStyle(

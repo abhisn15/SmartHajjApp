@@ -23,6 +23,8 @@ class TambahJamaahScreen extends StatefulWidget {
 }
 
 class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
+  bool isLoading = false;
+  double progress = 0.0;
   late String agentId;
   final List<String> items = [
     'BCA',
@@ -241,6 +243,9 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
   }
 
   Future<void> sendFormData() async {
+    setState(() {
+      isLoading = true; // Start loading
+    });
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
@@ -382,6 +387,13 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
             'Content-Type': 'multipart/form-data',
           },
         ),
+        onSendProgress: (int sent, int total) {
+          print(
+              'Loading: ${(sent / total * 100).toStringAsFixed(0)}% ($sent/$total)');
+          setState(() {
+            progress = sent / total;
+          });
+        },
       );
 
       if (response.statusCode == 200) {
@@ -394,10 +406,11 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
           title: 'Tabungan Jamaah',
           desc: 'Form Tambah Data berhasil!!',
           btnOkOnPress: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => BottomNavigationJamaah()));
+            Navigator.of(context).pushAndRemoveUntil(
+              // Navigate to login screen and remove all previous routes
+              MaterialPageRoute(builder: (context) => BottomNavigationJamaah()),
+              (Route<dynamic> route) => false,
+            );
           },
         )..show();
         clearForm();
@@ -426,6 +439,10 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
           btnOkOnPress: () {},
           btnOkColor: Colors.red)
         ..show();
+    } finally {
+      setState(() {
+        isLoading = false; // Stop loading regardless of the outcome
+      });
     }
   }
 
@@ -505,222 +522,51 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
             color: Colors.white, // <-- SEE HERE
           ),
         ),
-        body: SingleChildScrollView(
-            child: Column(children: [
-          Row(
-            children: [
-              Container(
-                margin: EdgeInsets.only(left: 24, top: 30),
-                child: Row(
-                  children: [
-                    Text(
-                      "Nama",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
-                    ),
-                    Text(
-                      "*",
-                      style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 18),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: 10.0,
-              horizontal: 16.0,
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                color: textField,
-                borderRadius: BorderRadius.circular(70.0),
-              ),
-              child: Form(
-                child: TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'ex : Papa Khan',
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 18.0,
-                      horizontal: 20.0,
-                    ),
+        body: isLoading
+            ? Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0, vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    color: Color.fromARGB(255, 255, 255, 255),
                   ),
-                ),
-              ),
-            ),
-          ),
-          Row(
-            children: [
-              Container(
-                margin: EdgeInsets.only(left: 24, top: 20),
-                child: Text(
-                  "Upload Foto",
-                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
-                ),
-              ),
-            ],
-          ),
-          Container(
-            width: double.infinity,
-            height: 90,
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () => _showImageSourceDialog(
-                    false), // Panggil pickImage langsung saat tombol ditekan
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(right: 10 * 1),
-                      child: Image.asset(
-                        "assets/jemaah/tambah.png",
-                        height: 40,
-                        width: 20,
-                      ),
-                    )
-                  ],
-                ),
-                style: ButtonStyle(
-                  elevation: MaterialStateProperty.all(0),
-                  backgroundColor: MaterialStateProperty.all<Color>(textField),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          70.0), // Border radius sebesar 70
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.all(16),
-            child: buildImagePreview(selectedImage: image),
-          ),
-          Row(
-            children: [
-              Container(
-                margin: EdgeInsets.only(left: 24, top: 20),
-                child: Row(
-                  children: [
-                    Text(
-                      "NIK",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
-                    ),
-                    Text(
-                      "*",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 18,
-                          color: Colors.red),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Container(
-            width: double.infinity,
-            margin: EdgeInsets.only(bottom: 20),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: 10.0,
-                horizontal: 16.0,
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: textField,
-                  borderRadius: BorderRadius.circular(70.0),
-                ),
-                child: Form(
-                  child: TextField(
-                    controller: nikController,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 18.0,
-                        horizontal: 20.0,
-                      ),
-                    ),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(bottom: 20),
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(left: 24),
-                  child: Row(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        "Nomor Telepon",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w400, fontSize: 18),
-                      ),
+                      CircularProgressIndicator(),
+                      SizedBox(height: 10),
+                      Text('Loading: ${(progress * 100).toStringAsFixed(0)}%'),
                     ],
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 10.0,
-                    horizontal: 16.0,
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: textField,
-                      borderRadius: BorderRadius.circular(70.0),
-                    ),
-                    child: Form(
-                      child: TextField(
-                        controller: phoneNumberController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            vertical: 18.0,
-                            horizontal: 20.0,
+              )
+            : SingleChildScrollView(
+                child: Column(children: [
+                Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(left: 24, top: 30),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Nama",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400, fontSize: 18),
                           ),
-                        ),
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
+                          Text(
+                            "*",
+                            style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 18),
+                          ),
                         ],
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(bottom: 20),
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(left: 24),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Alamat",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w400, fontSize: 18),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
+                Padding(
                   padding: EdgeInsets.symmetric(
                     vertical: 10.0,
                     horizontal: 16.0,
@@ -732,9 +578,10 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                     ),
                     child: Form(
                       child: TextField(
-                        controller: addressController,
+                        controller: nameController,
                         decoration: InputDecoration(
                           border: InputBorder.none,
+                          hintText: 'ex : Papa Khan',
                           contentPadding: EdgeInsets.symmetric(
                             vertical: 18.0,
                             horizontal: 20.0,
@@ -744,67 +591,17 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(bottom: 20),
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(left: 24),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Kota",
+                Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(left: 24, top: 20),
+                      child: Text(
+                        "Upload Foto",
                         style: TextStyle(
                             fontWeight: FontWeight.w400, fontSize: 18),
                       ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 10.0,
-                    horizontal: 16.0,
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: textField,
-                      borderRadius: BorderRadius.circular(70.0),
                     ),
-                    child: Form(
-                      child: TextField(
-                        controller: cityController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            vertical: 18.0,
-                            horizontal: 20.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(bottom: 20),
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(left: 24),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Kartu Keluarga",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w400, fontSize: 18),
-                      ),
-                    ],
-                  ),
+                  ],
                 ),
                 Container(
                   width: double.infinity,
@@ -812,7 +609,8 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                   child: Padding(
                     padding: EdgeInsets.all(16.0),
                     child: ElevatedButton(
-                      onPressed: () => _showImageSourceDialog(true),
+                      onPressed: () => _showImageSourceDialog(
+                          false), // Panggil pickImage langsung saat tombol ditekan
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -833,7 +631,8 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(70.0),
+                            borderRadius: BorderRadius.circular(
+                                70.0), // Border radius sebesar 70
                           ),
                         ),
                       ),
@@ -842,18 +641,63 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                 ),
                 Container(
                   margin: EdgeInsets.all(16),
-                  child: buildImagePreview(
-                    selectedImage: kartuKeluargaImage,
-                    isKartuKeluarga: true,
+                  child: buildImagePreview(selectedImage: image),
+                ),
+                Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(left: 24, top: 20),
+                      child: Row(
+                        children: [
+                          Text(
+                            "NIK",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400, fontSize: 18),
+                          ),
+                          Text(
+                            "*",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 18,
+                                color: Colors.red),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.only(bottom: 20),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 10.0,
+                      horizontal: 16.0,
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: textField,
+                        borderRadius: BorderRadius.circular(70.0),
+                      ),
+                      child: Form(
+                        child: TextField(
+                          controller: nikController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 18.0,
+                              horizontal: 20.0,
+                            ),
+                          ),
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ],
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(bottom: 20),
-            child: Column(
-              children: [
                 Container(
                   margin: EdgeInsets.only(bottom: 20),
                   child: Column(
@@ -863,11 +707,9 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                         child: Row(
                           children: [
                             Text(
-                              "No Passport",
+                              "Nomor Telepon",
                               style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 18,
-                              ),
+                                  fontWeight: FontWeight.w400, fontSize: 18),
                             ),
                           ],
                         ),
@@ -884,8 +726,54 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                           ),
                           child: Form(
                             child: TextField(
-                              readOnly: true,
-                              controller: passportNoController,
+                              controller: phoneNumberController,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 18.0,
+                                  horizontal: 20.0,
+                                ),
+                              ),
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 24),
+                        child: Row(
+                          children: [
+                            Text(
+                              "Alamat",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 18),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10.0,
+                          horizontal: 16.0,
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: textField,
+                            borderRadius: BorderRadius.circular(70.0),
+                          ),
+                          child: Form(
+                            child: TextField(
+                              controller: addressController,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                                 contentPadding: EdgeInsets.symmetric(
@@ -897,66 +785,116 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                           ),
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Container(
-                            margin: EdgeInsets.only(
-                              right: 10,
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 24),
+                        child: Row(
+                          children: [
+                            Text(
+                              "Kota",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 18),
                             ),
-                            child: IntrinsicWidth(
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  FilePickerResult? result =
-                                      await FilePicker.platform.pickFiles();
-
-                                  if (result != null &&
-                                      result.files.isNotEmpty) {
-                                    String? filePath = result.files.single.path;
-                                    if (filePath != null) {
-                                      File file = File(filePath);
-                                      // Handle the selected file here.
-                                      setState(() {
-                                        passportFile = file;
-                                        passportNoController.text =
-                                            file.path.split('/').last;
-                                        print(
-                                            'Selected file (No Passport): $file');
-                                        print(
-                                            'Passport File Path: ${passportFile?.path}');
-                                      });
-                                    } else {
-                                      // Handle the case where the path is null
-                                      print('File path is null');
-                                    }
-                                  } else {
-                                    // User canceled the picker
-                                    print('User canceled the picker');
-                                  }
-                                },
-                                style: ButtonStyle(
-                                  elevation: MaterialStateProperty.all(0),
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                    Colors.transparent,
-                                  ),
-                                ),
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    "+ Upload File",
-                                    style: TextStyle(
-                                      color: abu,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10.0,
+                          horizontal: 16.0,
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: textField,
+                            borderRadius: BorderRadius.circular(70.0),
+                          ),
+                          child: Form(
+                            child: TextField(
+                              controller: cityController,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 18.0,
+                                  horizontal: 20.0,
                                 ),
                               ),
                             ),
                           ),
-                        ],
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 24),
+                        child: Row(
+                          children: [
+                            Text(
+                              "Kartu Keluarga",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 18),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        height: 90,
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: ElevatedButton(
+                            onPressed: () => _showImageSourceDialog(true),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(right: 10 * 1),
+                                  child: Image.asset(
+                                    "assets/jemaah/tambah.png",
+                                    height: 40,
+                                    width: 20,
+                                  ),
+                                )
+                              ],
+                            ),
+                            style: ButtonStyle(
+                              elevation: MaterialStateProperty.all(0),
+                              backgroundColor:
+                                  MaterialStateProperty.all<Color>(textField),
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(70.0),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.all(16),
+                        child: buildImagePreview(
+                          selectedImage: kartuKeluargaImage,
+                          isKartuKeluarga: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    children: [
                       Container(
                         margin: EdgeInsets.only(bottom: 20),
                         child: Column(
@@ -966,7 +904,7 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                               child: Row(
                                 children: [
                                   Text(
-                                    "No Visa",
+                                    "No Passport",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w400,
                                       fontSize: 18,
@@ -988,7 +926,7 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                                 child: Form(
                                   child: TextField(
                                     readOnly: true,
-                                    controller: visaNoController,
+                                    controller: passportNoController,
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
                                       contentPadding: EdgeInsets.symmetric(
@@ -1013,6 +951,7 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                                         FilePickerResult? result =
                                             await FilePicker.platform
                                                 .pickFiles();
+
                                         if (result != null &&
                                             result.files.isNotEmpty) {
                                           String? filePath =
@@ -1021,13 +960,13 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                                             File file = File(filePath);
                                             // Handle the selected file here.
                                             setState(() {
-                                              visaFile = file;
-                                              visaNoController.text =
+                                              passportFile = file;
+                                              passportNoController.text =
                                                   file.path.split('/').last;
                                               print(
-                                                  'Selected file (No Visa): $file');
+                                                  'Selected file (No Passport): $file');
                                               print(
-                                                  'Visa File Path: ${visaFile?.path}');
+                                                  'Passport File Path: ${passportFile?.path}');
                                             });
                                           } else {
                                             // Handle the case where the path is null
@@ -1061,309 +1000,427 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(bottom: 20),
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(left: 24),
-                        child: Row(
-                          children: [
-                            Text(
-                              "Nama Ayah Kandung",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400, fontSize: 18),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 10.0,
-                          horizontal: 16.0,
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: textField,
-                            borderRadius: BorderRadius.circular(70.0),
-                          ),
-                          child: Form(
-                            child: TextField(
-                              controller: fatherNameController,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
-                                  vertical: 18.0,
-                                  horizontal: 20.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(bottom: 20),
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(left: 24),
-                        child: Row(
-                          children: [
-                            Text(
-                              "Tempat Lahir",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400, fontSize: 18),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 10.0,
-                          horizontal: 16.0,
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: textField,
-                            borderRadius: BorderRadius.circular(70.0),
-                          ),
-                          child: Form(
-                            child: TextField(
-                              controller: bornPlaceController,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
-                                  vertical: 18.0,
-                                  horizontal: 20.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(left: 24, top: 20),
-                      child: Text(
-                        "Tanggal Lahir",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w400, fontSize: 18),
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  width: double.infinity,
-                  height: 90,
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: textField,
-                        borderRadius: BorderRadius.circular(70.0),
-                      ),
-                      child: CupertinoButton(
-                        onPressed: () {
-                          showCupertinoModalPopup(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Scaffold(
-                                  backgroundColor: Colors.transparent,
-                                  body: Align(
-                                    alignment: Alignment.bottomCenter,
+                            Container(
+                              margin: EdgeInsets.only(bottom: 20),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(left: 24),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          "No Visa",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 10.0,
+                                      horizontal: 16.0,
+                                    ),
                                     child: Container(
-                                      width: double.infinity,
-                                      height: 250,
-                                      color: Colors.white,
-                                      child: CupertinoDatePicker(
-                                        backgroundColor: Colors.white,
-                                        initialDateTime: dateTime,
-                                        onDateTimeChanged: (DateTime newTime) {
-                                          setState(() {
-                                            dateTime = newTime;
-                                            // Format the date as needed (e.g., 'yyyy-MM-dd')
-                                            String formattedDate =
-                                                "${newTime.year}-${newTime.month}-${newTime.day}";
-                                            // Assign the formatted date to the controller
-                                            placeOfBirthController.text =
-                                                formattedDate;
-                                          });
-                                        },
-                                        use24hFormat: true,
-                                        mode: CupertinoDatePickerMode.date,
+                                      decoration: BoxDecoration(
+                                        color: textField,
+                                        borderRadius:
+                                            BorderRadius.circular(70.0),
+                                      ),
+                                      child: Form(
+                                        child: TextField(
+                                          readOnly: true,
+                                          controller: visaNoController,
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                              vertical: 18.0,
+                                              horizontal: 20.0,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: <Widget>[
+                                      Container(
+                                        margin: EdgeInsets.only(
+                                          right: 10,
+                                        ),
+                                        child: IntrinsicWidth(
+                                          child: ElevatedButton(
+                                            onPressed: () async {
+                                              FilePickerResult? result =
+                                                  await FilePicker.platform
+                                                      .pickFiles();
+                                              if (result != null &&
+                                                  result.files.isNotEmpty) {
+                                                String? filePath =
+                                                    result.files.single.path;
+                                                if (filePath != null) {
+                                                  File file = File(filePath);
+                                                  // Handle the selected file here.
+                                                  setState(() {
+                                                    visaFile = file;
+                                                    visaNoController.text = file
+                                                        .path
+                                                        .split('/')
+                                                        .last;
+                                                    print(
+                                                        'Selected file (No Visa): $file');
+                                                    print(
+                                                        'Visa File Path: ${visaFile?.path}');
+                                                  });
+                                                } else {
+                                                  // Handle the case where the path is null
+                                                  print('File path is null');
+                                                }
+                                              } else {
+                                                // User canceled the picker
+                                                print(
+                                                    'User canceled the picker');
+                                              }
+                                            },
+                                            style: ButtonStyle(
+                                              elevation:
+                                                  MaterialStateProperty.all(0),
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<
+                                                      Color>(
+                                                Colors.transparent,
+                                              ),
+                                            ),
+                                            child: Container(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "+ Upload File",
+                                                style: TextStyle(
+                                                  color: abu,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(bottom: 20),
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(left: 24),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Nama Ayah Kandung",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 18),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 10.0,
+                                horizontal: 16.0,
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: textField,
+                                  borderRadius: BorderRadius.circular(70.0),
+                                ),
+                                child: Form(
+                                  child: TextField(
+                                    controller: fatherNameController,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.symmetric(
+                                        vertical: 18.0,
+                                        horizontal: 20.0,
                                       ),
                                     ),
                                   ),
                                 ),
-                              );
-                            },
-                          );
-                        },
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "${dateTime.year}-${dateTime.month}-${dateTime.day}",
-                                style: TextStyle(color: abu),
                               ),
-                              Image.asset(
-                                "assets/jemaah/tanggalLahir.png",
-                                height: 35,
-                                width: 35,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(bottom: 20),
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(left: 24),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Tempat Lahir",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 18),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 20),
-                  child: Row(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(left: 24, bottom: 20),
-                        child: Text(
-                          "Pilih Pembayaran",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 30),
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                    color: Color.fromRGBO(141, 148, 168, 1),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(left: 20, right: 20),
-                        child: Image.asset("assets/home/topup.png"),
-                      ),
-                      DropdownButton<String>(
-                        hint: Text(
-                          'Select an option',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
-                        ),
-                        dropdownColor: abu,
-                        icon: Container(
-                          margin: EdgeInsets.only(left: 80 * 1),
-                          child: Image.asset("assets/home/dropdown_down.png"),
-                        ),
-                        items: items
-                            .map(
-                              (String item) => DropdownMenuItem<String>(
-                                value: item,
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      item,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.white,
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 10.0,
+                                horizontal: 16.0,
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: textField,
+                                  borderRadius: BorderRadius.circular(70.0),
+                                ),
+                                child: Form(
+                                  child: TextField(
+                                    controller: bornPlaceController,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.symmetric(
+                                        vertical: 18.0,
+                                        horizontal: 20.0,
                                       ),
                                     ),
-                                    SizedBox(
-                                        width:
-                                            10), // Beri jarak antara gambar dan teks
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(left: 24, top: 20),
+                            child: Text(
+                              "Tanggal Lahir",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 18),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        width: double.infinity,
+                        height: 90,
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: textField,
+                              borderRadius: BorderRadius.circular(70.0),
+                            ),
+                            child: CupertinoButton(
+                              onPressed: () {
+                                showCupertinoModalPopup(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Scaffold(
+                                        backgroundColor: Colors.transparent,
+                                        body: Align(
+                                          alignment: Alignment.bottomCenter,
+                                          child: Container(
+                                            width: double.infinity,
+                                            height: 250,
+                                            color: Colors.white,
+                                            child: CupertinoDatePicker(
+                                              backgroundColor: Colors.white,
+                                              initialDateTime: dateTime,
+                                              onDateTimeChanged:
+                                                  (DateTime newTime) {
+                                                setState(() {
+                                                  dateTime = newTime;
+                                                  // Format the date as needed (e.g., 'yyyy-MM-dd')
+                                                  String formattedDate =
+                                                      "${newTime.year}-${newTime.month}-${newTime.day}";
+                                                  // Assign the formatted date to the controller
+                                                  placeOfBirthController.text =
+                                                      formattedDate;
+                                                });
+                                              },
+                                              use24hFormat: true,
+                                              mode:
+                                                  CupertinoDatePickerMode.date,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "${dateTime.year}-${dateTime.month}-${dateTime.day}",
+                                      style: TextStyle(color: abu),
+                                    ),
+                                    Image.asset(
+                                      "assets/jemaah/tanggalLahir.png",
+                                      height: 35,
+                                      width: 35,
+                                    ),
                                   ],
                                 ),
                               ),
-                            )
-                            .toList(),
-                        value: selectedValue,
-                        onChanged: (String? value) {
-                          setState(() {
-                            selectedValue = value ?? '';
-                            bankController.text = value.toString();
-                            print(selectedValue);
-                          });
-                        },
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 20),
+                        child: Row(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(left: 24, bottom: 20),
+                              child: Text(
+                                "Pilih Pembayaran",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 30),
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          color: Color.fromRGBO(141, 148, 168, 1),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(left: 20, right: 20),
+                              child: Image.asset("assets/home/topup.png"),
+                            ),
+                            DropdownButton<String>(
+                              hint: Text(
+                                'Select an option',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              dropdownColor: abu,
+                              icon: Container(
+                                margin: EdgeInsets.only(left: 80 * 1),
+                                child: Image.asset(
+                                    "assets/home/dropdown_down.png"),
+                              ),
+                              items: items
+                                  .map(
+                                    (String item) => DropdownMenuItem<String>(
+                                      value: item,
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            item,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                              width:
+                                                  10), // Beri jarak antara gambar dan teks
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                              value: selectedValue,
+                              onChanged: (String? value) {
+                                setState(() {
+                                  selectedValue = value ?? '';
+                                  bankController.text = value.toString();
+                                  print(selectedValue);
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(
+                            left: 20, right: 20, bottom: 0, top: 30),
+                        child: ElevatedButton(
+                          onPressed: sendFormData,
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromRGBO(43, 69, 112, 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            minimumSize: Size(350, 50),
+                          ),
+                          child: Text(
+                            'Tambah Data',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(bottom: 20),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            clearForm();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromRGBO(245, 137, 77, 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            minimumSize: Size(350, 50),
+                          ),
+                          child: Text(
+                            'Hapus Data',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Container(
-                  padding:
-                      EdgeInsets.only(left: 20, right: 20, bottom: 0, top: 30),
-                  child: ElevatedButton(
-                    onPressed: sendFormData,
-                    style: ElevatedButton.styleFrom(
-                      primary: Color.fromRGBO(43, 69, 112, 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      minimumSize: Size(350, 50),
-                    ),
-                    child: Text(
-                      'Tambah Data',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(bottom: 20),
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      clearForm();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary: Color.fromRGBO(245, 137, 77, 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      minimumSize: Size(350, 50),
-                    ),
-                    child: Text(
-                      'Hapus Data',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ])));
+              ])));
   }
 }

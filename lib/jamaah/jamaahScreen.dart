@@ -209,7 +209,7 @@ class _JamaahScreenState extends State<JamaahScreen> {
                         return Container(
                           margin: const EdgeInsets.only(bottom: 20.0),
                           padding: const EdgeInsets.only(
-                              left: 20.0, top: 10, bottom: 10, right: 20),
+                              left: 20.0, top: 10, bottom: 10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20.0),
                             color: backgroundColor,
@@ -301,7 +301,7 @@ class _JamaahScreenState extends State<JamaahScreen> {
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         style: ElevatedButton.styleFrom(
-                                          minimumSize: Size(75, 25),
+                                          minimumSize: Size(55, 25),
                                           primary:
                                               Color.fromRGBO(43, 69, 112, 1),
                                           shape: RoundedRectangleBorder(
@@ -340,7 +340,7 @@ class _JamaahScreenState extends State<JamaahScreen> {
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         style: ElevatedButton.styleFrom(
-                                          minimumSize: Size(85, 24),
+                                          minimumSize: Size(55, 24),
                                           primary: primaryColor,
                                           shape: RoundedRectangleBorder(
                                             borderRadius:

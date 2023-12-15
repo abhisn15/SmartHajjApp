@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:SmartHajj/auth/loginScreen.dart';
+import 'package:SmartHajj/dashboard/productDetail/SnapToken.dart';
 import 'package:SmartHajj/dashboard/topup/topupTabunganScreen.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
@@ -32,7 +34,107 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
     super.initState();
     pilgrimId = widget.item['pilgrim_id'].toString();
     print(pilgrimId);
-    // Fetch Jamaah data when the screen is initialized
+  }
+
+  Future<void> storeSelectedJamaah(String savingsId, String pilgrimId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selectedSavingsId', savingsId);
+    await prefs.setString('selectedPilgrimId', pilgrimId);
+  }
+
+  Future<void> sendFormData() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+      String? savingsId = prefs.getString('selectedSavingsId');
+      String? pilgrimId = prefs.getString('selectedPilgrimId');
+      print("saving: $savingsId");
+      print("pilgrim: $pilgrimId");
+
+      if (token == null || savingsId == null || pilgrimId == null) {
+        print("Required data is missing");
+        return;
+      }
+
+      var data = FormData.fromMap({
+        'saving_id': savingsId,
+        'pilgrim_id': pilgrimId,
+      });
+      Dio dio = Dio();
+
+      // Make the POST request using Dio
+      var response = await dio.post(
+        'https://smarthajj.coffeelabs.id/api/topupPayment',
+        data: data,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = response.data;
+        print('Snap Token: ${responseData['data']}');
+
+        var paymentUrl = Uri.parse(
+            'https://smarthajj.coffeelabs.id/pay/mobile/${responseData['data']}');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  SnapToken(paymentUrl: paymentUrl.toString())),
+        );
+        print('Payment process initiated successfully');
+      } else {
+        // Handle the case where the API response status code is not 200
+        print(
+            'Error: API Response - ${response.statusCode}, ${response.statusMessage}');
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: 'Transaksi Gagal',
+          desc: 'Terdapat error saat melakukan transaksi',
+          btnOkOnPress: () {},
+          btnOkColor: Colors.red,
+        )..show();
+      }
+    } on DioException catch (e) {
+      // Something happened in setting up or sending the request that triggered an Error
+      if (e.response != null) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx and is also not 304.
+        print('DioError - Response Data: ${e.response!.data}');
+        print('DioError - Status: ${e.response!.statusCode}');
+      } else {
+        // Something went wrong in setting up or sending the request
+        print('DioError - Request: ${e.requestOptions}');
+        print('DioError - Message: ${e.message}');
+      }
+      AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: 'Transaksi Gagal',
+          desc: 'Terdapat error saat melakukan transaksi',
+          btnOkOnPress: () {},
+          btnOkColor: Colors.red)
+        ..show();
+    } catch (e) {
+      // Handle generic exceptions
+      print('Error: $e');
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.rightSlide,
+        title: 'Transaksi Gagal',
+        desc: 'Terdapat error saat melakukan transaksi',
+        btnOkOnPress: () {},
+        btnOkColor: Colors.red,
+      )..show();
+    }
   }
 
   Future<Map<String, dynamic>> fetchDataJamaahProfile() async {
@@ -195,7 +297,7 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return Center(
                         child: Text(
-                      'Belum ada Jamaah yang menabung!',
+                      'Jamaah belum menabung!',
                       style: TextStyle(color: Colors.white),
                     ));
                   } else {
@@ -204,7 +306,6 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                     if (jamaah == null || jamaah.isEmpty) {
                       return Center(child: Text('Jamaah data is empty'));
                     }
-
                     return ListView.builder(
                         itemCount: 1,
                         itemBuilder: (context, index) {
@@ -242,7 +343,7 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                                   clipBehavior: Clip.none,
                                   margin: EdgeInsets.only(top: 8),
                                   child: Text(
-                                    'phone',
+                                    jamaah['pilgrim_phone'].toString(),
                                     style: TextStyle(
                                       color: Color.fromRGBO(141, 148, 168, 1),
                                       fontSize: 12,
@@ -253,7 +354,7 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                                 Container(
                                   margin: EdgeInsets.only(top: 8),
                                   child: Text(
-                                    'Transfer on Dec 2, 2020',
+                                    'NIK: ${jamaah['pilgrim_nik']}',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,
@@ -261,17 +362,55 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                                     ),
                                   ),
                                 ),
-                                Container(
-                                  clipBehavior: Clip.none,
-                                  margin: EdgeInsets.only(top: 15),
-                                  child: Text(
-                                    deposit,
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      color: Color.fromRGBO(255, 255, 255, 1),
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
+                                FutureBuilder(
+                                  future: fetchDataJamaahProfile(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      // If the Future is still running, display a loading indicator
+                                      return Center(
+                                          child: CircularProgressIndicator());
+                                    } else if (snapshot.hasError) {
+                                      return Text('Error: ${snapshot.error}');
+                                    } else if (!snapshot.hasData ||
+                                        snapshot.data!.isEmpty) {
+                                      return Center(
+                                          child: Text(
+                                        'Belum ada Jamaah yang menabung!',
+                                        style: TextStyle(color: Colors.white),
+                                      ));
+                                    } else {
+                                      Map<String, dynamic> total =
+                                          snapshot.data as Map<String, dynamic>;
+                                      if (total == null || total.isEmpty) {
+                                        return Center(
+                                            child:
+                                                Text('Jamaah data is empty'));
+                                      }
+                                      var deposit = double.tryParse(
+                                              total['total'].toString()) ??
+                                          0.0;
+                                      String formattedDeposit =
+                                          NumberFormat.currency(
+                                                  locale: 'id',
+                                                  symbol: 'Rp ',
+                                                  decimalDigits: 0)
+                                              .format(deposit);
+                                      return Container(
+                                        clipBehavior: Clip.none,
+                                        margin: EdgeInsets.only(top: 15),
+                                        child: Text(
+                                          formattedDeposit,
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                            color: Color.fromRGBO(
+                                                255, 255, 255, 1),
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
                                 ),
                                 Container(
                                   clipBehavior: Clip.none,
@@ -311,7 +450,6 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
           //         String formattedTotal = NumberFormat.currency(
           //                 locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0)
           //             .format(total);
-
           //         return ListView.builder(
           //             itemCount: 1,
           //             itemBuilder: (context, index) {
@@ -426,7 +564,6 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                         if (jamaah == null || jamaah.isEmpty) {
                           return Center(child: Text('Jamaah data is empty'));
                         }
-
                         return ListView.builder(
                             itemCount: 1,
                             itemBuilder: (context, index) {
@@ -441,164 +578,184 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                                   .format(totalSaldo);
                               return Container(
                                 height: 800,
-                                child: Expanded(
-                                  child: ListView(
-                                    controller: scrollController,
-                                    children: [
-                                      Column(
+                                child: Column(
+                                  children: [
+                                    Expanded(
+                                      child: ListView(
+                                        controller: scrollController,
                                         children: [
-                                          Container(
-                                            child: Text(
-                                              "____",
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w700,
+                                          Column(
+                                            children: [
+                                              Container(
+                                                child: Text(
+                                                  "____",
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(top: 20),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10, vertical: 20),
-                                            width: double.infinity,
-                                            decoration: BoxDecoration(
-                                                color: Color.fromRGBO(
-                                                    141, 148, 168, 1),
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(5))),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                    child: Image.network(
-                                                  "https://smarthajj.coffeelabs.id/storage/package/1702581120_image-removebg-preview%20(5).png",
-                                                  width: 140,
-                                                  height: 140,
-                                                )),
-                                                Column(
+                                              Container(
+                                                margin:
+                                                    EdgeInsets.only(top: 20),
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 10,
+                                                    vertical: 20),
+                                                width: double.infinity,
+                                                decoration: BoxDecoration(
+                                                    color: Color.fromRGBO(
+                                                        141, 148, 168, 1),
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                5))),
+                                                child: Row(
                                                   children: [
                                                     Container(
-                                                      margin: EdgeInsets.only(
-                                                          left: 10),
-                                                      width: 200,
-                                                      child: Column(
-                                                        children: [
-                                                          Text(
-                                                            "Paket Tabungan ${jamaah['package_name']}",
-                                                            style: TextStyle(
-                                                                fontSize: 16,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w700,
-                                                                color:
-                                                                    defaultColor),
-                                                          ),
-                                                          Container(
-                                                            margin:
-                                                                EdgeInsets.only(
-                                                                    top: 5),
-                                                            child: Row(
-                                                              children: [
-                                                                Text(
-                                                                  "Jumlah Tabungan: $deposit",
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          11,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w700,
-                                                                      color:
-                                                                          defaultColor),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          Container(
-                                                            margin:
-                                                                EdgeInsets.only(
-                                                                    top: 5),
-                                                            child: Row(
-                                                              children: [
-                                                                Text(
-                                                                  "VA: ${jamaah['va_number']}",
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          13,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w700,
-                                                                      color:
-                                                                          defaultColor),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          Row(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
+                                                        child: Image.network(
+                                                      "https://smarthajj.coffeelabs.id/storage/package/1702581120_image-removebg-preview%20(5).png",
+                                                      width: 140,
+                                                      height: 140,
+                                                    )),
+                                                    Column(
+                                                      children: [
+                                                        Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 10),
+                                                          width: 200,
+                                                          child: Column(
                                                             children: [
+                                                              Text(
+                                                                "Paket Tabungan ${jamaah['package_name']}",
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w700,
+                                                                    color:
+                                                                        defaultColor),
+                                                              ),
                                                               Container(
-                                                                child:
-                                                                    ElevatedButton(
-                                                                  onPressed:
-                                                                      () {
-                                                                    Navigator
-                                                                        .push(
-                                                                      context,
-                                                                      MaterialPageRoute(
-                                                                        builder:
-                                                                            (context) =>
-                                                                                TopupTabunganScreen(),
-                                                                      ),
-                                                                    );
-                                                                  },
-                                                                  style:
-                                                                      ButtonStyle(
-                                                                    minimumSize:
-                                                                        MaterialStateProperty.all(Size(
-                                                                            30,
-                                                                            30)),
-                                                                    backgroundColor:
-                                                                        MaterialStateProperty.all(
-                                                                            primaryColor),
-                                                                    shape:
-                                                                        MaterialStateProperty
-                                                                            .all(
-                                                                      RoundedRectangleBorder(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(20),
-                                                                      ),
+                                                                margin: EdgeInsets
+                                                                    .only(
+                                                                        top: 5),
+                                                                child: Row(
+                                                                  children: [
+                                                                    Text(
+                                                                      "Jumlah Tabungan: $deposit",
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              11,
+                                                                          fontWeight: FontWeight
+                                                                              .w700,
+                                                                          color:
+                                                                              defaultColor),
                                                                     ),
-                                                                    // Sesuaikan properti lain sesuai kebutuhan
-                                                                  ),
-                                                                  child: Text(
-                                                                    "Topup Tabungan",
-                                                                    style:
-                                                                        TextStyle(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w600,
-                                                                    ),
-                                                                  ),
+                                                                  ],
                                                                 ),
                                                               ),
+                                                              Container(
+                                                                margin: EdgeInsets
+                                                                    .only(
+                                                                        top: 5),
+                                                                child: Row(
+                                                                  children: [
+                                                                    Text(
+                                                                      "VA: ${jamaah['va_number']}",
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          fontWeight: FontWeight
+                                                                              .w700,
+                                                                          color:
+                                                                              defaultColor),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Container(
+                                                                    child:
+                                                                        ElevatedButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        AwesomeDialog(
+                                                                            context:
+                                                                                context,
+                                                                            dialogType: DialogType
+                                                                                .question,
+                                                                            animType: AnimType
+                                                                                .rightSlide,
+                                                                            title:
+                                                                                'Apakah anda yakin untuk melakukan Topup?',
+                                                                            btnOkOnPress:
+                                                                                () async {
+                                                                              await storeSelectedJamaah(
+                                                                                jamaah['savings_id'].toString(),
+                                                                                jamaah['pilgrim_id'].toString(),
+                                                                              );
+                                                                              sendFormData();
+                                                                            },
+                                                                            btnCancelOnPress:
+                                                                                () {},
+                                                                            btnOkColor:
+                                                                                Colors.green[600],
+                                                                            btnCancelColor: Colors.red)
+                                                                          ..show();
+                                                                        // Simpan ID yang dipilih sebelum mengirim formulir
+                                                                      },
+                                                                      style:
+                                                                          ButtonStyle(
+                                                                        minimumSize: MaterialStateProperty.all(Size(
+                                                                            30,
+                                                                            30)),
+                                                                        backgroundColor:
+                                                                            MaterialStateProperty.all(primaryColor),
+                                                                        shape: MaterialStateProperty
+                                                                            .all(
+                                                                          RoundedRectangleBorder(
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(20),
+                                                                          ),
+                                                                        ),
+                                                                        // Sesuaikan properti lain sesuai kebutuhan
+                                                                      ),
+                                                                      child:
+                                                                          Text(
+                                                                        "Topup Tabungan",
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          fontWeight:
+                                                                              FontWeight.w600,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              )
                                                             ],
-                                                          )
-                                                        ],
-                                                      ),
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ],
                                                 ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               );
                             });

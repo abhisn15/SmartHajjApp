@@ -382,10 +382,11 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
           title: 'Ubah Data Berhasil',
           desc: 'Form Ubah Data Jamaah berhasil!!',
           btnOkOnPress: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => BottomNavigationJamaah()));
+            Navigator.of(context).pushAndRemoveUntil(
+              // Navigate to login screen and remove all previous routes
+              MaterialPageRoute(builder: (context) => BottomNavigationJamaah()),
+              (Route<dynamic> route) => false,
+            );
           },
         )..show();
       } else {
@@ -475,7 +476,14 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
             animType: AnimType.rightSlide,
             title: 'Berhasil Menghapus Jamaah',
             desc: 'Form Tambah Data berhasil!!',
-            btnOkOnPress: () {},
+            btnOkOnPress: () {
+              Navigator.of(context).pushAndRemoveUntil(
+                // Navigate to login screen and remove all previous routes
+                MaterialPageRoute(
+                    builder: (context) => BottomNavigationJamaah()),
+                (Route<dynamic> route) => false,
+              );
+            },
             btnOkColor: Colors.red)
           ..show();
       } else {

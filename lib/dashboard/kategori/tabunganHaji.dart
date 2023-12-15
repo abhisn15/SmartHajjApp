@@ -188,7 +188,7 @@ class _TabunganHajiState extends State<TabunganHaji> {
               //   ),
               // ),
               Container(
-                  margin: EdgeInsets.only(left: 10, right: 24),
+                  margin: EdgeInsets.only(left: 0, right: 24),
                   height: 800,
                   child: FutureBuilder(
                       future: listKategori,
@@ -226,8 +226,8 @@ class _TabunganHajiState extends State<TabunganHaji> {
                                 String detail = kategoriList['detail'] ??
                                     ''; // Replace with your actual map access
                                 List<String> words = detail.split(' ');
-                                String splitText = words.length >= 3
-                                    ? '${words[1]} ${words[2]} ${words[3]}.....'
+                                String splitText = words.length >= 7
+                                    ? '${words[0]} ${words[1]} ${words[2]} ${words[3]} ${words[4]} ${words[5]}.....'
                                     : detail;
                                 return Container(
                                   margin: EdgeInsets.only(top: 20, bottom: 30),
@@ -238,9 +238,13 @@ class _TabunganHajiState extends State<TabunganHaji> {
                                   ),
                                   child: Row(
                                     children: [
-                                      Image.network(
-                                        "https://smarthajj.coffeelabs.id/storage/${kategoriList['image']}",
-                                        width: 180,
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20)),
+                                        child: Image.network(
+                                          "https://smarthajj.coffeelabs.id/storage/${kategoriList['image']}",
+                                          height: 140,
+                                        ),
                                       ),
                                       Container(
                                         margin:
@@ -255,7 +259,7 @@ class _TabunganHajiState extends State<TabunganHaji> {
                                             Container(
                                               width: 150,
                                               child: Text(
-                                                'PAKET TABUNGAN ${kategoriList['name']}',
+                                                '${kategoriList['name']}',
                                                 style: TextStyle(
                                                   fontSize: 14,
                                                   color: Color.fromRGBO(

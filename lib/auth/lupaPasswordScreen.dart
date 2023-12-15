@@ -73,12 +73,11 @@ class _LupaPasswordState extends State<LupaPasswordScreen> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
-                      // Navigate to sendMail screen
-                      context,
+                    Navigator.of(context).pushAndRemoveUntil(
+                      // Navigate to login screen and remove all previous routes
                       MaterialPageRoute(
-                        builder: (context) => CheckCodeScreen(),
-                      ),
+                          builder: (context) => CheckCodeScreen()),
+                      (Route<dynamic> route) => false,
                     );
                   },
                   child: Text("OK"),

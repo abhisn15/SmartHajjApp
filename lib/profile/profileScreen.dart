@@ -224,7 +224,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       margin: EdgeInsets.only(top: 20.0),
                       padding: EdgeInsets.only(top: 10.0, left: 24, right: 24),
                       width: double.infinity,
-                      height: 920,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(20),
@@ -636,6 +635,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                               ),
                               Container(
+                                margin: EdgeInsets.only(bottom: 20),
                                 child:
                                     Image.asset('assets/profile/partner.png'),
                               ),

@@ -1,4 +1,5 @@
 import 'package:SmartHajj/BottomNavigationBar.dart';
+import 'package:SmartHajj/BottomNavigationDompet.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -31,8 +32,11 @@ class _SnapTokenState extends State<SnapToken> {
             title: 'Berhasil!',
             desc: 'Proses transaksi anda Sukses!',
             btnOkOnPress: () {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => BottomNavigation()));
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                    builder: (context) => BottomNavigationDompet()),
+                (Route<dynamic> route) => false,
+              );
             },
           )..show();
         }

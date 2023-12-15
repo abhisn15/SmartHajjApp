@@ -975,7 +975,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                           ),
                           Container(
-                            height: 240.0,
+                            height: 250.0,
                             margin: const EdgeInsets.only(
                                 top: 20.0, bottom: 20, left: 0),
                             child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -1034,52 +1034,61 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                             primary: Colors.transparent,
                                             elevation: 0,
                                           ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Container(
-                                                child: Image.network(
-                                                  'https://smarthajj.coffeelabs.id/storage/${product["image"]}',
-                                                  width: 160,
-                                                  height: 190,
-                                                  fit: BoxFit.cover,
+                                          child: Container(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Container(
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    child: Image.network(
+                                                      'https://smarthajj.coffeelabs.id/storage/${product["image"]}',
+                                                      width: 160,
+                                                      height: 190,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 5.0),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: <Widget>[
-                                                    Container(
-                                                      width: 150,
-                                                      alignment:
-                                                          Alignment.center,
-                                                      child: Text(
-                                                        product["name"],
-                                                        style: TextStyle(
-                                                          fontSize: 16,
-                                                          color:
-                                                              Color(0xFF2B4570),
-                                                          fontWeight:
-                                                              FontWeight.w800,
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 5.0),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      Container(
+                                                        width: 160,
+                                                        child: Text(
+                                                          product["name"],
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          style: TextStyle(
+                                                            fontSize: 16,
+                                                            color: Color(
+                                                                0xFF2B4570),
+                                                            fontWeight:
+                                                                FontWeight.w800,
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                    // Text(
-                                                    //   "Berangkat ${product['date']}-${product['month']}-${product['year']}",
-                                                    //   style: TextStyle(
-                                                    //     fontSize: 14.0,
-                                                    //     color: Color.fromRGBO(
-                                                    //         141, 148, 168, 1),
-                                                    //   ),
-                                                    // ),
-                                                  ],
+                                                      // Text(
+                                                      //   "Berangkat ${product['date']}-${product['month']}-${product['year']}",
+                                                      //   style: TextStyle(
+                                                      //     fontSize: 14.0,
+                                                      //     color: Color.fromRGBO(
+                                                      //         141, 148, 168, 1),
+                                                      //   ),
+                                                      // ),
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       );
