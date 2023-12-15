@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:SmartHajj/auth/loginScreen.dart';
 import 'package:SmartHajj/jamaah/editJamaahScreen.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:SmartHajj/jamaah/detailJamaahScreen.dart';
 import 'package:SmartHajj/jamaah/tambahJamaahScreen.dart';
@@ -25,6 +27,37 @@ class _JamaahScreenState extends State<JamaahScreen> {
     fetchDataJamaah();
   }
 
+  Future<Map<String, dynamic>> fetchDetailJamaah(String pilgrimId) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      if (token == null) {
+        throw Exception('Token not available');
+      }
+
+      HttpClient httpClient = HttpClient();
+      httpClient.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+
+      var request = await httpClient.getUrl(
+        Uri.parse('https://smarthajj.coffeelabs.id/api/getPayment/$pilgrimId'),
+      );
+      request.headers.add('Authorization', 'Bearer $token');
+
+      var response = await request.close();
+      String responseBody = await response.transform(utf8.decoder).join();
+
+      if (response.statusCode == 200) {
+        return jsonDecode(responseBody);
+      } else {
+        throw Exception('Failed to load jamaah detail');
+      }
+    } catch (e) {
+      throw Exception('Error fetching jamaah detail: $e');
+    }
+  }
+
   Future<List<Map<String, dynamic>>> fetchDataJamaah() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -33,6 +66,24 @@ class _JamaahScreenState extends State<JamaahScreen> {
       String? agentId = prefs.getString('agentId');
 
       if (token == null) {
+        AwesomeDialog(
+            dismissOnTouchOutside: false,
+            context: context,
+            dialogType: DialogType.error,
+            animType: AnimType.rightSlide,
+            title: 'Token Expired',
+            desc: 'Token anda sudah kadaluarsa, harap login kembali!',
+            btnOkOnPress: () {
+              Navigator.pushReplacement(
+                // Navigate to sendMail screen
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginScreen(),
+                ),
+              );
+            },
+            btnOkColor: Colors.red)
+          ..show();
         throw Exception('Token not available');
       }
 
@@ -165,11 +216,14 @@ class _JamaahScreenState extends State<JamaahScreen> {
                           ),
                           child: Row(
                             children: [
-                              Image.network(
-                                // Replace the placeholder with the actual image URL logic
-                                'https://smarthajj.coffeelabs.id/storage/${item["f_pic"]}',
-                                width: 100,
-                                fit: BoxFit.cover,
+                              ClipOval(
+                                child: Image.network(
+                                  // Replace the placeholder with the actual image URL logic
+                                  'https://smarthajj.coffeelabs.id/storage/${item["f_pic"]}',
+                                  width: 110,
+                                  height: 110,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                               const SizedBox(width: 20),
                               Column(
@@ -275,8 +329,7 @@ class _JamaahScreenState extends State<JamaahScreen> {
                                               builder: (context) =>
                                                   EditJamaahScreen(
                                                 agentId: agentId,
-                                                pilgrimId: item['data']
-                                                    ["pilgrim_id"],
+                                                pilgrimId: item["pilgrim_id"],
                                                 item: item,
                                               ),
                                             ),

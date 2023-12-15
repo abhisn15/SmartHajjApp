@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:SmartHajj/BottomNavigationDompet.dart';
 import 'package:SmartHajj/Dashboard/CustomCategoryButton.dart';
 import 'package:SmartHajj/Dashboard/CustomInformationButton.dart';
+import 'package:SmartHajj/auth/loginScreen.dart';
 import 'package:SmartHajj/dashboard/checkoutDP.dart';
 import 'package:SmartHajj/dashboard/informasi/hewanQurban/hewanQurban.dart';
 import 'package:SmartHajj/dashboard/informasi/infoHotel/infoHotel.dart';
@@ -15,9 +15,10 @@ import 'package:SmartHajj/dashboard/informasi/infoVisa/infoVisa.dart';
 import 'package:SmartHajj/dashboard/informasi/manasikHaji/manasikHaji.dart';
 import 'package:SmartHajj/dashboard/informasi/manasikUmroh/manasikUmroh.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganHaji.dart';
-import 'package:SmartHajj/dashboard/kategori/tabunganLangsung.dart';
+import 'package:SmartHajj/dashboard/kategori/berangkatLangsung.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganQurban.dart';
 import 'package:SmartHajj/dashboard/kategori/tabunganUmroh.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:dio/dio.dart';
 
 import 'package:flutter/material.dart';
@@ -95,6 +96,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
       String? agentId = prefs.getString('agentId');
 
       if (token == null) {
+        AwesomeDialog(
+            context: context,
+            dialogType: DialogType.error,
+            animType: AnimType.rightSlide,
+            title: 'Token Expired',
+            desc: 'Token anda sudah kadaluarsa, harap login kembali!',
+            btnOkOnPress: () {
+              Navigator.pushReplacement(
+                // Navigate to sendMail screen
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginScreen(),
+                ),
+              );
+            },
+            btnOkColor: Colors.red)
+          ..show();
         throw Exception('Token not available');
       }
 
@@ -1093,7 +1111,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => TabunganLangsung(),
+                                      builder: (context) => BerangkatLangsung(),
                                     ),
                                   );
                                 },

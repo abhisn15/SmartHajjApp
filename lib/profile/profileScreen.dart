@@ -6,6 +6,7 @@ import 'package:SmartHajj/profile/bantuanScreen.dart';
 import 'package:SmartHajj/profile/faqScreen.dart';
 import 'package:SmartHajj/profile/gantiPasswordScreen.dart';
 import 'package:SmartHajj/profile/kebijakanPrivasiScreen.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:ui';
@@ -39,10 +40,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
       String? token = prefs.getString('token');
 
       if (token == null) {
-        // Handle the case where the token is not available
+        AwesomeDialog(
+            dismissOnTouchOutside: false,
+            context: context,
+            dialogType: DialogType.error,
+            animType: AnimType.rightSlide,
+            title: 'Token Expired',
+            desc: 'Token anda sudah kadaluarsa, harap login kembali!',
+            btnOkOnPress: () {
+              Navigator.pushReplacement(
+                // Navigate to sendMail screen
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginScreen(),
+                ),
+              );
+            },
+            btnOkColor: Colors.red)
+          ..show();
         throw Exception('Token not available');
       }
-
       HttpClient httpClient = new HttpClient();
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
@@ -73,41 +90,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    _logout() async {
-      try {
-        String? apiLogout = dotenv.env['API_LOGOUT'];
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        String? token = prefs.getString('token');
+  _logout() async {
+    try {
+      String? apiLogout = dotenv.env['API_LOGOUT'];
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
 
-        HttpClient httpClient = new HttpClient();
-        httpClient.badCertificateCallback =
-            (X509Certificate cert, String host, int port) => true;
+      HttpClient httpClient = new HttpClient();
+      httpClient.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
 
-        if (token != null) {
-          if (apiLogout != null) {
-            request = await httpClient.postUrl(Uri.parse(apiLogout));
-          }
-
-          request.headers.add('Authorization', 'Bearer $token');
-
-          HttpClientResponse response = await request.close();
-
-          if (response.statusCode == 200) {
-            print('Logout successfully');
-          } else {
-            print('Logout failed');
-          }
+      if (token != null) {
+        if (apiLogout != null) {
+          request = await httpClient.postUrl(Uri.parse(apiLogout));
         }
 
-        // Remove token from shared preferences
-        prefs.remove('token');
-      } catch (e) {
-        print('Error during logout: $e');
-      }
-    }
+        request.headers.add('Authorization', 'Bearer $token');
 
+        HttpClientResponse response = await request.close();
+
+        if (response.statusCode == 200) {
+          showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Logout Berhasil"),
+                content: Text("Logout telah berhasil!"),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        // Navigate to login screen and remove all previous routes
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                        (Route<dynamic> route) => false,
+                      );
+                    },
+                    child: Text("OK"),
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          print('Logout failed');
+        }
+      }
+
+      // Remove token from shared preferences
+      prefs.remove('token');
+      prefs.remove('agentId');
+    } catch (e) {
+      print('Error during logout: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
           future: apiData,
@@ -496,15 +535,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Container(
                             padding: EdgeInsets.only(top: 24, bottom: 20),
                             child: ElevatedButton(
-                              onPressed: () async {
-                                await _logout();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => LoginScreen(),
-                                  ),
-                                );
-                              },
+                              onPressed: _logout,
                               style: ElevatedButton.styleFrom(
                                 primary: Color.fromRGBO(43, 69, 112, 1),
                                 shape: RoundedRectangleBorder(

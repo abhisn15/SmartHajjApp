@@ -24,6 +24,7 @@ class _SnapTokenState extends State<SnapToken> {
         print("Message received: ${message.message}");
         if (message.message == 'success') {
           AwesomeDialog(
+            dismissOnTouchOutside: false,
             context: context,
             dialogType: DialogType.success,
             animType: AnimType.rightSlide,

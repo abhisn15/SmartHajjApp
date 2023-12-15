@@ -79,6 +79,7 @@ class _EditProfileState extends State<EditProfileScreen> {
         if (response.statusCode == 200) {
           print('Profile berhasil diupdate');
           showDialog(
+            barrierDismissible: false,
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
@@ -87,7 +88,6 @@ class _EditProfileState extends State<EditProfileScreen> {
                 actions: [
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).pop(); // Close the dialog
                       Navigator.pushReplacement(
                         // Navigate to login screen
                         context,

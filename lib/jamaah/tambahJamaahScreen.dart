@@ -387,6 +387,7 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
       if (response.statusCode == 200) {
         print('Data saved successfully');
         AwesomeDialog(
+          dismissOnTouchOutside: false,
           context: context,
           dialogType: DialogType.success,
           animType: AnimType.rightSlide,
@@ -460,8 +461,8 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
           )
         : Image.network(
             isKartuKeluarga
-                ? "https://smarthajj.coffeelabs.id/storage/pilgrim_pict/1701386653_flat-business-man-user-profile-avatar-icon-vector-4333097.jpg"
-                : "https://smarthajj.coffeelabs.id/storage/pilgrim_pict/1701386653_flat-business-man-user-profile-avatar-icon-vector-4333097.jpg", // Replace with your other placeholder image
+                ? "https://www.mangaip.com/wp-content/uploads/2023/09/membuat-profil-wa-kosong.png"
+                : "https://www.mangaip.com/wp-content/uploads/2023/09/membuat-profil-wa-kosong.png", // Replace with your other placeholder image
             height: 100,
             width: 100,
             fit: BoxFit.cover,

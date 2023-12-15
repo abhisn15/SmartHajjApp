@@ -1,28 +1,28 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:SmartHajj/auth/checkCodeScreeen.dart';
+
 import 'package:SmartHajj/auth/daftarScreen.dart';
+import 'package:SmartHajj/auth/loginScreen.dart';
+import 'package:SmartHajj/auth/resetPasswordScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
 import 'dart:ui';
 
-class LupaPasswordScreen extends StatefulWidget {
-  const LupaPasswordScreen({Key? key}) : super(key: key);
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+class CheckCodeScreen extends StatefulWidget {
   @override
-  _LupaPasswordState createState() => _LupaPasswordState();
+  _CheckCodeScreenState createState() => _CheckCodeScreenState();
 }
 
-class _LupaPasswordState extends State<LupaPasswordScreen> {
+class _CheckCodeScreenState extends State<CheckCodeScreen> {
   late HttpClientRequest request;
   void showAlert(String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Send Email"),
+          title: Text("Kode"),
           content: Text(message),
           actions: [
             TextButton(
@@ -35,27 +35,27 @@ class _LupaPasswordState extends State<LupaPasswordScreen> {
     );
   }
 
-  TextEditingController emailController = TextEditingController();
+  TextEditingController codeController = TextEditingController();
 
-  void sendMail(String email) async {
-    if (email.isEmpty) {
-      showAlert("Email anda tidak valid. Harap isi semua kolom.");
+  void sendMail(String code) async {
+    if (code.isEmpty) {
+      showAlert("Kode anda tidak valid. Harap isi semua kolom.");
       return;
     }
 
     try {
-      String? apiSendMail = dotenv.env['API_SENDMAIL'];
+      String? apiConfirmCode = dotenv.env['API_CONFIRMCODE'];
       HttpClient httpClient = new HttpClient();
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
 
-      if (apiSendMail != null) {
-        request = await httpClient.postUrl(Uri.parse(apiSendMail));
+      if (apiConfirmCode != null) {
+        request = await httpClient.postUrl(Uri.parse(apiConfirmCode));
       }
 
       // Add headers and body to the request
       request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
-      request.write('email=$email');
+      request.write('code=$code');
 
       HttpClientResponse response = await request.close();
 
@@ -63,13 +63,13 @@ class _LupaPasswordState extends State<LupaPasswordScreen> {
         // Reading response data
         String responseBody = await response.transform(utf8.decoder).join();
         var data = jsonDecode(responseBody);
-        print('Send Email successfully');
+        print('Confirm Code successfully');
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text("Berhasil mengirim kode"),
-              content: Text("Silahkan cek email anda atau folder spam!!"),
+              title: Text("Berhasil mengkonfirmasi kode"),
+              content: Text("Kode anda valid!"),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -77,7 +77,7 @@ class _LupaPasswordState extends State<LupaPasswordScreen> {
                       // Navigate to sendMail screen
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CheckCodeScreen(),
+                        builder: (context) => ResetPasswordScreen(),
                       ),
                     );
                   },
@@ -99,13 +99,13 @@ class _LupaPasswordState extends State<LupaPasswordScreen> {
 
         return;
       } else {
-        print('Login Failed: ${response.statusCode}');
-        showAlert("Send Email anda tidak valid. Silakan coba lagi.");
+        print('Kode Failed: ${response.statusCode}');
+        showAlert("Kode anda tidak valid. Silakan coba lagi.");
         return;
       }
     } catch (e) {
       print('Error during sendMail: $e');
-      showAlert("Send Email anda tidak valid. Terjadi Kesalahan.");
+      showAlert("Kode anda tidak valid. Terjadi Kesalahan.");
       return;
     }
   }
@@ -123,7 +123,9 @@ class _LupaPasswordState extends State<LupaPasswordScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              SizedBox(height: 30.0),
+              SizedBox(
+                height: 30,
+              ),
               Container(
                 child: Image.asset(
                   'assets/icon_app.png',
@@ -134,7 +136,7 @@ class _LupaPasswordState extends State<LupaPasswordScreen> {
               Padding(
                 padding: EdgeInsets.only(bottom: 30.0),
                 child: Text(
-                  "FORGOT PASSWORD",
+                  "CEK KODE",
                   style: TextStyle(
                     fontSize: 24.0,
                     fontWeight: FontWeight.bold,
@@ -143,26 +145,25 @@ class _LupaPasswordState extends State<LupaPasswordScreen> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: 10.0,
-                  horizontal: 16.0,
-                ),
+                padding: EdgeInsets.all(16.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Color(0xFFf4f4f4), // Warna latar belakang email
-                    borderRadius: BorderRadius.circular(70.0), // Border radius
+                    color: Color(0xFFf4f4f4),
+                    borderRadius: BorderRadius.circular(70.0),
                   ),
                   child: TextField(
-                    controller: emailController,
+                    controller: codeController,
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      labelText: 'Email',
-                      labelStyle: TextStyle(fontSize: 14.0),
+                      labelText: 'Kode',
+                      labelStyle: TextStyle(fontSize: 15.0),
                       contentPadding: EdgeInsets.symmetric(
                         vertical: 18.0,
                         horizontal: 20.0,
                       ),
                     ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   ),
                 ),
               ),
@@ -173,7 +174,7 @@ class _LupaPasswordState extends State<LupaPasswordScreen> {
                   onPressed: () {
                     try {
                       sendMail(
-                        emailController.text.toString(),
+                        codeController.text.toString(),
                       );
                     } catch (e) {
                       print('Error: $e');
@@ -188,7 +189,7 @@ class _LupaPasswordState extends State<LupaPasswordScreen> {
                     minimumSize: Size(350, 58),
                   ),
                   child: Text(
-                    'Send Email',
+                    'KONFIRMASI KODE',
                     style: TextStyle(
                       fontSize: 24.0,
                       color: Color.fromRGBO(43, 69, 112, 1),

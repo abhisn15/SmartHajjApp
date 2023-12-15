@@ -73,10 +73,11 @@ class _LoginScreenState extends State<LoginScreen> {
         print(data['users']);
         print('Login successfully');
         showDialog(
+          barrierDismissible: false,
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text("Login Successful"),
+              title: Text("Login Berhasil"),
               content: Text("Login telah berhasil!"),
               actions: [
                 TextButton(
@@ -216,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => LupaPasswoardScreen(),
+                            builder: (context) => LupaPasswordScreen(),
                           ),
                         );
                       },

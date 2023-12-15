@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:SmartHajj/auth/loginScreen.dart';
 import 'package:SmartHajj/dashboard/productDetail/SnapToken.dart';
 import 'package:SmartHajj/dashboard/topup/topupTabunganScreen.dart';
 import 'package:SmartHajj/dompet/ProgressPaunter.dart';
@@ -143,6 +144,24 @@ class _DompetScreenState extends State<DompetScreen> {
       String? agentId = prefs.getString('agentId');
 
       if (token == null) {
+        AwesomeDialog(
+            dismissOnTouchOutside: false,
+            context: context,
+            dialogType: DialogType.error,
+            animType: AnimType.rightSlide,
+            title: 'Token Expired',
+            desc: 'Token anda sudah kadaluarsa, harap login kembali!',
+            btnOkOnPress: () {
+              Navigator.pushReplacement(
+                // Navigate to sendMail screen
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginScreen(),
+                ),
+              );
+            },
+            btnOkColor: Colors.red)
+          ..show();
         throw Exception('Token not available');
       }
 
@@ -485,205 +504,221 @@ class _DompetScreenState extends State<DompetScreen> {
                                           topRight: Radius.circular(20.0),
                                         ),
                                       ),
-                                      child: FutureBuilder<
-                                              List<Map<String, dynamic>>>(
-                                          future: apiJamaah,
-                                          builder: (context, snapshot) {
-                                            if (snapshot.connectionState ==
-                                                ConnectionState.waiting) {
-                                              return Center(
-                                                  child:
-                                                      CircularProgressIndicator());
-                                            } else if (snapshot.hasError) {
-                                              return Center(
-                                                  child: Text(
-                                                      'Error: ${snapshot.error}'));
-                                            } else if (snapshot.data == null ||
-                                                snapshot.data!.isEmpty) {
-                                              return Center(
-                                                  child: Text(
-                                                'Belum ada Jamaah yang menabung!',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ));
-                                            } else {
-                                              List<Map<String, dynamic>>
-                                                  jamaahList = snapshot.data!;
+                                      child:
+                                          FutureBuilder<
+                                                  List<Map<String, dynamic>>>(
+                                              future: apiJamaah,
+                                              builder: (context, snapshot) {
+                                                if (snapshot.connectionState ==
+                                                    ConnectionState.waiting) {
+                                                  return Center(
+                                                      child:
+                                                          CircularProgressIndicator());
+                                                } else if (snapshot.hasError) {
+                                                  return Center(
+                                                      child: Text(
+                                                          'Error: ${snapshot.error}'));
+                                                } else if (snapshot.data ==
+                                                        null ||
+                                                    snapshot.data!.isEmpty) {
+                                                  return Center(
+                                                      child: Text(
+                                                    'Belum ada Jamaah yang menabung!',
+                                                    style: TextStyle(
+                                                        color: Colors.black),
+                                                  ));
+                                                } else {
+                                                  List<Map<String, dynamic>>
+                                                      jamaahList =
+                                                      snapshot.data!;
 
-                                              return ListView.builder(
-                                                  controller: scrollController,
-                                                  itemCount: jamaahList.length,
-                                                  itemBuilder:
-                                                      (BuildContext context,
-                                                          int index) {
-                                                    // Build your list items
-                                                    var item =
-                                                        jamaahList[index];
-                                                    double depositValue =
-                                                        double.tryParse(item[
-                                                                        'deposit']
-                                                                    ?.toString() ??
-                                                                '0') ??
-                                                            0.0;
+                                                  return ListView.builder(
+                                                      controller:
+                                                          scrollController,
+                                                      itemCount:
+                                                          jamaahList.length,
+                                                      itemBuilder:
+                                                          (BuildContext context,
+                                                              int index) {
+                                                        // Build your list items
+                                                        var item =
+                                                            jamaahList[index];
+                                                        double
+                                                            depositTargetValue =
+                                                            double.tryParse(
+                                                                    item['deposit_target']
+                                                                            ?.toString() ??
+                                                                        '0') ??
+                                                                0.0;
 
-                                                    // Mengonversi depositValue ke format Rupiah
-                                                    String formattedDeposit =
-                                                        NumberFormat.currency(
-                                                                locale: 'id_ID',
-                                                                symbol: 'Rp ',
-                                                                decimalDigits:
-                                                                    0 // Gunakan 2 desimal untuk format rupiah
-                                                                )
-                                                            .format(
-                                                                depositValue);
+                                                        // Mengonversi depositValue ke format Rupiah
+                                                        String
+                                                            formattedDepositTarget =
+                                                            NumberFormat.currency(
+                                                                    locale:
+                                                                        'id_ID',
+                                                                    symbol:
+                                                                        'Rp ',
+                                                                    decimalDigits:
+                                                                        0 // Gunakan 2 desimal untuk format rupiah
+                                                                    )
+                                                                .format(
+                                                                    depositTargetValue);
 
-                                                    return ListTile(
-                                                      title: index ==
-                                                              0 // Check if it's the first item
-                                                          ? Container(
-                                                              margin: EdgeInsets
-                                                                  .only(
-                                                                      bottom: 0,
-                                                                      left: 5),
-                                                              child: Column(
-                                                                children: [
-                                                                  Container(
-                                                                    child: Text(
-                                                                      '____',
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.w800,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  Row(
+                                                        double depositValue =
+                                                            double.tryParse(
+                                                                    item['deposit']
+                                                                            ?.toString() ??
+                                                                        '0') ??
+                                                                0.0;
+
+                                                        // Mengonversi depositValue ke format Rupiah
+                                                        String
+                                                            formattedDeposit =
+                                                            NumberFormat.currency(
+                                                                    locale:
+                                                                        'id_ID',
+                                                                    symbol:
+                                                                        'Rp ',
+                                                                    decimalDigits:
+                                                                        0 // Gunakan 2 desimal untuk format rupiah
+                                                                    )
+                                                                .format(
+                                                                    depositValue);
+
+                                                        return ListTile(
+                                                          title: index ==
+                                                                  0 // Check if it's the first item
+                                                              ? Container(
+                                                                  margin: EdgeInsets
+                                                                      .only(
+                                                                          bottom:
+                                                                              0,
+                                                                          left:
+                                                                              5),
+                                                                  child: Column(
                                                                     children: [
-                                                                      Text(
-                                                                        'List Saldo Jamaah',
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontWeight:
-                                                                              FontWeight.w500,
+                                                                      Container(
+                                                                        child:
+                                                                            Text(
+                                                                          '____',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontWeight:
+                                                                                FontWeight.w800,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      Row(
+                                                                        children: [
+                                                                          Text(
+                                                                            'List Saldo Jamaah',
+                                                                            style:
+                                                                                TextStyle(
+                                                                              fontWeight: FontWeight.w500,
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                )
+                                                              : SizedBox
+                                                                  .shrink(),
+                                                          subtitle: Container(
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                              top: 15,
+                                                              left: 5,
+                                                              right: 5,
+                                                            ),
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                                    left: 20,
+                                                                    right: 10,
+                                                                    top: 10,
+                                                                    bottom: 5),
+                                                            width:
+                                                                double.infinity,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .all(Radius
+                                                                          .circular(
+                                                                              2)),
+                                                              color: Color
+                                                                  .fromRGBO(
+                                                                      141,
+                                                                      148,
+                                                                      168,
+                                                                      1),
+                                                            ),
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Container(
+                                                                  padding: EdgeInsets
+                                                                      .only(
+                                                                          bottom:
+                                                                              5),
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Container(
+                                                                        margin: EdgeInsets.only(
+                                                                            right:
+                                                                                15),
+                                                                        child: Image.asset(
+                                                                            'assets/home/topup.png'),
+                                                                      ),
+                                                                      Container(
+                                                                        padding:
+                                                                            EdgeInsets.only(bottom: 5),
+                                                                        child:
+                                                                            Text(
+                                                                          formattedDeposit,
+                                                                          style: TextStyle(
+                                                                              fontSize: 26,
+                                                                              fontWeight: FontWeight.w700,
+                                                                              color: Colors.white),
                                                                         ),
                                                                       ),
                                                                     ],
                                                                   ),
-                                                                ],
-                                                              ),
-                                                            )
-                                                          : SizedBox.shrink(),
-                                                      subtitle: Container(
-                                                        margin: EdgeInsets.only(
-                                                          top: 15,
-                                                          left: 5,
-                                                          right: 5,
-                                                        ),
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                                left: 20,
-                                                                right: 10,
-                                                                top: 10,
-                                                                bottom: 5),
-                                                        width: double.infinity,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          2)),
-                                                          color: Color.fromRGBO(
-                                                              141, 148, 168, 1),
-                                                        ),
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Container(
-                                                              padding: EdgeInsets
-                                                                  .only(
-                                                                      bottom:
-                                                                          5),
-                                                              child: Row(
-                                                                children: [
-                                                                  Container(
-                                                                    margin: EdgeInsets.only(
-                                                                        right:
-                                                                            15),
-                                                                    child: Image
-                                                                        .asset(
-                                                                            'assets/home/topup.png'),
-                                                                  ),
-                                                                  Container(
-                                                                    padding: EdgeInsets.only(
-                                                                        bottom:
-                                                                            5),
-                                                                    child: Text(
-                                                                      formattedDeposit,
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              26,
-                                                                          fontWeight: FontWeight
-                                                                              .w700,
-                                                                          color:
-                                                                              Colors.white),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            Container(
-                                                              margin: EdgeInsets
-                                                                  .only(
-                                                                      left: 52,
-                                                                      bottom:
-                                                                          10),
-                                                              color:
-                                                                  Colors.green,
-                                                              width: double
-                                                                  .infinity,
-                                                              height: 4,
-                                                              child: Container(
-                                                                margin: EdgeInsets
-                                                                    .only(
-                                                                        left:
-                                                                            150),
-                                                                child:
-                                                                    CustomPaint(
-                                                                  painter:
-                                                                      ProgressPainter(),
                                                                 ),
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              "Nomor Virtual Akun",
-                                                              style: TextStyle(
-                                                                fontSize: 16,
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              item['va_number'],
-                                                              style: TextStyle(
-                                                                fontSize: 20,
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                              ),
-                                                            ),
-                                                            Row(
-                                                              children: [
+                                                                Container(
+                                                                    margin: EdgeInsets.only(
+                                                                        left:
+                                                                            52,
+                                                                        bottom:
+                                                                            10),
+                                                                    child: Row(
+                                                                      children: [
+                                                                        Text(
+                                                                          "Dari Harga Target: ",
+                                                                          style: TextStyle(
+                                                                              color: Colors.white,
+                                                                              fontSize: 15),
+                                                                        ),
+                                                                        Text(
+                                                                          "$formattedDepositTarget",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            color: Color.fromRGBO(
+                                                                                203,
+                                                                                255,
+                                                                                113,
+                                                                                1),
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    )),
                                                                 Text(
-                                                                  item[
-                                                                      'pilgrim_name'],
+                                                                  "Nomor Virtual Akun",
                                                                   style:
                                                                       TextStyle(
                                                                     fontSize:
@@ -692,110 +727,132 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                         .white,
                                                                     fontWeight:
                                                                         FontWeight
+                                                                            .w400,
+                                                                  ),
+                                                                ),
+                                                                Text(
+                                                                  item[
+                                                                      'va_number'],
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        20,
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontWeight:
+                                                                        FontWeight
                                                                             .bold,
                                                                   ),
                                                                 ),
-                                                                Container(
-                                                                  margin: EdgeInsets
-                                                                      .only(
+                                                                Row(
+                                                                  children: [
+                                                                    Text(
+                                                                      item[
+                                                                          'pilgrim_name'],
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            16,
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                      ),
+                                                                    ),
+                                                                    Container(
+                                                                      margin: EdgeInsets.only(
                                                                           left:
                                                                               20),
-                                                                  child: Text(
-                                                                    "NIK: ${item['nik']}",
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontSize:
-                                                                          14,
-                                                                      color: Colors
-                                                                          .white,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w400,
+                                                                      child:
+                                                                          Text(
+                                                                        "NIK: ${item['nik']}",
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              14,
+                                                                          color:
+                                                                              Colors.white,
+                                                                          fontWeight:
+                                                                              FontWeight.w400,
+                                                                        ),
+                                                                      ),
                                                                     ),
-                                                                  ),
+                                                                  ],
                                                                 ),
-                                                              ],
-                                                            ),
-                                                            // Text(
-                                                            //   "$item",
-                                                            //   style: TextStyle(
-                                                            //     fontSize: 13,
-                                                            //     color: Colors
-                                                            //         .white,
-                                                            //     fontWeight:
-                                                            //         FontWeight
-                                                            //             .w400,
-                                                            //   ),
-                                                            // ),
-                                                            ListTile(
-                                                                onTap: () {
-                                                                  storeSelectedJamaah(
-                                                                    item['savings_id']
-                                                                        .toString(),
-                                                                    item['pilgrim_id']
-                                                                        .toString(),
-                                                                  );
-                                                                },
-                                                                subtitle:
-                                                                    Container(
-                                                                  margin: EdgeInsets
-                                                                      .only(
-                                                                          left:
-                                                                              30,
-                                                                          right:
-                                                                              30),
-                                                                  child:
-                                                                      ElevatedButton(
-                                                                    onPressed:
-                                                                        () async {
-                                                                      // Simpan ID yang dipilih sebelum mengirim formulir
-                                                                      await storeSelectedJamaah(
+                                                                // Text(
+                                                                //   "$item",
+                                                                //   style: TextStyle(
+                                                                //     fontSize: 13,
+                                                                //     color: Colors
+                                                                //         .white,
+                                                                //     fontWeight:
+                                                                //         FontWeight
+                                                                //             .w400,
+                                                                //   ),
+                                                                // ),
+                                                                ListTile(
+                                                                    onTap: () {
+                                                                      storeSelectedJamaah(
                                                                         item['savings_id']
                                                                             .toString(),
                                                                         item['pilgrim_id']
                                                                             .toString(),
                                                                       );
-                                                                      sendFormData();
                                                                     },
-                                                                    style:
-                                                                        ButtonStyle(
-                                                                      minimumSize:
-                                                                          MaterialStateProperty
-                                                                              .all(
-                                                                        Size(
-                                                                            double.infinity,
-                                                                            30),
-                                                                      ),
-                                                                      backgroundColor:
-                                                                          MaterialStateProperty.all(
-                                                                              primaryColor),
-                                                                      shape: MaterialStateProperty
-                                                                          .all(
-                                                                        RoundedRectangleBorder(
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(20),
+                                                                    subtitle:
+                                                                        Container(
+                                                                      margin: EdgeInsets.only(
+                                                                          left:
+                                                                              30,
+                                                                          right:
+                                                                              30),
+                                                                      child:
+                                                                          ElevatedButton(
+                                                                        onPressed:
+                                                                            () async {
+                                                                          // Simpan ID yang dipilih sebelum mengirim formulir
+                                                                          await storeSelectedJamaah(
+                                                                            item['savings_id'].toString(),
+                                                                            item['pilgrim_id'].toString(),
+                                                                          );
+                                                                          sendFormData();
+                                                                        },
+                                                                        style:
+                                                                            ButtonStyle(
+                                                                          minimumSize:
+                                                                              MaterialStateProperty.all(
+                                                                            Size(double.infinity,
+                                                                                30),
+                                                                          ),
+                                                                          backgroundColor:
+                                                                              MaterialStateProperty.all(primaryColor),
+                                                                          shape:
+                                                                              MaterialStateProperty.all(
+                                                                            RoundedRectangleBorder(
+                                                                              borderRadius: BorderRadius.circular(20),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        child:
+                                                                            Text(
+                                                                          "Tambah Saldo",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            color:
+                                                                                Colors.white,
+                                                                            fontWeight:
+                                                                                FontWeight.w600,
+                                                                          ),
                                                                         ),
                                                                       ),
-                                                                    ),
-                                                                    child: Text(
-                                                                      "Tambah Saldo",
-                                                                      style:
-                                                                          TextStyle(
-                                                                        color: Colors
-                                                                            .white,
-                                                                        fontWeight:
-                                                                            FontWeight.w600,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                )),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    );
-                                                  });
-                                            }
-                                          }));
+                                                                    )),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        );
+                                                      });
+                                                }
+                                              }));
                                 })
                           ]);
                         }

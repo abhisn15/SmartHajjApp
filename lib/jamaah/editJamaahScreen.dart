@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:SmartHajj/BottomNavigationBar.dart';
 import 'package:SmartHajj/BottomNavigationJamaah.dart';
 import 'package:SmartHajj/dompet/dompetScreen.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -67,6 +68,7 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
     fatherNameController.text = widget.item['father_name'] ?? '';
     bornPlaceController.text = widget.item['born_place'] ?? '';
     placeOfBirthController.text = widget.item['born_date'] ?? '';
+    bankController.text = widget.item['bank_type'] ?? '';
     // bankController.text = widget.item['bank_type'] ?? '';
 
     // Fetch Jamaah data when the screen is initialized
@@ -93,6 +95,7 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
   TextEditingController fatherNameController = TextEditingController();
   TextEditingController bornPlaceController = TextEditingController();
   TextEditingController placeOfBirthController = TextEditingController();
+  TextEditingController bankController = TextEditingController();
   // TextEditingController bankController = TextEditingController();
 
   Future pickImageFromCamera() async {
@@ -293,6 +296,8 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
       data.fields.add(MapEntry('father_name', fatherNameController.text));
       data.fields.add(MapEntry('born_place', bornPlaceController.text));
       data.fields.add(MapEntry('born_date', placeOfBirthController.text));
+      data.fields.add(MapEntry('bank_type', bankController.text));
+
       // data.fields.add(MapEntry('bank_type', bankController.text));
 
       if (image != null) {
@@ -352,31 +357,6 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
       print('Passport File Path: ${passportFile?.path}');
       print('Visa File Path: ${visaFile?.path}');
 
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Ubah Data Successfull!!"),
-            content: Text("Data yang telah anda rubah berhasil!!"),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
-                  Navigator.pushReplacement(
-                    // Navigate to login screen
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => BottomNavigationJamaah(),
-                    ),
-                  );
-                },
-                child: Text("OK"),
-              ),
-            ],
-          );
-        },
-      );
-
       // Create Dio instance
       Dio dio = Dio();
 
@@ -394,38 +374,35 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
 
       if (response.statusCode == 200) {
         print('Data saved successfully');
-        _showAlert('Success', 'Data saved successfully');
+        AwesomeDialog(
+          dismissOnTouchOutside: false,
+          context: context,
+          dialogType: DialogType.success,
+          animType: AnimType.rightSlide,
+          title: 'Ubah Data Berhasil',
+          desc: 'Form Ubah Data Jamaah berhasil!!',
+          btnOkOnPress: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => BottomNavigationJamaah()));
+          },
+        )..show();
       } else {
         print('Failed to save data. Status code: ${response.statusCode}');
         _showAlert('Error',
             'Failed to save data. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Ubah Data Error"),
-            content: Text("Ada kesalahan tunggu yaa!!"),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
-                  Navigator.pushReplacement(
-                    // Navigate to login screen
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => BottomNavigationJamaah(),
-                    ),
-                  );
-                },
-                child: Text("OK"),
-              ),
-            ],
-          );
-        },
-      );
-      print('Error sending data: $e');
+      AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: 'Ubah Data Gagal',
+          desc: 'Form Tambah Data berhasil!!',
+          btnOkOnPress: () {},
+          btnOkColor: Colors.red)
+        ..show();
     }
   }
 
@@ -492,7 +469,15 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
       );
       if (response.statusCode == 200) {
         print('Data deleted successfully');
-        _showAlert('Success', 'Data berhasil dihapus');
+        AwesomeDialog(
+            context: context,
+            dialogType: DialogType.error,
+            animType: AnimType.rightSlide,
+            title: 'Berhasil Menghapus Jamaah',
+            desc: 'Form Tambah Data berhasil!!',
+            btnOkOnPress: () {},
+            btnOkColor: Colors.red)
+          ..show();
       } else {
         print('Failed to delete data. Status code: ${response.statusCode}');
         _showAlert('Error',
@@ -1366,8 +1351,8 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
                         value: selectedValue,
                         onChanged: (String? value) {
                           setState(() {
-                            // bankController.text = selectedValue.toString();
                             selectedValue = value ?? '';
+                            bankController.text = value.toString();
                             print(selectedValue);
                           });
                         },

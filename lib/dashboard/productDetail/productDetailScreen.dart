@@ -150,7 +150,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         Container(
                           margin: EdgeInsets.symmetric(horizontal: 20),
                           child: Html(
-                            data: widget.product['feature'],
+                            data: widget.product['detail'],
                             style: {
                               // You can customize the style here
                               'body': Style(

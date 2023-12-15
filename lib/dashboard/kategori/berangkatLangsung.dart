@@ -8,14 +8,14 @@ import 'dart:ui';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-class TabunganHaji extends StatefulWidget {
-  const TabunganHaji({Key? key}) : super(key: key);
+class BerangkatLangsung extends StatefulWidget {
+  const BerangkatLangsung({Key? key}) : super(key: key);
 
   @override
-  _TabunganHajiState createState() => _TabunganHajiState();
+  _BerangkatLangsungState createState() => _BerangkatLangsungState();
 }
 
-class _TabunganHajiState extends State<TabunganHaji> {
+class _BerangkatLangsungState extends State<BerangkatLangsung> {
   final primaryColor = Color.fromRGBO(43, 69, 112, 1);
   final defaultColor = Colors.white;
   final abu = Color.fromRGBO(141, 148, 168, 1);
@@ -33,7 +33,8 @@ class _TabunganHajiState extends State<TabunganHaji> {
 
   Future<List<Map<String, dynamic>>> fetchData() async {
     try {
-      String? apiKategoriHaji = dotenv.env['API_KATEGORI_HAJI'];
+      String? apiKategoriBerangkatLangsung =
+          dotenv.env['API_KATEGORI_BERANGKATLANGSUNG'];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
 
@@ -45,8 +46,9 @@ class _TabunganHajiState extends State<TabunganHaji> {
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
 
-      if (apiKategoriHaji != null) {
-        request = await httpClient.getUrl(Uri.parse(apiKategoriHaji));
+      if (apiKategoriBerangkatLangsung != null) {
+        request =
+            await httpClient.getUrl(Uri.parse(apiKategoriBerangkatLangsung));
       }
       request.headers.add('Authorization', 'Bearer $token');
 
@@ -79,7 +81,7 @@ class _TabunganHajiState extends State<TabunganHaji> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Paket Tabungan Haji",
+                  "Paket Berangkat Langsung",
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,

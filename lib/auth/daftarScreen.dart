@@ -33,9 +33,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
           content: Text(message),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () {},
               child: Text("OK"),
             ),
           ],
@@ -87,7 +85,6 @@ class _DaftarScreenState extends State<DaftarScreen> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
                     Navigator.pushReplacement(
                       // Navigate to login screen
                       context,
@@ -351,7 +348,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
               Padding(
                 padding: EdgeInsets.only(top: 30.0),
                 child: Text(
-                  'Already Have an account?',
+                  'Sudah mempunyai akun?',
                   style: TextStyle(
                     color: Colors.black,
                     decoration: TextDecoration.none,

@@ -31,8 +31,8 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    checkLoginStatus();
     super.initState();
+    checkLoginStatus();
   }
 
   // Function to check login status
