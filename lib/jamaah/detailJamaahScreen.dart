@@ -565,7 +565,7 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                           return Center(child: Text('Jamaah data is empty'));
                         }
                         return ListView.builder(
-                            itemCount: 1,
+                            itemCount: jamaah.length,
                             itemBuilder: (context, index) {
                               final pilgrimName = jamaah['pilgrim_name'];
                               String depositString = jamaah['deposit'] ?? '0';

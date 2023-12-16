@@ -10,6 +10,9 @@ import 'dart:ui';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
+  final String code;
+
+  ResetPasswordScreen({required this.code});
   @override
   _ResetPasswordScreenState createState() => _ResetPasswordScreenState();
 }
@@ -25,7 +28,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           content: Text(message),
           actions: [
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
               child: Text("OK"),
             ),
           ],
@@ -154,12 +159,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       labelText: 'Kode',
+                      hintText: widget.code,
                       labelStyle: TextStyle(fontSize: 15.0),
                       contentPadding: EdgeInsets.symmetric(
                         vertical: 18.0,
                         horizontal: 20.0,
                       ),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
                     ),
+                    readOnly: true,
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   ),
@@ -193,7 +201,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     try {
-                      sendResetPassword(codeController.text.toString(),
+                      sendResetPassword(codeController.text = widget.code,
                           passwordController.text.toString());
                     } catch (e) {
                       print('Error: $e');

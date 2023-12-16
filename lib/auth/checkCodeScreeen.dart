@@ -78,7 +78,8 @@ class _CheckCodeScreenState extends State<CheckCodeScreen> {
                     Navigator.of(context).pushAndRemoveUntil(
                       // Navigate to login screen and remove all previous routes
                       MaterialPageRoute(
-                          builder: (context) => ResetPasswordScreen()),
+                          builder: (context) =>
+                              ResetPasswordScreen(code: codeController.text)),
                       (Route<dynamic> route) => false,
                     );
                   },
