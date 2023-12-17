@@ -26,7 +26,9 @@ class _LupaPasswordState extends State<LupaPasswordScreen> {
           content: Text(message),
           actions: [
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
               child: Text("OK"),
             ),
           ],

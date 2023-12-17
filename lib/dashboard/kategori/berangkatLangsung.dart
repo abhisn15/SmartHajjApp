@@ -204,7 +204,7 @@ class _BerangkatLangsungState extends State<BerangkatLangsung> {
                         } else if (snapshot.data == null) {
                           return Center(
                               child: Text(
-                            'Kategori Produk Tabungan Haji belum tersedia!',
+                            'Kategori Produk Berangkat Langsung belum tersedia!',
                             style: TextStyle(color: Colors.black),
                             textAlign: TextAlign.center,
                           ));
@@ -213,7 +213,7 @@ class _BerangkatLangsungState extends State<BerangkatLangsung> {
                           return Center(
                             child: Text(
                                 textAlign: TextAlign.center,
-                                'Kategori Produk Tabungan Haji belum tersedia saat ini.'),
+                                'Kategori Produk Berangkat Langsung belum tersedia saat ini.'),
                           );
                         } else {
                           List<Map<String, dynamic>> kategori =

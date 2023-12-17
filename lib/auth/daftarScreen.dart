@@ -33,7 +33,9 @@ class _DaftarScreenState extends State<DaftarScreen> {
           content: Text(message),
           actions: [
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
               child: Text("OK"),
             ),
           ],

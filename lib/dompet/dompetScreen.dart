@@ -674,8 +674,6 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                             'assets/home/topup.png'),
                                                                       ),
                                                                       Container(
-                                                                        padding:
-                                                                            EdgeInsets.only(bottom: 5),
                                                                         child:
                                                                             Text(
                                                                           formattedDeposit,
@@ -822,6 +820,8 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                                 );
                                                                                 sendFormData();
                                                                               },
+                                                                              btnOkText: 'Yakin',
+                                                                              btnCancelText: 'Batal',
                                                                               btnCancelOnPress: () {},
                                                                               btnOkColor: Colors.green[600],
                                                                               btnCancelColor: Colors.red)

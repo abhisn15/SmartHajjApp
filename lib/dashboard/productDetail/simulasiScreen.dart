@@ -31,7 +31,7 @@ class NumberTextInputFormatter extends TextInputFormatter {
     if (numericValue != null) {
       final formattedValue = NumberFormat.currency(
         locale: 'id',
-        symbol: 'Rp',
+        symbol: 'Rp ',
         decimalDigits: 0,
       ).format(numericValue);
 
@@ -170,14 +170,21 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
       // Prepare the data to be sent
       var data = FormData();
 
+      String cleanDeposit =
+          depositController.text.replaceAll(RegExp('[^0-9]'), '');
+      String cleanDepositPlan =
+          depositPlanController.text.replaceAll(RegExp('[^0-9]'), '');
+      String cleanDepositTarget =
+          depositTargetController.text.replaceAll(RegExp('[^0-9]'), '');
+
       data.fields.add(MapEntry('agent_id', "${widget.agentId}"));
       data.fields.add(MapEntry('depart_id', departIdController.text));
       data.fields.add(MapEntry('pilgrim_id', pilgrimIdController.text));
       data.fields.add(MapEntry('package_id', "${widget.packageId}"));
       data.fields.add(MapEntry('package_type', "${widget.categoryId}"));
-      data.fields.add(MapEntry('deposit', depositController.text));
-      data.fields.add(MapEntry('deposit_plan', depositPlanController.text));
-      data.fields.add(MapEntry('deposit_target', "$hargaPerkiraan"));
+      data.fields.add(MapEntry('deposit', cleanDeposit));
+      data.fields.add(MapEntry('deposit_plan', cleanDepositPlan));
+      data.fields.add(MapEntry('deposit_target', cleanDepositTarget));
       // Create Dio instance
       Dio dio = Dio();
 
@@ -534,9 +541,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                   ),
                                 ),
                                 keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
+                                inputFormatters: [NumberTextInputFormatter()],
                                 onChanged: (value) {},
                               ),
                             ),
@@ -574,9 +579,7 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                   ),
                                 ),
                                 keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
+                                inputFormatters: [NumberTextInputFormatter()],
                                 onChanged: (value) {},
                               ),
                             ),
@@ -673,8 +676,19 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                                 selectedKeberangkatan?['price'];
                                             // deposit_target = hargaPerkiraan;
 
+                                            double numericValue =
+                                                double.tryParse(
+                                                        hargaPerkiraan ??
+                                                            "0") ??
+                                                    0.0;
+                                            String formattedValue =
+                                                NumberFormat.currency(
+                                              locale: 'id',
+                                              symbol: 'Rp ',
+                                              decimalDigits: 0,
+                                            ).format(numericValue);
                                             depositTargetController.text =
-                                                "$hargaPerkiraan";
+                                                formattedValue;
                                             departIdController.text =
                                                 "$departId";
 

@@ -557,12 +557,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             children: <Widget>[
                               InkWell(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    // Navigate to login screen and remove all previous routes
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          BottomNavigationDompet(),
-                                    ),
+                                        builder: (context) =>
+                                            BottomNavigationDompet()),
+                                    (Route<dynamic> route) => false,
                                   );
                                 },
                                 child: Padding(

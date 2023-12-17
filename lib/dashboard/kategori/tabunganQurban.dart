@@ -202,7 +202,7 @@ class _TabunganQurbanState extends State<TabunganQurban> {
                         } else if (snapshot.data == null) {
                           return Center(
                               child: Text(
-                            'Kategori Produk Tabungan Haji belum tersedia!',
+                            'Kategori Produk Tabungan Qurban belum tersedia!',
                             style: TextStyle(color: Colors.black),
                             textAlign: TextAlign.center,
                           ));
@@ -211,7 +211,7 @@ class _TabunganQurbanState extends State<TabunganQurban> {
                           return Center(
                             child: Text(
                                 textAlign: TextAlign.center,
-                                'Kategori Produk Tabungan Haji belum tersedia saat ini.'),
+                                'Kategori Produk Tabungan Qurban belum tersedia saat ini.'),
                           );
                         } else {
                           List<Map<String, dynamic>> kategori =

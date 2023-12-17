@@ -703,6 +703,10 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                                                                               );
                                                                               sendFormData();
                                                                             },
+                                                                            btnOkText:
+                                                                                'Yakin',
+                                                                            btnCancelText:
+                                                                                'Batal',
                                                                             btnCancelOnPress:
                                                                                 () {},
                                                                             btnOkColor:
