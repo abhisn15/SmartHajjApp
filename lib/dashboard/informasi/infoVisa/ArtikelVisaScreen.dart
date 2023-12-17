@@ -14,7 +14,6 @@ class ArtikelInfoVisaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('artikelId: $artikelId');
     // Find the article with the specified ID
     Map<String, dynamic>? selectedArticle;
     for (Map<String, dynamic> article in listArtikel) {

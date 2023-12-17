@@ -69,9 +69,6 @@ class _LoginScreenState extends State<LoginScreen> {
         // Reading response data
         String responseBody = await response.transform(utf8.decoder).join();
         var data = jsonDecode(responseBody);
-        print(data['token']);
-        print(data['users']);
-        print('Login successfully');
         showDialog(
           barrierDismissible: false,
           context: context,
@@ -112,12 +109,10 @@ class _LoginScreenState extends State<LoginScreen> {
         prefs.setString('agentId', data['users'].toString());
         return;
       } else {
-        print('Login Failed: ${response.statusCode}');
         showAlert("Login anda tidak valid. Silakan coba lagi.");
         return;
       }
     } catch (e) {
-      print('Error during login: $e');
       showAlert("Login anda tidak valid. Terjadi Kesalahan.");
       return;
     }
@@ -245,7 +240,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         login(emailController.text.toString(),
                             passwordController.text.toString());
                       } catch (e) {
-                        print('Error: $e');
                         // Handle the error or show a message to the user.
                       }
                     },

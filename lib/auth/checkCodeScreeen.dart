@@ -65,7 +65,6 @@ class _CheckCodeScreenState extends State<CheckCodeScreen> {
         // Reading response data
         String responseBody = await response.transform(utf8.decoder).join();
         var data = jsonDecode(responseBody);
-        print('Confirm Code successfully');
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -101,12 +100,10 @@ class _CheckCodeScreenState extends State<CheckCodeScreen> {
 
         return;
       } else {
-        print('Kode Failed: ${response.statusCode}');
         showAlert("Kode anda tidak valid. Silakan coba lagi.");
         return;
       }
     } catch (e) {
-      print('Error during sendMail: $e');
       showAlert("Kode anda tidak valid. Terjadi Kesalahan.");
       return;
     }
@@ -179,7 +176,6 @@ class _CheckCodeScreenState extends State<CheckCodeScreen> {
                         codeController.text.toString(),
                       );
                     } catch (e) {
-                      print('Error: $e');
                       // Handle the error or show a message to the user.
                     }
                   },

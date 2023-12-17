@@ -53,8 +53,6 @@ class _DaftarScreenState extends State<DaftarScreen> {
 
     try {
       String? apiSignup = dotenv.env['API_SIGNUP'];
-      print(
-          'Request Body: name=$name&email=$email&phone=$phone&password=$password&isAgent=1');
 
       HttpClient httpClient = new HttpClient();
       httpClient.badCertificateCallback =
@@ -75,7 +73,6 @@ class _DaftarScreenState extends State<DaftarScreen> {
         // Reading response data
         String responseBody = await response.transform(utf8.decoder).join();
         var data = jsonDecode(responseBody);
-        print('Signup successfully');
 
         // Show success alert
         showDialog(
@@ -110,15 +107,9 @@ class _DaftarScreenState extends State<DaftarScreen> {
         //   ),
         // );
       } else {
-        print('Signup Failed: ${response.statusCode}');
-
-        // Show error alert
         showAlert("Signup anda tidak valid. Silakan coba lagi.");
       }
     } catch (e) {
-      print('Error during signup: $e');
-
-      // Show error alert
       showAlert("Signup anda tidak valid. Terjadi kesalahan.");
     }
   }

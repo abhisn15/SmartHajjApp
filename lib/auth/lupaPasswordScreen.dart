@@ -65,7 +65,6 @@ class _LupaPasswordState extends State<LupaPasswordScreen> {
         // Reading response data
         String responseBody = await response.transform(utf8.decoder).join();
         var data = jsonDecode(responseBody);
-        print('Send Email successfully');
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -100,12 +99,10 @@ class _LupaPasswordState extends State<LupaPasswordScreen> {
 
         return;
       } else {
-        print('Login Failed: ${response.statusCode}');
         showAlert("Send Email anda tidak valid. Silakan coba lagi.");
         return;
       }
     } catch (e) {
-      print('Error during sendMail: $e');
       showAlert("Send Email anda tidak valid. Terjadi Kesalahan.");
       return;
     }
@@ -177,7 +174,6 @@ class _LupaPasswordState extends State<LupaPasswordScreen> {
                         emailController.text.toString(),
                       );
                     } catch (e) {
-                      print('Error: $e');
                       // Handle the error or show a message to the user.
                     }
                   },

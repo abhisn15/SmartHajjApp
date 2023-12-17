@@ -47,11 +47,8 @@ class _DompetScreenState extends State<DompetScreen> {
       String? token = prefs.getString('token');
       String? savingsId = prefs.getString('selectedSavingsId');
       String? pilgrimId = prefs.getString('selectedPilgrimId');
-      print("saving: $savingsId");
-      print("pilgrim: $pilgrimId");
 
       if (token == null || savingsId == null || pilgrimId == null) {
-        print("Required data is missing");
         return;
       }
 
@@ -75,7 +72,6 @@ class _DompetScreenState extends State<DompetScreen> {
 
       if (response.statusCode == 200) {
         var responseData = response.data;
-        print('Snap Token: ${responseData['data']}');
 
         var paymentUrl = Uri.parse(
             'https://smarthajj.coffeelabs.id/pay/mobile/${responseData['data']}');
@@ -85,11 +81,8 @@ class _DompetScreenState extends State<DompetScreen> {
               builder: (context) =>
                   SnapToken(paymentUrl: paymentUrl.toString())),
         );
-        print('Payment process initiated successfully');
       } else {
         // Handle the case where the API response status code is not 200
-        print(
-            'Error: API Response - ${response.statusCode}, ${response.statusMessage}');
         AwesomeDialog(
           context: context,
           dialogType: DialogType.error,
@@ -105,12 +98,8 @@ class _DompetScreenState extends State<DompetScreen> {
       if (e.response != null) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx and is also not 304.
-        print('DioError - Response Data: ${e.response!.data}');
-        print('DioError - Status: ${e.response!.statusCode}');
       } else {
         // Something went wrong in setting up or sending the request
-        print('DioError - Request: ${e.requestOptions}');
-        print('DioError - Message: ${e.message}');
       }
       AwesomeDialog(
           context: context,
@@ -123,7 +112,6 @@ class _DompetScreenState extends State<DompetScreen> {
         ..show();
     } catch (e) {
       // Handle generic exceptions
-      print('Error: $e');
       AwesomeDialog(
         context: context,
         dialogType: DialogType.error,
@@ -175,7 +163,6 @@ class _DompetScreenState extends State<DompetScreen> {
       request.headers.add('Authorization', 'Bearer $token');
 
       HttpClientResponse response = await request.close();
-      print(response);
 
       String responseBody = await response.transform(utf8.decoder).join();
 
@@ -188,21 +175,16 @@ class _DompetScreenState extends State<DompetScreen> {
         // Handle rate limiting: wait for the specified duration and retry
         int retryAfterSeconds =
             int.tryParse(response.headers.value('Retry-After') ?? '5') ?? 5;
-        print('Rate limited. Retrying after $retryAfterSeconds seconds.');
         await Future.delayed(Duration(seconds: retryAfterSeconds));
         return fetchDataJamaah(); // Retry the request
       } else if (response.statusCode == 401) {
         // Handle unauthorized access (token expired, invalid, etc.)
-        print('Unauthorized access: ${response.statusCode}');
         // Perform actions such as logging out the user or requesting a new token
         throw Exception('Unauthorized access: ${response.statusCode}');
       } else {
-        print('Response Body: $responseBody');
-        print('Response Status Code: ${response.statusCode}');
         throw Exception('Failed to load Jamaah data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching Jamaah data: $e');
       throw Exception('Failed to load Jamaah data');
     }
   }
@@ -224,21 +206,17 @@ class _DompetScreenState extends State<DompetScreen> {
         'https://smarthajj.coffeelabs.id/api/getPayment/$agentId',
       );
 
-      print('Dio Response Status Code: ${response.statusCode}');
-
       if (response.statusCode == 200) {
         var responseData = response.data as Map<String, dynamic>;
         setState(() {
           // Assuming 'total' is meant to be a String
           selectedTotal = (responseData['total']);
         });
-        print('Dio Response Data: ${responseData['data']}');
         return response.data;
       } else {
         throw Exception('Failed to load user data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching user data: $e');
       throw Exception('Failed to load user data');
     }
   }
@@ -281,7 +259,6 @@ class _DompetScreenState extends State<DompetScreen> {
       }
     } catch (e) {
       // Catch any exceptions that occur during the process
-      print('Error: $e');
       throw Exception('Failed to load data');
     }
   }
@@ -425,8 +402,6 @@ class _DompetScreenState extends State<DompetScreen> {
                               return Center(child: CircularProgressIndicator());
                             } else if (snapshot.hasError) {
                               // Print detailed error information
-                              print('Error Details: ${snapshot.error}');
-                              print('Stack Trace: ${snapshot.stackTrace}');
                               return Center(
                                   child: Text('Error: ${snapshot.error}'));
                             } else if (snapshot.data == null ||
@@ -435,7 +410,6 @@ class _DompetScreenState extends State<DompetScreen> {
                                   child: Text('Data is null or empty'));
                             } else {
                               // Print the complete response
-                              print('Complete Response: ${snapshot.data}');
 
                               int? totalSaldo = snapshot.data!['total'] as int?;
                               String formattedTotalSaldo =
@@ -543,6 +517,20 @@ class _DompetScreenState extends State<DompetScreen> {
                                                         // Build your list items
                                                         var item =
                                                             jamaahList[index];
+
+                                                        if ((item['pilgrim_name'] ??
+                                                                    '')
+                                                                .isEmpty ||
+                                                            (item['deposit'] ??
+                                                                    '')
+                                                                .isEmpty ||
+                                                            (item['va_number'] ??
+                                                                    '')
+                                                                .isEmpty) {
+                                                          return SizedBox
+                                                              .shrink(); // Mengembalikan widget kosong jika kondisi terpenuhi
+                                                        }
+
                                                         double
                                                             depositTargetValue =
                                                             double.tryParse(

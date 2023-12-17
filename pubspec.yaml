@@ -95,6 +95,7 @@ flutter:
     - assets/home/profile.jpg
     - assets/profile/edit_profile.png
     - assets/profile/ganti_password.png
+    - assets/profile/images.jpeg
     - assets/profile/kebijakan_privasi.png
     - assets/profile/syarat_ketentuan.png
     - assets/profile/partner.png

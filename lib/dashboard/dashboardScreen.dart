@@ -57,7 +57,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     apiSaldo = fetchDataSaldo(); // Call your user API function
     apiDataProduct = fetchDataProduct(); // Call your product API function
     apiDataProductId = fetchDataProductId();
-    print(apiDataProductId);
     futureData = fetchDataJamaah();
     futureData.then((data) {
       allData = data;
@@ -126,7 +125,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       request.headers.add('Authorization', 'Bearer $token');
 
       HttpClientResponse response = await request.close();
-      print(response);
 
       String responseBody = await response.transform(utf8.decoder).join();
 
@@ -139,21 +137,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
         // Handle rate limiting: wait for the specified duration and retry
         int retryAfterSeconds =
             int.tryParse(response.headers.value('Retry-After') ?? '5') ?? 5;
-        print('Rate limited. Retrying after $retryAfterSeconds seconds.');
         await Future.delayed(Duration(seconds: retryAfterSeconds));
         return fetchDataJamaah(); // Retry the request
       } else if (response.statusCode == 401) {
         // Handle unauthorized access (token expired, invalid, etc.)
-        print('Unauthorized access: ${response.statusCode}');
         // Perform actions such as logging out the user or requesting a new token
         throw Exception('Unauthorized access: ${response.statusCode}');
       } else {
-        print('Response Body: $responseBody');
-        print('Response Status Code: ${response.statusCode}');
         throw Exception('Failed to load Jamaah data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching Jamaah data: $e');
       throw Exception('Failed to load Jamaah data');
     }
   }
@@ -185,15 +178,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         if (response.statusCode == 200) {
           return jsonDecode(responseBody);
         } else {
-          print('Response Body: $responseBody');
-          print('Response Status Code: ${response.statusCode}');
           throw Exception('Failed to load user data: ${response.statusCode}');
         }
       } else {
         throw Exception('API_USER is not defined in the .env file');
       }
     } catch (e) {
-      print('Error fetching user data: $e');
       throw Exception('Failed to load user data');
     }
   }
@@ -225,12 +215,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (response.statusCode == 200) {
         return List<Map<String, dynamic>>.from(jsonDecode(responseBody));
       } else {
-        print('Response Body: $responseBody');
-        print('Response Status Code: ${response.statusCode}');
         throw Exception('Failed to load product data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching product data: $e');
       throw Exception('Failed to load product data');
     }
   }
@@ -252,21 +239,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
         'https://smarthajj.coffeelabs.id/api/getPayment/$agentId',
       );
 
-      print('Dio Response Status Code: ${response.statusCode}');
-
       if (response.statusCode == 200) {
         var responseData = response.data as Map<String, dynamic>;
         setState(() {
           // Assuming 'total' is meant to be a String
           selectedTotal = (responseData['total']);
         });
-        print('Dio Response Data: ${responseData['data']}');
         return response.data;
       } else {
         throw Exception('Failed to load user data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching user data: $e');
       throw Exception('Failed to load user data');
     }
   }
@@ -298,12 +281,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (response.statusCode == 200) {
         return List<Map<String, dynamic>>.from(jsonDecode(responseBody));
       } else {
-        print('Response Body: $responseBody');
-        print('Response Status Code: ${response.statusCode}');
         throw Exception('Failed to load product data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching product data: $e');
       throw Exception('Failed to load product data');
     }
   }
@@ -495,8 +475,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     child: CircularProgressIndicator());
                               } else if (snapshot.hasError) {
                                 // Print detailed error information
-                                print('Error Details: ${snapshot.error}');
-                                print('Stack Trace: ${snapshot.stackTrace}');
                                 return Center(
                                     child: Text('Error: ${snapshot.error}'));
                               } else if (snapshot.data == null ||
@@ -505,7 +483,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     child: Text('Data is null or empty'));
                               } else {
                                 // Print the complete response
-                                print('Complete Response: ${snapshot.data}');
 
                                 int? totalSaldo =
                                     snapshot.data!['total'] as int?;
@@ -622,7 +599,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Text(
-                                "TOTAL TABUNGAN",
+                                "TABUNGAN SAAT INI",
                                 style: TextStyle(
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.bold,
@@ -672,8 +649,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       child: CircularProgressIndicator());
                                 } else if (snapshot.hasError) {
                                   // Print detailed error information
-                                  print('Error Details: ${snapshot.error}');
-                                  print('Stack Trace: ${snapshot.stackTrace}');
                                   return Center(
                                       child: Text('Error: ${snapshot.error}'));
                                 } else if (snapshot.data == null ||
@@ -682,7 +657,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       child: Text('Data is null or empty'));
                                 } else {
                                   // Print the complete response
-                                  print('Complete Response: ${snapshot.data}');
 
                                   int? totalSaldo =
                                       snapshot.data!['total'] as int?;
@@ -701,30 +675,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          formattedTotalSaldo,
-                                          style: TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(
-                                            top: 30, bottom: 15),
-                                        child: Center(
-                                            child: Text(
-                                          'TABUNGAN SAAT INI',
-                                          style: TextStyle(
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.black,
-                                          ),
-                                        )),
-                                      ),
                                       TextField(
                                         onChanged: (value) {
                                           filterSearchResults(value);

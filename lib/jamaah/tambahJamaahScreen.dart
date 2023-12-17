@@ -39,7 +39,6 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
   void initState() {
     super.initState();
     agentId = widget.agentId;
-    print('Agent ID: $agentId');
   }
 
   File? image;
@@ -159,11 +158,9 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
         File file = File(filePath);
         return file;
       } else {
-        print('File path is null');
         return null;
       }
     } else {
-      print('User canceled the picker');
       return null;
     }
   }
@@ -257,39 +254,20 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
       // Ensure that required fields are not empty
       // Ensure that required fields are not empty
 
-      String? photoPath = image?.path;
-      String? kartuKeluargaPath = kartuKeluargaImage?.path;
+      // String? photoPath = image?.path;
+      // String? kartuKeluargaPath = kartuKeluargaImage?.path;
 
-      if (photoPath == null || kartuKeluargaPath == null) {
-        throw Exception('Photo or Kartu Keluarga file not selected');
-      }
+      // if (photoPath == null || kartuKeluargaPath == null) {
+      //   throw Exception('Photo or Kartu Keluarga file not selected');
+      // }
 
-      print('Agent ID: $agentId');
-      print('name: ${nameController.text}');
-      print('uploadPhoto: ${photoController.text}');
-      print('nik: ${nikController.text}');
-      print('Nomor Telepon: ${phoneNumberController.text}');
-      print('alamat: ${addressController.text}');
-      print('kota: ${cityController.text}');
-      print('kartuKeluarga: ${familyCardController.text}');
-      print('Nama Ayah: ${fatherNameController.text}');
-      print('Tempat Lahir: ${bornPlaceController.text}');
-      print('Tanggal Lahir: ${placeOfBirthController.text}');
-      print('Passport File Path: ${passportFile?.path}');
-      print('Visa File Path: ${visaFile?.path}');
-      print('Pilihan Bank: ${bankController.text}');
       if (nameController.text.isEmpty ||
           nikController.text.isEmpty ||
           phoneNumberController.text.isEmpty ||
           addressController.text.isEmpty ||
           cityController.text.isEmpty ||
-          fatherNameController.text.isEmpty ||
           bornPlaceController.text.isEmpty ||
           placeOfBirthController.text.isEmpty ||
-          image == null ||
-          kartuKeluargaImage == null ||
-          passportFile == null ||
-          visaFile == null ||
           bankController == null) {
         List<String> emptyFields = [];
         if (nameController.text.isEmpty) emptyFields.add('Name');
@@ -297,15 +275,9 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
         if (phoneNumberController.text.isEmpty) emptyFields.add('Phone Number');
         if (addressController.text.isEmpty) emptyFields.add('Address');
         if (cityController.text.isEmpty) emptyFields.add('City');
-        if (fatherNameController.text.isEmpty)
-          emptyFields.add('Father\'s Name');
         if (bornPlaceController.text.isEmpty) emptyFields.add('Born Place');
         if (placeOfBirthController.text.isEmpty)
           emptyFields.add('Place of Birth');
-        if (image == null) emptyFields.add('Photo');
-        if (kartuKeluargaImage == null) emptyFields.add('Kartu Keluarga Image');
-        if (passportFile == null) emptyFields.add('Passport File');
-        if (visaFile == null) emptyFields.add('Visa File');
         if (bankController == null) emptyFields.add('bank_type');
 
         throw Exception(
@@ -388,8 +360,6 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
           },
         ),
         onSendProgress: (int sent, int total) {
-          print(
-              'Loading: ${(sent / total * 100).toStringAsFixed(0)}% ($sent/$total)');
           setState(() {
             progress = sent / total;
           });
@@ -397,7 +367,6 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
       );
 
       if (response.statusCode == 200) {
-        print('Data saved successfully');
         AwesomeDialog(
           dismissOnTouchOutside: false,
           context: context,
@@ -424,12 +393,10 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
             btnOkOnPress: () {},
             btnOkColor: Colors.red)
           ..show();
-        print('Failed to save data. Status code: ${response.statusCode}');
         _showAlert('Error',
             'Failed to save data. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error sending data: $e');
       AwesomeDialog(
           context: context,
           dialogType: DialogType.error,
@@ -478,8 +445,8 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
           )
         : Image.network(
             isKartuKeluarga
-                ? "https://www.mangaip.com/wp-content/uploads/2023/09/membuat-profil-wa-kosong.png"
-                : "https://www.mangaip.com/wp-content/uploads/2023/09/membuat-profil-wa-kosong.png", // Replace with your other placeholder image
+                ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiKh4EAN3JLS737cpoNg15kjMVU8RjgDEreqLgmWM5&s"
+                : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiKh4EAN3JLS737cpoNg15kjMVU8RjgDEreqLgmWM5&s", // Replace with your other placeholder image
             height: 100,
             width: 100,
             fit: BoxFit.cover,
@@ -706,10 +673,22 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                         margin: EdgeInsets.only(left: 24),
                         child: Row(
                           children: [
-                            Text(
-                              "Nomor Telepon",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400, fontSize: 18),
+                            Row(
+                              children: [
+                                Text(
+                                  "Nomor Telepon",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 18),
+                                ),
+                                Text(
+                                  "*",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 18,
+                                      color: Colors.red),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -758,6 +737,13 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                               style: TextStyle(
                                   fontWeight: FontWeight.w400, fontSize: 18),
                             ),
+                            Text(
+                              "*",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 18,
+                                  color: Colors.red),
+                            ),
                           ],
                         ),
                       ),
@@ -800,6 +786,13 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                               "Kota",
                               style: TextStyle(
                                   fontWeight: FontWeight.w400, fontSize: 18),
+                            ),
+                            Text(
+                              "*",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 18,
+                                  color: Colors.red),
                             ),
                           ],
                         ),
@@ -963,18 +956,12 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                                               passportFile = file;
                                               passportNoController.text =
                                                   file.path.split('/').last;
-                                              print(
-                                                  'Selected file (No Passport): $file');
-                                              print(
-                                                  'Passport File Path: ${passportFile?.path}');
                                             });
                                           } else {
                                             // Handle the case where the path is null
-                                            print('File path is null');
                                           }
                                         } else {
                                           // User canceled the picker
-                                          print('User canceled the picker');
                                         }
                                       },
                                       style: ButtonStyle(
@@ -1071,19 +1058,12 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                                                         .path
                                                         .split('/')
                                                         .last;
-                                                    print(
-                                                        'Selected file (No Visa): $file');
-                                                    print(
-                                                        'Visa File Path: ${visaFile?.path}');
                                                   });
                                                 } else {
                                                   // Handle the case where the path is null
-                                                  print('File path is null');
                                                 }
                                               } else {
                                                 // User canceled the picker
-                                                print(
-                                                    'User canceled the picker');
                                               }
                                             },
                                             style: ButtonStyle(
@@ -1175,6 +1155,13 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                                         fontWeight: FontWeight.w400,
                                         fontSize: 18),
                                   ),
+                                  Text(
+                                    "*",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 18,
+                                        color: Colors.red),
+                                  ),
                                 ],
                               ),
                             ),
@@ -1209,10 +1196,22 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                         children: [
                           Container(
                             margin: EdgeInsets.only(left: 24, top: 20),
-                            child: Text(
-                              "Tanggal Lahir",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400, fontSize: 18),
+                            child: Row(
+                              children: [
+                                Text(
+                                  "Tanggal Lahir",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 18),
+                                ),
+                                Text(
+                                  "*",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 18,
+                                      color: Colors.red),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -1297,13 +1296,25 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                           children: [
                             Container(
                               margin: EdgeInsets.only(left: 24, bottom: 20),
-                              child: Text(
-                                "Pilih Pembayaran",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,
-                                ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Pilih Pembayaran",
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  Text(
+                                    "*",
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -1364,7 +1375,6 @@ class _TambahJamaahScreenState extends State<TambahJamaahScreen> {
                                 setState(() {
                                   selectedValue = value ?? '';
                                   bankController.text = value.toString();
-                                  print(selectedValue);
                                 });
                               },
                             ),

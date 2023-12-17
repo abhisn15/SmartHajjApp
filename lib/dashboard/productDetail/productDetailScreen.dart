@@ -28,7 +28,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   void initState() {
     super.initState();
     productData = fetchDataProduct();
-    print(widget.packageId);
   }
 
   Future<List<Map<String, dynamic>>> fetchDataProduct() async {
@@ -61,15 +60,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
       String responseBody = await response.transform(utf8.decoder).join();
       if (response.statusCode == 200) {
-        print('Response Body: $responseBody');
         return List<Map<String, dynamic>>.from(jsonDecode(responseBody));
       } else {
-        print('Response Body: $responseBody');
-        print('Response Status Code: ${response.statusCode}');
         throw Exception('Failed to load product data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching product data: $e');
       throw Exception('Failed to load product data');
     }
   }
@@ -263,7 +258,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               String? agentId = prefs.getString('agentId');
                               if (agentId == null) {
                                 // Handle the case where agentId is not available
-                                print('AgentId not available');
                                 return;
                               }
                               Navigator.push(

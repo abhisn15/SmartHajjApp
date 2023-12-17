@@ -68,7 +68,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         // Reading response data
         String responseBody = await response.transform(utf8.decoder).join();
         var data = jsonDecode(responseBody);
-        print('Reset Password successfully');
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -102,12 +101,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
         return;
       } else {
-        print('Login Failed: ${response.statusCode}');
         showAlert("Reset Password anda tidak valid. Silakan coba lagi.");
         return;
       }
     } catch (e) {
-      print('Error during sendMail: $e');
       showAlert("Reset Password anda tidak valid. Terjadi Kesalahan.");
       return;
     }
@@ -204,7 +201,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       sendResetPassword(codeController.text = widget.code,
                           passwordController.text.toString());
                     } catch (e) {
-                      print('Error: $e');
                       // Handle the error or show a message to the user.
                     }
                   },

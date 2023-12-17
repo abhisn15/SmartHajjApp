@@ -77,7 +77,6 @@ class _EditProfileState extends State<EditProfileScreen> {
         );
 
         if (response.statusCode == 200) {
-          print('Profile berhasil diupdate');
           showDialog(
             barrierDismissible: false,
             context: context,
@@ -102,14 +101,9 @@ class _EditProfileState extends State<EditProfileScreen> {
               );
             },
           );
-        } else {
-          print(
-              'Failed to update profile. Status code: ${response.statusCode}');
-        }
+        } else {}
       }
-    } catch (e) {
-      print('Error during profile update: $e');
-    }
+    } catch (e) {}
   }
 
   // Function to handle saving both profile picture and profile update

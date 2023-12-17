@@ -22,7 +22,6 @@ class _SnapTokenState extends State<SnapToken> {
       ..setBackgroundColor(const Color(0x00000000))
       ..addJavaScriptChannel("FlutterChannel",
           onMessageReceived: (JavaScriptMessage message) {
-        print("Message received: ${message.message}");
         if (message.message == 'success') {
           AwesomeDialog(
             dismissOnTouchOutside: false,
@@ -46,9 +45,7 @@ class _SnapTokenState extends State<SnapToken> {
           onProgress: (int progress) {
             // Update loading bar.
           },
-          onPageStarted: (String url) {
-            print('onPageStarted: $url');
-          },
+          onPageStarted: (String url) {},
           onPageFinished: (String url) {},
           onWebResourceError: (WebResourceError error) {},
           onNavigationRequest: (NavigationRequest request) {

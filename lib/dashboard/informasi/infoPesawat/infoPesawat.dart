@@ -56,12 +56,9 @@ class _InfoPesawatState extends State<InfoPesawat> {
             List<Map<String, dynamic>>.from(jsonDecode(responseBody));
         return data;
       } else {
-        print('Response Body: $responseBody');
-        print('Response Status Code: ${response.statusCode}');
         throw Exception('Failed to load user data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching user data: $e');
       throw Exception('Failed to load artikel');
     }
   }

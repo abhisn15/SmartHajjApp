@@ -32,6 +32,8 @@ class EditJamaahScreen extends StatefulWidget {
 }
 
 class _EditJamaahScreenState extends State<EditJamaahScreen> {
+  bool isLoading = false;
+  double progress = 0.0;
   late Map<String, dynamic> pilgrimData;
   final List<String> items = [
     'BCA',
@@ -49,8 +51,6 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
     pilgrimData = {};
     agentId = widget.agentId;
     // Print pilgrimId to the console
-    print('Pilgrim ID: ${widget.pilgrimId}');
-    print('Agent ID: ${widget.agentId}');
     // Set values to controllers from widget.item with null-aware operators
     nameController.text = widget.item['name'] ?? '';
     photoController.text =
@@ -160,14 +160,17 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
                   child: Text('Camera'),
                   onTap: () async {
                     Navigator.pop(context);
-                    XFile? image = await _pickImageFromCamera();
-                    if (isKartuKeluarga) {
-                      // ... (kode lainnya)
-                    } else {
+                    XFile? pickedImage = await _pickImageFromCamera();
+                    if (pickedImage != null) {
+                      File imageTemp = File(pickedImage.path);
                       setState(() {
-                        this.image = image != null ? File(image.path) : null;
-                        // Set value to the controller
-                        photoController.text = image?.path ?? '';
+                        if (isKartuKeluarga) {
+                          kartuKeluargaImage = imageTemp;
+                          // Tidak perlu update controller karena preview bergantung pada File
+                        } else {
+                          image = imageTemp;
+                          photoController.text = image?.path ?? '';
+                        }
                       });
                     }
                   },
@@ -189,11 +192,9 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
         File file = File(filePath);
         return file;
       } else {
-        print('File path is null');
         return null;
       }
     } else {
-      print('User canceled the picker');
       return null;
     }
   }
@@ -278,8 +279,6 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
 
-      print(token);
-
       if (token == null) {
         throw Exception('Token not available');
       }
@@ -344,19 +343,6 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
         ));
       }
 
-      print('name: ${nameController.text}');
-      print('uploadPhoto: ${photoController.text}');
-      print('nik: ${nikController.text}');
-      print('Nomor Telepon: ${phoneNumberController.text}');
-      print('alamat: ${addressController.text}');
-      print('kota: ${cityController.text}');
-      print('kartuKeluarga: ${familyCardController.text}');
-      print('Nama Ayah: ${fatherNameController.text}');
-      print('Tempat Lahir: ${bornPlaceController.text}');
-      print('Tanggal Lahir: ${placeOfBirthController.text}');
-      print('Passport File Path: ${passportFile?.path}');
-      print('Visa File Path: ${visaFile?.path}');
-
       // Create Dio instance
       Dio dio = Dio();
 
@@ -370,10 +356,14 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
             'Content-Type': 'multipart/form-data',
           },
         ),
+        onSendProgress: (int sent, int total) {
+          setState(() {
+            progress = sent / total;
+          });
+        },
       );
 
       if (response.statusCode == 200) {
-        print('Data saved successfully');
         AwesomeDialog(
           dismissOnTouchOutside: false,
           context: context,
@@ -390,7 +380,6 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
           },
         )..show();
       } else {
-        print('Failed to save data. Status code: ${response.statusCode}');
         _showAlert('Error',
             'Failed to save data. Status code: ${response.statusCode}');
       }
@@ -404,6 +393,10 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
           btnOkOnPress: () {},
           btnOkColor: Colors.red)
         ..show();
+    } finally {
+      setState(() {
+        isLoading = false; // Stop loading regardless of the outcome
+      });
     }
   }
 
@@ -446,8 +439,6 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
 
-      print(token);
-
       if (token == null) {
         throw Exception('Token not available');
       }
@@ -467,33 +458,55 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
             'Content-Type': 'multipart/form-data',
           },
         ),
+        onSendProgress: (int sent, int total) {
+          setState(() {
+            progress = sent / total;
+          });
+        },
       );
       if (response.statusCode == 200) {
-        print('Data deleted successfully');
         AwesomeDialog(
-            context: context,
-            dialogType: DialogType.error,
-            animType: AnimType.rightSlide,
-            title: 'Berhasil Menghapus Jamaah',
-            desc: 'Form Tambah Data berhasil!!',
-            btnOkOnPress: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                // Navigate to login screen and remove all previous routes
-                MaterialPageRoute(
-                    builder: (context) => BottomNavigationJamaah()),
-                (Route<dynamic> route) => false,
-              );
-            },
-            btnOkColor: Colors.red)
-          ..show();
+          context: context,
+          dialogType: DialogType.success,
+          animType: AnimType.rightSlide,
+          title: 'Berhasil Menghapus Jamaah',
+          desc: 'Form Hapus Data berhasil!!',
+          btnOkOnPress: () {
+            Navigator.of(context).pushAndRemoveUntil(
+              // Navigate to login screen and remove all previous routes
+              MaterialPageRoute(builder: (context) => BottomNavigationJamaah()),
+              (Route<dynamic> route) => false,
+            );
+          },
+        )..show();
       } else {
-        print('Failed to delete data. Status code: ${response.statusCode}');
         _showAlert('Error',
             'Failed to delete data. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      print(e);
+    } finally {
+      setState(() {
+        isLoading = false; // Stop loading regardless of the outcome
+      });
     }
+  }
+
+  void dispose() {
+    // Hapus controller pada saat widget di-dipose
+    nameController.dispose();
+    photoController.dispose();
+    nikController.dispose();
+    phoneNumberController.dispose();
+    addressController.dispose();
+    cityController.dispose();
+    familyCardController.dispose();
+    passportNoController.dispose();
+    visaNoController.dispose();
+    fatherNameController.dispose();
+    bornPlaceController.dispose();
+    placeOfBirthController.dispose();
+    bankController.dispose();
+    super.dispose();
   }
 
   void clearForm() {
@@ -522,8 +535,14 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
           )
         : Image.network(
             isKartuKeluarga
-                ? "https://smarthajj.coffeelabs.id/storage/${widget.item['f_family_card']}"
-                : "https://smarthajj.coffeelabs.id/storage/${widget.item['f_pic']}", // Replace with your other placeholder image
+                ? (widget.item["f_family_card"] != null &&
+                        widget.item["f_family_card"] != "/storage/null"
+                    ? 'https://smarthajj.coffeelabs.id/storage/${widget.item["f_family_card"]}'
+                    : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiKh4EAN3JLS737cpoNg15kjMVU8RjgDEreqLgmWM5&s')
+                : (widget.item["f_pic"] != null &&
+                        widget.item["f_pic"] != "/storage/null"
+                    ? 'https://smarthajj.coffeelabs.id/storage/${widget.item["f_pic"]}'
+                    : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiKh4EAN3JLS737cpoNg15kjMVU8RjgDEreqLgmWM5&s'),
             height: 100,
             width: 100,
             fit: BoxFit.cover,
@@ -539,222 +558,51 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
         appBar: AppBar(
           title: Text('Edit Jamaah'),
         ),
-        body: SingleChildScrollView(
-            child: Column(children: [
-          Row(
-            children: [
-              Container(
-                margin: EdgeInsets.only(left: 24, top: 30),
-                child: Row(
-                  children: [
-                    Text(
-                      "Nama",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
-                    ),
-                    Text(
-                      "*",
-                      style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 18),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: 10.0,
-              horizontal: 16.0,
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                color: textField,
-                borderRadius: BorderRadius.circular(70.0),
-              ),
-              child: Form(
-                child: TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'ex : Papa Khan',
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 18.0,
-                      horizontal: 20.0,
-                    ),
+        body: isLoading
+            ? Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0, vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    color: Color.fromARGB(255, 255, 255, 255),
                   ),
-                ),
-              ),
-            ),
-          ),
-          Row(
-            children: [
-              Container(
-                margin: EdgeInsets.only(left: 24, top: 20),
-                child: Text(
-                  "Upload Foto",
-                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
-                ),
-              ),
-            ],
-          ),
-          Container(
-            width: double.infinity,
-            height: 90,
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () => _showImageSourceDialog(
-                    false), // Panggil pickImage langsung saat tombol ditekan
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(right: 10 * 1),
-                      child: Image.asset(
-                        "assets/jemaah/tambah.png",
-                        height: 40,
-                        width: 20,
-                      ),
-                    )
-                  ],
-                ),
-                style: ButtonStyle(
-                  elevation: MaterialStateProperty.all(0),
-                  backgroundColor: MaterialStateProperty.all<Color>(textField),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          70.0), // Border radius sebesar 70
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.all(16),
-            child: buildImagePreview(selectedImage: image),
-          ),
-          Row(
-            children: [
-              Container(
-                margin: EdgeInsets.only(left: 24, top: 20),
-                child: Row(
-                  children: [
-                    Text(
-                      "NIK",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
-                    ),
-                    Text(
-                      "*",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 18,
-                          color: Colors.red),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Container(
-            width: double.infinity,
-            margin: EdgeInsets.only(bottom: 20),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: 10.0,
-                horizontal: 16.0,
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: textField,
-                  borderRadius: BorderRadius.circular(70.0),
-                ),
-                child: Form(
-                  child: TextField(
-                    controller: nikController,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 18.0,
-                        horizontal: 20.0,
-                      ),
-                    ),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(bottom: 20),
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(left: 24),
-                  child: Row(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        "Nomor Telepon",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w400, fontSize: 18),
-                      ),
+                      CircularProgressIndicator(),
+                      SizedBox(height: 10),
+                      Text('Loading: ${(progress * 100).toStringAsFixed(0)}%'),
                     ],
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 10.0,
-                    horizontal: 16.0,
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: textField,
-                      borderRadius: BorderRadius.circular(70.0),
-                    ),
-                    child: Form(
-                      child: TextField(
-                        controller: phoneNumberController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            vertical: 18.0,
-                            horizontal: 20.0,
+              )
+            : SingleChildScrollView(
+                child: Column(children: [
+                Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(left: 24, top: 30),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Nama",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400, fontSize: 18),
                           ),
-                        ),
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
+                          Text(
+                            "*",
+                            style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 18),
+                          ),
                         ],
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(bottom: 20),
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(left: 24),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Alamat",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w400, fontSize: 18),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
+                Padding(
                   padding: EdgeInsets.symmetric(
                     vertical: 10.0,
                     horizontal: 16.0,
@@ -766,9 +614,10 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
                     ),
                     child: Form(
                       child: TextField(
-                        controller: addressController,
+                        controller: nameController,
                         decoration: InputDecoration(
                           border: InputBorder.none,
+                          hintText: 'ex : Papa Khan',
                           contentPadding: EdgeInsets.symmetric(
                             vertical: 18.0,
                             horizontal: 20.0,
@@ -778,77 +627,17 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(bottom: 20),
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(left: 24),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Kota",
+                Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(left: 24, top: 20),
+                      child: Text(
+                        "Upload Foto",
                         style: TextStyle(
                             fontWeight: FontWeight.w400, fontSize: 18),
                       ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 10.0,
-                    horizontal: 16.0,
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: textField,
-                      borderRadius: BorderRadius.circular(70.0),
                     ),
-                    child: Form(
-                      child: TextField(
-                        controller: cityController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            vertical: 18.0,
-                            horizontal: 20.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(bottom: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(left: 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Kartu Keluarga",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w400, fontSize: 18),
-                      ),
-                      Text(
-                        "*Lewati jika tidak ada perubahan",
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                        ),
-                      )
-                    ],
-                  ),
+                  ],
                 ),
                 Container(
                   width: double.infinity,
@@ -856,7 +645,8 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
                   child: Padding(
                     padding: EdgeInsets.all(16.0),
                     child: ElevatedButton(
-                      onPressed: () => _showImageSourceDialog(true),
+                      onPressed: () => _showImageSourceDialog(
+                          false), // Panggil pickImage langsung saat tombol ditekan
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -877,53 +667,85 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(70.0),
+                            borderRadius: BorderRadius.circular(
+                                70.0), // Border radius sebesar 70
                           ),
                         ),
                       ),
                     ),
                   ),
                 ),
-                Center(
-                  child: Container(
-                    margin: EdgeInsets.all(16),
-                    child: buildImagePreview(
-                      selectedImage: kartuKeluargaImage,
-                      isKartuKeluarga: true,
+                Container(
+                  margin: EdgeInsets.all(16),
+                  child: buildImagePreview(selectedImage: image),
+                ),
+                Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(left: 24, top: 20),
+                      child: Row(
+                        children: [
+                          Text(
+                            "NIK",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400, fontSize: 18),
+                          ),
+                          Text(
+                            "*",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 18,
+                                color: Colors.red),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.only(bottom: 20),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 10.0,
+                      horizontal: 16.0,
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: textField,
+                        borderRadius: BorderRadius.circular(70.0),
+                      ),
+                      child: Form(
+                        child: TextField(
+                          controller: nikController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 18.0,
+                              horizontal: 20.0,
+                            ),
+                          ),
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(bottom: 20),
-            child: Column(
-              children: [
                 Container(
                   margin: EdgeInsets.only(bottom: 20),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         margin: EdgeInsets.only(left: 24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
                             Text(
-                              "No Passport",
+                              "Nomor Telepon",
                               style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 18,
-                              ),
-                            ),
-                            Text(
-                              "*Lewati jika tidak ada perubahan",
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14,
-                              ),
+                                  fontWeight: FontWeight.w400, fontSize: 18),
                             ),
                           ],
                         ),
@@ -940,8 +762,54 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
                           ),
                           child: Form(
                             child: TextField(
-                              readOnly: true,
-                              controller: passportNoController,
+                              controller: phoneNumberController,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 18.0,
+                                  horizontal: 20.0,
+                                ),
+                              ),
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 24),
+                        child: Row(
+                          children: [
+                            Text(
+                              "Alamat",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 18),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10.0,
+                          horizontal: 16.0,
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: textField,
+                            borderRadius: BorderRadius.circular(70.0),
+                          ),
+                          child: Form(
+                            child: TextField(
+                              controller: addressController,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                                 contentPadding: EdgeInsets.symmetric(
@@ -953,66 +821,128 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
                           ),
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Container(
-                            margin: EdgeInsets.only(
-                              right: 10,
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 24),
+                        child: Row(
+                          children: [
+                            Text(
+                              "Kota",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 18),
                             ),
-                            child: IntrinsicWidth(
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  FilePickerResult? result =
-                                      await FilePicker.platform.pickFiles();
-
-                                  if (result != null &&
-                                      result.files.isNotEmpty) {
-                                    String? filePath = result.files.single.path;
-                                    if (filePath != null) {
-                                      File file = File(filePath);
-                                      // Handle the selected file here.
-                                      setState(() {
-                                        passportFile = file;
-                                        passportNoController.text =
-                                            file.path.split('/').last;
-                                        print(
-                                            'Selected file (No Passport): $file');
-                                        print(
-                                            'Passport File Path: ${passportFile?.path}');
-                                      });
-                                    } else {
-                                      // Handle the case where the path is null
-                                      print('File path is null');
-                                    }
-                                  } else {
-                                    // User canceled the picker
-                                    print('User canceled the picker');
-                                  }
-                                },
-                                style: ButtonStyle(
-                                  elevation: MaterialStateProperty.all(0),
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                    Colors.transparent,
-                                  ),
-                                ),
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    "+ Upload File",
-                                    style: TextStyle(
-                                      color: abu,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10.0,
+                          horizontal: 16.0,
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: textField,
+                            borderRadius: BorderRadius.circular(70.0),
+                          ),
+                          child: Form(
+                            child: TextField(
+                              controller: cityController,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 18.0,
+                                  horizontal: 20.0,
                                 ),
                               ),
                             ),
                           ),
-                        ],
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Kartu Keluarga",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 18),
+                            ),
+                            Text(
+                              "*Lewati jika tidak ada perubahan",
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        height: 90,
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: ElevatedButton(
+                            onPressed: () => _showImageSourceDialog(true),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(right: 10 * 1),
+                                  child: Image.asset(
+                                    "assets/jemaah/tambah.png",
+                                    height: 40,
+                                    width: 20,
+                                  ),
+                                )
+                              ],
+                            ),
+                            style: ButtonStyle(
+                              elevation: MaterialStateProperty.all(0),
+                              backgroundColor:
+                                  MaterialStateProperty.all<Color>(textField),
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(70.0),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Center(
+                        child: Container(
+                          margin: EdgeInsets.all(16),
+                          child: buildImagePreview(
+                            selectedImage: kartuKeluargaImage,
+                            isKartuKeluarga: true,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    children: [
                       Container(
                         margin: EdgeInsets.only(bottom: 20),
                         child: Column(
@@ -1024,7 +954,7 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "No Visa",
+                                    "No Passport",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w400,
                                       fontSize: 18,
@@ -1037,7 +967,7 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
                                       fontWeight: FontWeight.w400,
                                       fontSize: 14,
                                     ),
-                                  )
+                                  ),
                                 ],
                               ),
                             ),
@@ -1054,7 +984,7 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
                                 child: Form(
                                   child: TextField(
                                     readOnly: true,
-                                    controller: visaNoController,
+                                    controller: passportNoController,
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
                                       contentPadding: EdgeInsets.symmetric(
@@ -1088,21 +1018,15 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
                                             File file = File(filePath);
                                             // Handle the selected file here.
                                             setState(() {
-                                              visaFile = file;
-                                              visaNoController.text =
+                                              passportFile = file;
+                                              passportNoController.text =
                                                   file.path.split('/').last;
-                                              print(
-                                                  'Selected file (No Visa): $file');
-                                              print(
-                                                  'Visa File Path: ${visaFile?.path}');
                                             });
                                           } else {
                                             // Handle the case where the path is null
-                                            print('File path is null');
                                           }
                                         } else {
                                           // User canceled the picker
-                                          print('User canceled the picker');
                                         }
                                       },
                                       style: ButtonStyle(
@@ -1128,293 +1052,418 @@ class _EditJamaahScreenState extends State<EditJamaahScreen> {
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(bottom: 20),
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(left: 24),
-                        child: Row(
-                          children: [
-                            Text(
-                              "Nama Ayah Kandung",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400, fontSize: 18),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 10.0,
-                          horizontal: 16.0,
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: textField,
-                            borderRadius: BorderRadius.circular(70.0),
-                          ),
-                          child: Form(
-                            child: TextField(
-                              controller: fatherNameController,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
-                                  vertical: 18.0,
-                                  horizontal: 20.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(bottom: 20),
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(left: 24),
-                        child: Row(
-                          children: [
-                            Text(
-                              "Tempat Lahir",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400, fontSize: 18),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 10.0,
-                          horizontal: 16.0,
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: textField,
-                            borderRadius: BorderRadius.circular(70.0),
-                          ),
-                          child: Form(
-                            child: TextField(
-                              controller: bornPlaceController,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
-                                  vertical: 18.0,
-                                  horizontal: 20.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(left: 24, top: 20),
-                      child: Text(
-                        "Tanggal Lahir",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w400, fontSize: 18),
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  width: double.infinity,
-                  height: 90,
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: textField,
-                        borderRadius: BorderRadius.circular(70.0),
-                      ),
-                      child: CupertinoButton(
-                        onPressed: () {
-                          showCupertinoModalPopup(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Scaffold(
-                                  backgroundColor: Colors.transparent,
-                                  body: Align(
-                                    alignment: Alignment.bottomCenter,
+                            Container(
+                              margin: EdgeInsets.only(bottom: 20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(left: 24),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "No Visa",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                        Text(
+                                          "*Lewati jika tidak ada perubahan",
+                                          style: TextStyle(
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 14,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 10.0,
+                                      horizontal: 16.0,
+                                    ),
                                     child: Container(
-                                      width: double.infinity,
-                                      height: 250,
-                                      color: Colors.white,
-                                      child: CupertinoDatePicker(
-                                        backgroundColor: Colors.white,
-                                        initialDateTime: selectedDate ??
-                                            DateTime.now(), // Use selectedDate
-                                        onDateTimeChanged: (DateTime newTime) {
-                                          setState(() {
-                                            selectedDate =
-                                                newTime; // Update selectedDate
-                                            // Format the date as needed (e.g., 'yyyy-MM-dd')
-                                            String formattedDate =
-                                                DateFormat('yyyy-MM-dd').format(
-                                                    selectedDate ??
-                                                        DateTime.now());
-                                            // Assign the formatted date to the controller
-                                            placeOfBirthController.text =
-                                                formattedDate;
-                                          });
-                                        },
-                                        use24hFormat: true,
-                                        mode: CupertinoDatePickerMode.date,
+                                      decoration: BoxDecoration(
+                                        color: textField,
+                                        borderRadius:
+                                            BorderRadius.circular(70.0),
+                                      ),
+                                      child: Form(
+                                        child: TextField(
+                                          readOnly: true,
+                                          controller: visaNoController,
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                              vertical: 18.0,
+                                              horizontal: 20.0,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: <Widget>[
+                                      Container(
+                                        margin: EdgeInsets.only(
+                                          right: 10,
+                                        ),
+                                        child: IntrinsicWidth(
+                                          child: ElevatedButton(
+                                            onPressed: () async {
+                                              FilePickerResult? result =
+                                                  await FilePicker.platform
+                                                      .pickFiles();
+
+                                              if (result != null &&
+                                                  result.files.isNotEmpty) {
+                                                String? filePath =
+                                                    result.files.single.path;
+                                                if (filePath != null) {
+                                                  File file = File(filePath);
+                                                  // Handle the selected file here.
+                                                  setState(() {
+                                                    visaFile = file;
+                                                    visaNoController.text = file
+                                                        .path
+                                                        .split('/')
+                                                        .last;
+                                                  });
+                                                } else {
+                                                  // Handle the case where the path is null
+                                                }
+                                              } else {
+                                                // User canceled the picker
+                                              }
+                                            },
+                                            style: ButtonStyle(
+                                              elevation:
+                                                  MaterialStateProperty.all(0),
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<
+                                                      Color>(
+                                                Colors.transparent,
+                                              ),
+                                            ),
+                                            child: Container(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "+ Upload File",
+                                                style: TextStyle(
+                                                  color: abu,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(bottom: 20),
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(left: 24),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Nama Ayah Kandung",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 18),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 10.0,
+                                horizontal: 16.0,
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: textField,
+                                  borderRadius: BorderRadius.circular(70.0),
+                                ),
+                                child: Form(
+                                  child: TextField(
+                                    controller: fatherNameController,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.symmetric(
+                                        vertical: 18.0,
+                                        horizontal: 20.0,
                                       ),
                                     ),
                                   ),
                                 ),
-                              );
-                            },
-                          );
-                        },
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "${DateFormat('yyyy-MM-dd').format(selectedDate ?? (widget.item['born_date'] is DateTime ? widget.item['born_date'] : DateTime.parse(widget.item['born_date'] ?? DateTime.now().toString())))}",
-                                style: TextStyle(color: abu),
                               ),
-                              Image.asset(
-                                "assets/jemaah/tanggalLahir.png",
-                                height: 35,
-                                width: 35,
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 30),
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                    color: Color.fromRGBO(141, 148, 168, 1),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
                       Container(
-                        margin: EdgeInsets.only(left: 20, right: 20),
-                        child: Image.asset("assets/home/topup.png"),
-                      ),
-                      DropdownButton<String>(
-                        hint: Text(
-                          widget.item['bank_type'].toString(),
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
-                        ),
-                        dropdownColor: abu,
-                        icon: Container(
-                          margin: EdgeInsets.only(left: 80 * 1),
-                          child: Image.asset("assets/home/dropdown_down.png"),
-                        ),
-                        items: items
-                            .map(
-                              (String item) => DropdownMenuItem<String>(
-                                value: item,
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      item,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.white,
+                        margin: EdgeInsets.only(bottom: 20),
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(left: 24),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Tempat Lahir",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 18),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 10.0,
+                                horizontal: 16.0,
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: textField,
+                                  borderRadius: BorderRadius.circular(70.0),
+                                ),
+                                child: Form(
+                                  child: TextField(
+                                    controller: bornPlaceController,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.symmetric(
+                                        vertical: 18.0,
+                                        horizontal: 20.0,
                                       ),
                                     ),
-                                    SizedBox(
-                                        width:
-                                            10), // Beri jarak antara gambar dan teks
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(left: 24, top: 20),
+                            child: Text(
+                              "Tanggal Lahir",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 18),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        width: double.infinity,
+                        height: 90,
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: textField,
+                              borderRadius: BorderRadius.circular(70.0),
+                            ),
+                            child: CupertinoButton(
+                              onPressed: () {
+                                showCupertinoModalPopup(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Scaffold(
+                                        backgroundColor: Colors.transparent,
+                                        body: Align(
+                                          alignment: Alignment.bottomCenter,
+                                          child: Container(
+                                            width: double.infinity,
+                                            height: 250,
+                                            color: Colors.white,
+                                            child: CupertinoDatePicker(
+                                              backgroundColor: Colors.white,
+                                              initialDateTime: selectedDate ??
+                                                  DateTime
+                                                      .now(), // Use selectedDate
+                                              onDateTimeChanged:
+                                                  (DateTime newTime) {
+                                                setState(() {
+                                                  selectedDate =
+                                                      newTime; // Update selectedDate
+                                                  // Format the date as needed (e.g., 'yyyy-MM-dd')
+                                                  String formattedDate =
+                                                      DateFormat('yyyy-MM-dd')
+                                                          .format(
+                                                              selectedDate ??
+                                                                  DateTime
+                                                                      .now());
+                                                  // Assign the formatted date to the controller
+                                                  placeOfBirthController.text =
+                                                      formattedDate;
+                                                });
+                                              },
+                                              use24hFormat: true,
+                                              mode:
+                                                  CupertinoDatePickerMode.date,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "${DateFormat('yyyy-MM-dd').format(selectedDate ?? (widget.item['born_date'] is DateTime ? widget.item['born_date'] : DateTime.parse(widget.item['born_date'] ?? DateTime.now().toString())))}",
+                                      style: TextStyle(color: abu),
+                                    ),
+                                    Image.asset(
+                                      "assets/jemaah/tanggalLahir.png",
+                                      height: 35,
+                                      width: 35,
+                                    ),
                                   ],
                                 ),
                               ),
-                            )
-                            .toList(),
-                        value: selectedValue,
-                        onChanged: (String? value) {
-                          setState(() {
-                            selectedValue = value ?? '';
-                            bankController.text = value.toString();
-                            print(selectedValue);
-                          });
-                        },
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 30),
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          color: Color.fromRGBO(141, 148, 168, 1),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(left: 20, right: 20),
+                              child: Image.asset("assets/home/topup.png"),
+                            ),
+                            DropdownButton<String>(
+                              hint: Text(
+                                widget.item['bank_type'].toString(),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              dropdownColor: abu,
+                              icon: Container(
+                                margin: EdgeInsets.only(left: 80 * 1),
+                                child: Image.asset(
+                                    "assets/home/dropdown_down.png"),
+                              ),
+                              items: items
+                                  .map(
+                                    (String item) => DropdownMenuItem<String>(
+                                      value: item,
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            item,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                              width:
+                                                  10), // Beri jarak antara gambar dan teks
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                              value: selectedValue,
+                              onChanged: (String? value) {
+                                setState(() {
+                                  selectedValue = value ?? '';
+                                  bankController.text = value.toString();
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(
+                            left: 20, right: 20, bottom: 0, top: 30),
+                        child: ElevatedButton(
+                          onPressed: updateJamaahData,
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromRGBO(43, 69, 112, 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            minimumSize: Size(350, 50),
+                          ),
+                          child: Text(
+                            'Ubah Data',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(bottom: 20),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        child: ElevatedButton(
+                          onPressed: deleteJamaah,
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromRGBO(245, 137, 77, 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            minimumSize: Size(350, 50),
+                          ),
+                          child: Text(
+                            'Hapus Data',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Container(
-                  padding:
-                      EdgeInsets.only(left: 20, right: 20, bottom: 0, top: 30),
-                  child: ElevatedButton(
-                    onPressed: updateJamaahData,
-                    style: ElevatedButton.styleFrom(
-                      primary: Color.fromRGBO(43, 69, 112, 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      minimumSize: Size(350, 50),
-                    ),
-                    child: Text(
-                      'Ubah Data',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(bottom: 20),
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: ElevatedButton(
-                    onPressed: deleteJamaah,
-                    style: ElevatedButton.styleFrom(
-                      primary: Color.fromRGBO(245, 137, 77, 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      minimumSize: Size(350, 50),
-                    ),
-                    child: Text(
-                      'Hapus Data',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ])));
+              ])));
   }
 }

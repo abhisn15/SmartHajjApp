@@ -97,7 +97,6 @@ class _JamaahScreenState extends State<JamaahScreen> {
       request.headers.add('Authorization', 'Bearer $token');
 
       HttpClientResponse response = await request.close();
-      print(response);
 
       String responseBody = await response.transform(utf8.decoder).join();
 
@@ -110,21 +109,16 @@ class _JamaahScreenState extends State<JamaahScreen> {
         // Handle rate limiting: wait for the specified duration and retry
         int retryAfterSeconds =
             int.tryParse(response.headers.value('Retry-After') ?? '5') ?? 5;
-        print('Rate limited. Retrying after $retryAfterSeconds seconds.');
         await Future.delayed(Duration(seconds: retryAfterSeconds));
         return fetchDataJamaah(); // Retry the request
       } else if (response.statusCode == 401) {
         // Handle unauthorized access (token expired, invalid, etc.)
-        print('Unauthorized access: ${response.statusCode}');
         // Perform actions such as logging out the user or requesting a new token
         throw Exception('Unauthorized access: ${response.statusCode}');
       } else {
-        print('Response Body: $responseBody');
-        print('Response Status Code: ${response.statusCode}');
         throw Exception('Failed to load Jamaah data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching Jamaah data: $e');
       throw Exception('Failed to load Jamaah data');
     }
   }
@@ -155,7 +149,6 @@ class _JamaahScreenState extends State<JamaahScreen> {
                 String? agentId = prefs.getString('agentId');
                 if (agentId == null) {
                   // Handle the case where agentId is not available
-                  print('AgentId not available');
                   return;
                 }
                 Navigator.push(
@@ -219,7 +212,10 @@ class _JamaahScreenState extends State<JamaahScreen> {
                               ClipOval(
                                 child: Image.network(
                                   // Replace the placeholder with the actual image URL logic
-                                  'https://smarthajj.coffeelabs.id/storage/${item["f_pic"]}',
+                                  item["f_pic"] != null &&
+                                          item["f_pic"] != "/storage/null"
+                                      ? 'https://smarthajj.coffeelabs.id/storage/${item["f_pic"]}'
+                                      : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiKh4EAN3JLS737cpoNg15kjMVU8RjgDEreqLgmWM5&s',
                                   width: 110,
                                   height: 110,
                                   fit: BoxFit.cover,
@@ -320,7 +316,6 @@ class _JamaahScreenState extends State<JamaahScreen> {
                                               prefs.getString('agentId');
                                           if (agentId == null) {
                                             // Handle the case where agentId is not available
-                                            print('AgentId not available');
                                             return;
                                           }
                                           Navigator.push(

@@ -85,7 +85,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     } catch (e) {
       // Catch any exceptions that occur during the process
-      print('Error: $e');
       throw Exception('Failed to load data');
     }
   }
@@ -132,17 +131,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
           );
-        } else {
-          print('Logout failed');
-        }
+        } else {}
       }
 
       // Remove token from shared preferences
       prefs.remove('token');
       prefs.remove('agentId');
-    } catch (e) {
-      print('Error during logout: $e');
-    }
+    } catch (e) {}
   }
 
   @override
@@ -253,7 +248,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 String? agentId = prefs.getString('agentId');
                                 if (agentId == null) {
                                   // Handle the case where agentId is not available
-                                  print('AgentId not available');
                                   return;
                                 }
                                 Navigator.push(

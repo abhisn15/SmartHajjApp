@@ -150,7 +150,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       // Handle the selected item here
                       setState(() {
                         _selectedValue = selectedItem;
-                        print('Selected item: $selectedItem');
                       });
                     },
                     hint: Container(
@@ -268,7 +267,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             // Handle the selected item here
                             setState(() {
                               _selectedValueJamaah = selectedItem;
-                              print('Selected item: $selectedItem');
                             });
                           },
                           hint: Container(

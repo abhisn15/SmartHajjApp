@@ -84,9 +84,6 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
     // initSDK();
     widget.name;
     pilgrimIdController = TextEditingController();
-    print('Package ID: ${widget.packageId}');
-    print('category ID: ${widget.categoryId}');
-    print('Agent ID: ${widget.agentId}');
   }
 
   String? hargaPerkiraan;
@@ -142,14 +139,6 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
         throw Exception('Token not available');
       }
 
-      print('Agent ID: ${widget.agentId}');
-      print('Depart ID: ${departIdController.text}');
-      print('Pilgrim ID: ${pilgrimIdController.text}');
-      print('Package ID: ${widget.packageId}');
-      print('Category ID: ${widget.categoryId}');
-      print('Deposit : ${depositController.text}');
-      print('Deposit Plan : ${depositPlanController.text}');
-      print('Deposit Target : ${depositTargetController.text}');
       if (departIdController.text.isEmpty ||
           pilgrimIdController.text.isEmpty ||
           depositController.text.isEmpty ||
@@ -202,7 +191,6 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
 
       if (response.statusCode == 200) {
         var responseData = response.data;
-        print('Snap Token: ${responseData['data']}');
 
         var paymentUrl = Uri.parse(
             'https://smarthajj.coffeelabs.id/pay/mobile/${responseData['data']}');
@@ -212,11 +200,8 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
               builder: (context) =>
                   SnapToken(paymentUrl: paymentUrl.toString())),
         );
-        print('Payment process initiated successfully');
       } else {
         // Handle the case where the API response status code is not 200
-        print(
-            'Error: API Response - ${response.statusCode}, ${response.statusMessage}');
         AwesomeDialog(
           context: context,
           dialogType: DialogType.error,
@@ -232,12 +217,8 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
       if (e.response != null) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx and is also not 304.
-        print('DioError - Response Data: ${e.response!.data}');
-        print('DioError - Status: ${e.response!.statusCode}');
       } else {
         // Something went wrong in setting up or sending the request
-        print('DioError - Request: ${e.requestOptions}');
-        print('DioError - Message: ${e.message}');
       }
       AwesomeDialog(
           context: context,
@@ -250,7 +231,6 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
         ..show();
     } catch (e) {
       // Handle generic exceptions
-      print('Error: $e');
       AwesomeDialog(
         context: context,
         dialogType: DialogType.error,
@@ -293,14 +273,11 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
             jsonResponse['data']; // Access the 'data' key
         return jamaahList.cast<Map<String, dynamic>>();
       } else {
-        print('Response Body: $responseBody');
-        print('Response Status Code: ${response.statusCode}');
         // Provide a more meaningful error message
         throw Exception(
             'Failed to load user data. Status Code: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching user data: $e');
       // Provide a more user-friendly error message
       throw Exception('Failed to load user data. Please try again later.');
     }
@@ -342,7 +319,6 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
             'Failed to fetch departure data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching departure data: $e');
       throw Exception('Failed to fetch departure data');
     }
   }
@@ -383,7 +359,6 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
             'Failed to fetch departure data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching departure data: $e');
       throw Exception('Failed to fetch departure data');
     }
   }
@@ -691,13 +666,6 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                                 formattedValue;
                                             departIdController.text =
                                                 "$departId";
-
-                                            print(
-                                                'Selected depart_id: $departId');
-                                            print(
-                                                'Updated hargaPerkiraan: $hargaPerkiraan');
-                                            // print(
-                                            //     'Updated deposit_target: $deposit_target');
                                           });
                                         },
                                         hint: Container(
@@ -811,8 +779,6 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
                                                 _selectedValueJamaah
                                                         ?.toString() ??
                                                     '';
-                                            print(
-                                                'Selected pilgrim_id: $_selectedValueJamaah');
                                             // Add any additional logic here based on the selected value
                                             // For example, you can use a switch statement:
                                           });
