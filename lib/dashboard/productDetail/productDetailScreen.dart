@@ -216,10 +216,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Container(
-                          margin: EdgeInsets.symmetric(horizontal: 20),
-                          child: Align(
+                          margin: const EdgeInsets.symmetric(horizontal: 20),
+                          child: const Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
                               "Persyaratan Yang Terkait",
@@ -232,7 +232,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           ),
                         ),
                         Container(
-                          margin: EdgeInsets.symmetric(
+                          margin: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 20),
                           child: Align(
                             alignment: Alignment.centerLeft,
@@ -247,10 +247,39 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 24),
+                          margin: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Vendor',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromRGBO(43, 69, 112, 1),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 30),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              '${widget.product['vendor_name']}',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 24),
                           child: ElevatedButton(
                             onPressed: () async {
                               SharedPreferences prefs =
@@ -277,9 +306,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0),
                               ),
-                              minimumSize: Size(350, 50),
+                              minimumSize: const Size(350, 50),
                             ),
-                            child: Text(
+                            child: const Text(
                               'MULAI MENABUNG',
                               style: TextStyle(
                                 fontSize: 16.0,

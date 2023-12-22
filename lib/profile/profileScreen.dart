@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:SmartHajj/auth/loginScreen.dart';
 import 'package:SmartHajj/profile/Syarat&KetentuanScreen.dart';
+import 'package:SmartHajj/profile/UndangAgentScreen.dart';
 import 'package:SmartHajj/profile/bantuanScreen.dart';
 import 'package:SmartHajj/profile/faqScreen.dart';
 import 'package:SmartHajj/profile/gantiPasswordScreen.dart';
@@ -446,6 +447,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
+                                    builder: (context) => UndangAgentScreen(),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 16),
+                                primary: Color(0xFFf4f4f4),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                                minimumSize: Size(350, 58),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                      child: Image.asset(
+                                    "assets/profile/referal.png",
+                                    width: 40,
+                                  )),
+                                  Container(
+                                    margin: EdgeInsets.only(right: 105 / 1),
+                                    child: Text(
+                                      'Undang Agent',
+                                      style: TextStyle(
+                                          fontSize: 18.0,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ),
+                                  Image.asset('assets/profile/arrow.png'),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(top: 16),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                // Tambahkan logika otentikasi Anda di sini
+                                // Jika otentikasi berhasil, arahkan pengguna ke DashboardScreen
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
                                     builder: (context) => FaqScreen(),
                                   ),
                                 );
@@ -467,7 +514,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       child: Image.asset(
                                           "assets/profile/faq.png")),
                                   Container(
-                                    margin: EdgeInsets.only(right: 175),
+                                    margin: EdgeInsets.only(right: 160 / 1),
                                     child: Text(
                                       'F.A.Q',
                                       style: TextStyle(
@@ -511,7 +558,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       child: Image.asset(
                                           "assets/profile/bantuan.png")),
                                   Container(
-                                    margin: EdgeInsets.only(right: 150),
+                                    margin: EdgeInsets.only(right: 140 / 1),
                                     child: Text(
                                       'Bantuan',
                                       style: TextStyle(

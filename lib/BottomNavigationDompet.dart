@@ -31,7 +31,7 @@ class BottomNavigationBarExample extends StatefulWidget {
 class _BottomNavigationBarExampleState
     extends State<BottomNavigationBarExample> {
   int _selectedIndex = 2;
-  bool _isDompetActive = false; // Tambahkan variabel ini
+  bool _isDompetActive = true; // Tambahkan variabel ini
 
   static const List<Widget> _widgetOptions = <Widget>[
     DashboardScreen(),

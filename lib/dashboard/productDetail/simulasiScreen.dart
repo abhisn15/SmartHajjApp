@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:SmartHajj/dashboard/productDetail/SnapToken.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -9,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
-import 'package:midtrans_sdk/midtrans_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NumberTextInputFormatter extends TextInputFormatter {
@@ -18,6 +16,7 @@ class NumberTextInputFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
+    // Jika teks baru kosong, kembalikan nilai kosong
     if (newValue.text.isEmpty) {
       return newValue.copyWith(
         text: '',
@@ -25,9 +24,18 @@ class NumberTextInputFormatter extends TextInputFormatter {
       );
     }
 
-    final numericValue =
-        int.tryParse(newValue.text.replaceAll(RegExp('[^0-9]'), ''));
+    // Hapus semua karakter selain angka
+    final numericOnly = newValue.text.replaceAll(RegExp('[^0-9]'), '');
 
+    // Jika hasilnya kosong, kembalikan nilai kosong
+    if (numericOnly.isEmpty) {
+      return newValue.copyWith(
+        text: '',
+        selection: TextSelection.collapsed(offset: 0),
+      );
+    }
+
+    final numericValue = int.tryParse(numericOnly);
     if (numericValue != null) {
       final formattedValue = NumberFormat.currency(
         locale: 'id',
@@ -43,7 +51,7 @@ class NumberTextInputFormatter extends TextInputFormatter {
       );
     }
 
-    // If parsing fails, return the old value
+    // Jika parsing gagal, kembalikan nilai lama
     return oldValue;
   }
 }
@@ -76,7 +84,6 @@ class DropdownItem {
 class _SimulasiScreenState extends State<SimulasiScreen> {
   late HttpClientRequest request;
   late List<Map<String, dynamic>> jamaahList;
-  MidtransSDK? _midtrans;
 
   @override
   void initState() {
@@ -194,11 +201,12 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
 
         var paymentUrl = Uri.parse(
             'https://smarthajj.coffeelabs.id/pay/mobile/${responseData['data']}');
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
               builder: (context) =>
                   SnapToken(paymentUrl: paymentUrl.toString())),
+          (Route<dynamic> route) => false,
         );
       } else {
         // Handle the case where the API response status code is not 200
@@ -208,7 +216,9 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
           animType: AnimType.rightSlide,
           title: 'Transaksi Gagal',
           desc: 'Terdapat error saat melakukan transaksi',
-          btnOkOnPress: () {},
+          btnOkOnPress: () {
+            Navigator.of(context).pop;
+          },
           btnOkColor: Colors.red,
         )..show();
       }
@@ -250,9 +260,6 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
       String? token = prefs.getString('token');
       String? agentId = prefs.getString('agentId');
       // Ensure that token is not null before using it
-      if (token == null || widget.packageId == null) {
-        throw Exception('Token or Hajj ID not available');
-      }
 
       HttpClient httpClient = new HttpClient();
       httpClient.badCertificateCallback =
@@ -362,9 +369,6 @@ class _SimulasiScreenState extends State<SimulasiScreen> {
       throw Exception('Failed to fetch departure data');
     }
   }
-
-  String _totalSetoran = '';
-  String _harganya = '';
 
   @override
   Widget build(BuildContext context) {

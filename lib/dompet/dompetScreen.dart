@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:SmartHajj/auth/loginScreen.dart';
 import 'package:SmartHajj/dashboard/productDetail/SnapToken.dart';
 import 'package:SmartHajj/dashboard/topup/topupTabunganScreen.dart';
-import 'package:SmartHajj/dompet/ProgressPaunter.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -438,10 +437,51 @@ class _DompetScreenState extends State<DompetScreen> {
                           },
                         ),
                         Container(
-                          clipBehavior: Clip.none,
-                          margin: EdgeInsets.only(top: 24),
-                          child: Image.asset('assets/dompet/info.png'),
-                        ),
+                            alignment: Alignment.center,
+                            clipBehavior: Clip.none,
+                            margin:
+                                EdgeInsets.only(top: 24, left: 40, right: 40),
+                            child: Container(
+                              margin: EdgeInsets.only(bottom: 12),
+                              height: 84,
+                              width: double.infinity,
+                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                color: Color.fromARGB(82, 217, 217, 217),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(bottom: 25),
+                                    child: Image.asset(
+                                      'assets/dompet/pemberitahuan.png',
+                                      height: 40,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 8,
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Transfer made to bank account \ncould take a few minutes',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w300),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            )),
                       ],
                     ),
                   ),
@@ -574,6 +614,13 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                 .format(
                                                                     depositValue);
 
+                                                        double persentaseBar =
+                                                            depositValue /
+                                                                depositTargetValue;
+
+                                                        String persentaseTeks =
+                                                            "${(persentaseBar * 100).toStringAsFixed(0)}%";
+
                                                         return ListTile(
                                                           title: index ==
                                                                   0 // Check if it's the first item
@@ -587,13 +634,19 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                   child: Column(
                                                                     children: [
                                                                       Container(
+                                                                        margin: EdgeInsets.symmetric(
+                                                                            horizontal:
+                                                                                160),
                                                                         child:
-                                                                            Text(
-                                                                          '____',
-                                                                          style:
-                                                                              TextStyle(
-                                                                            fontWeight:
-                                                                                FontWeight.w800,
+                                                                            Center(
+                                                                          child:
+                                                                              Divider(
+                                                                            color:
+                                                                                Colors.black, // Ganti dengan warna yang Anda inginkan
+                                                                            thickness:
+                                                                                2, // Atur ketebalan garis
+                                                                            height:
+                                                                                20, // Jarak vertikal garis dari widget lainnya
                                                                           ),
                                                                         ),
                                                                       ),
@@ -675,11 +728,76 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                   ),
                                                                 ),
                                                                 Container(
-                                                                    margin: EdgeInsets.only(
-                                                                        left:
-                                                                            52,
-                                                                        bottom:
+                                                                  margin: EdgeInsets
+                                                                      .only(
+                                                                          bottom:
+                                                                              4),
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Text(
+                                                                        'Presentase Tabungan : ',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          fontWeight:
+                                                                              FontWeight.w400,
+                                                                        ),
+                                                                      ),
+                                                                      Text(
+                                                                        "$persentaseTeks",
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                                Container(
+                                                                  margin: EdgeInsets
+                                                                      .symmetric(
+                                                                          vertical:
+                                                                              10),
+                                                                  child:
+                                                                      ClipRRect(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
                                                                             10),
+                                                                    child:
+                                                                        TweenAnimationBuilder(
+                                                                      duration: Duration(
+                                                                          seconds:
+                                                                              1), // Durasi animasi
+                                                                      tween: Tween<
+                                                                              double>(
+                                                                          begin:
+                                                                              0,
+                                                                          end:
+                                                                              persentaseBar),
+                                                                      builder: (context,
+                                                                              double value,
+                                                                              child) =>
+                                                                          LinearProgressIndicator(
+                                                                        value:
+                                                                            value,
+                                                                        backgroundColor:
+                                                                            Colors.grey[300],
+                                                                        valueColor:
+                                                                            AlwaysStoppedAnimation<Color>(primaryColor),
+                                                                        minHeight:
+                                                                            10,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                Container(
+                                                                    margin: EdgeInsets.only(
+                                                                        bottom:
+                                                                            8),
                                                                     child: Row(
                                                                       children: [
                                                                         Text(
@@ -697,6 +815,8 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                                 255,
                                                                                 113,
                                                                                 1),
+                                                                            fontSize:
+                                                                                15,
                                                                             fontWeight:
                                                                                 FontWeight.bold,
                                                                           ),

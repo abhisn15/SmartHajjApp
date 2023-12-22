@@ -57,6 +57,7 @@ dependencies:
   flutter_dotenv: ^5.1.0
   midtrans_sdk: ^0.4.0
   webview_flutter: ^4.4.2
+  share_plus: ^7.2.1
 
 flutter_native_splash:
 android: true
@@ -101,8 +102,11 @@ flutter:
     - assets/profile/partner.png
     - assets/profile/faq.png
     - assets/profile/bantuan.png
+    - assets/profile/referal.png
+    - assets/profile/undangAgent.png
     - assets/profile/arrow.png
     - assets/dompet/info.png
+    - assets/dompet/pemberitahuan.png
     - assets/home/topup.png
     - assets/dompet.png
     - assets/tabunganUmroh.png

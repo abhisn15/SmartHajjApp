@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:SmartHajj/auth/daftarScreen.dart';
-import 'package:SmartHajj/auth/loginScreen.dart';
 import 'package:SmartHajj/auth/resetPasswordScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,14 +20,14 @@ class _CheckCodeScreenState extends State<CheckCodeScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Kode"),
+          title: const Text("Kode"),
           content: Text(message),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("OK"),
+              child: const Text("OK"),
             ),
           ],
         );

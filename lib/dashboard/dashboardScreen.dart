@@ -702,7 +702,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         ),
                                       ),
                                       Container(
-                                        height: 200,
+                                        height: 320,
                                         child: Column(
                                           children: [
                                             Expanded(
@@ -786,22 +786,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                                       var deposit =
                                                                           double.tryParse(item['deposit'].toString()) ??
                                                                               0.0;
+                                                                      var depositTarget =
+                                                                          double.tryParse(item['deposit_target'].toString()) ??
+                                                                              0.0;
                                                                       String formattedDeposit = NumberFormat.currency(
                                                                               locale: 'id',
                                                                               symbol: 'Rp ',
                                                                               decimalDigits: 0)
                                                                           .format(deposit);
+                                                                      double
+                                                                          persentaseBar =
+                                                                          deposit /
+                                                                              depositTarget;
+
+                                                                      String
+                                                                          persentaseTeks =
+                                                                          "${(persentaseBar * 100).toStringAsFixed(0)}%";
                                                                       return Column(
                                                                         children: [
                                                                           Container(
                                                                             margin:
                                                                                 EdgeInsets.only(bottom: 12),
                                                                             height:
-                                                                                50,
+                                                                                84,
                                                                             width:
                                                                                 double.infinity,
                                                                             padding:
-                                                                                EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                                                                EdgeInsets.symmetric(horizontal: 20),
                                                                             decoration:
                                                                                 BoxDecoration(
                                                                               border: Border.all(
@@ -814,11 +825,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                                             child:
                                                                                 Container(
                                                                               alignment: Alignment.centerLeft,
-                                                                              child: Row(
-                                                                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                                              child: Column(
                                                                                 children: [
-                                                                                  Text(item['pilgrim_name'] ?? ''),
-                                                                                  Text(formattedDeposit),
+                                                                                  Container(
+                                                                                    margin: EdgeInsets.only(top: 16),
+                                                                                    child: Row(
+                                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                      children: [
+                                                                                        Text(
+                                                                                          item['pilgrim_name'] ?? '',
+                                                                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                                                                        ),
+                                                                                        Text(
+                                                                                          formattedDeposit,
+                                                                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                                                                        ),
+                                                                                      ],
+                                                                                    ),
+                                                                                  ),
+                                                                                  Container(
+                                                                                    margin: EdgeInsets.symmetric(vertical: 10),
+                                                                                    child: ClipRRect(
+                                                                                      child: TweenAnimationBuilder(
+                                                                                        duration: Duration(seconds: 1), // Durasi animasi
+                                                                                        tween: Tween<double>(begin: 0, end: persentaseBar),
+                                                                                        builder: (context, double value, child) => LinearProgressIndicator(
+                                                                                          value: value,
+                                                                                          backgroundColor: Colors.grey[300],
+                                                                                          valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+                                                                                          minHeight: 10,
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
                                                                                 ],
                                                                               ),
                                                                             ),
