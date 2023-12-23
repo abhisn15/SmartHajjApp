@@ -87,12 +87,13 @@ class _EditProfileState extends State<EditProfileScreen> {
                 actions: [
                   TextButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      Navigator.pushAndRemoveUntil(
                         // Navigate to login screen
                         context,
                         MaterialPageRoute(
                           builder: (context) => BottomNavigationProfile(),
                         ),
+                        (Route<dynamic> route) => false,
                       );
                     },
                     child: Text("OK"),
