@@ -256,6 +256,24 @@ class _DompetScreenState extends State<DompetScreen> {
         throw Exception('Failed to load data: ${response.statusCode}');
       }
     } catch (e) {
+      AwesomeDialog(
+          dismissOnTouchOutside: false,
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: 'Token Expired',
+          desc: 'Token anda sudah kadaluarsa, harap login kembali!',
+          btnOkOnPress: () {
+            Navigator.pushReplacement(
+              // Navigate to sendMail screen
+              context,
+              MaterialPageRoute(
+                builder: (context) => LoginScreen(),
+              ),
+            );
+          },
+          btnOkColor: Colors.red)
+        ..show();
       // Catch any exceptions that occur during the process
       throw Exception('Failed to load data');
     }
@@ -605,12 +623,8 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                   child: Column(
                                                                     children: [
                                                                       Container(
-                                                                        width: double
-                                                                            .infinity,
-                                                                        margin: const EdgeInsets
-                                                                            .symmetric(
-                                                                            horizontal:
-                                                                                160),
+                                                                        width:
+                                                                            40,
                                                                         child:
                                                                             const Center(
                                                                           child:

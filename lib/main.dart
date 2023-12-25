@@ -45,15 +45,15 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(Duration(seconds: 3));
 
     if (token == null && agentId == null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
-      );
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+          (Route<dynamic> route) => false);
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => BottomNavigation()),
-      );
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => BottomNavigation()),
+          (Route<dynamic> route) => false);
     }
   }
 

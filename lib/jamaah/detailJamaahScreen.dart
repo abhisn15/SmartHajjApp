@@ -579,11 +579,15 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                                             child: Column(
                                               children: [
                                                 Container(
-                                                  child: Text(
-                                                    '____',
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w800,
+                                                  width: 40,
+                                                  child: const Center(
+                                                    child: Divider(
+                                                      color: Colors
+                                                          .black, // Ganti dengan warna yang Anda inginkan
+                                                      thickness:
+                                                          2, // Atur ketebalan garis
+                                                      height:
+                                                          20, // Jarak vertikal garis dari widget lainnya
                                                     ),
                                                   ),
                                                 ),

@@ -204,6 +204,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
         throw Exception('API_USER is not defined in the .env file');
       }
     } catch (e) {
+      AwesomeDialog(
+          dismissOnTouchOutside: false,
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: 'Token Expired',
+          desc: 'Token anda sudah kadaluarsa, harap login kembali!',
+          btnOkOnPress: () {
+            Navigator.pushReplacement(
+              // Navigate to sendMail screen
+              context,
+              MaterialPageRoute(
+                builder: (context) => LoginScreen(),
+              ),
+            );
+          },
+          btnOkColor: Colors.red)
+        ..show();
       throw Exception('Failed to load user data');
     }
   }
@@ -308,6 +326,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
         throw Exception('Failed to load user data: ${response.statusCode}');
       }
     } catch (e) {
+      AwesomeDialog(
+          dismissOnTouchOutside: false,
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: 'Token Expired',
+          desc: 'Token anda sudah kadaluarsa, harap login kembali!',
+          btnOkOnPress: () {
+            Navigator.pushReplacement(
+              // Navigate to sendMail screen
+              context,
+              MaterialPageRoute(
+                builder: (context) => LoginScreen(),
+              ),
+            );
+          },
+          btnOkColor: Colors.red)
+        ..show();
       throw Exception('Failed to load user data');
     }
   }
@@ -341,7 +377,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ..show();
         throw Exception('Token not available');
       }
-
       HttpClient httpClient = new HttpClient();
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
