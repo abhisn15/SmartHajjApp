@@ -460,10 +460,59 @@ class _DetailJamaahScreenState extends State<DetailJamaahScreen> {
                                   },
                                 ),
                                 Container(
-                                  clipBehavior: Clip.none,
-                                  margin: EdgeInsets.only(top: 24),
-                                  child: Image.asset('assets/dompet/info.png'),
-                                ),
+                                    alignment: Alignment.center,
+                                    clipBehavior: Clip.none,
+                                    margin: const EdgeInsets.only(
+                                        top: 24, left: 40, right: 40),
+                                    child: Container(
+                                      margin: const EdgeInsets.only(bottom: 12),
+                                      height: 84,
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5),
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        color: const Color.fromARGB(
+                                            82, 217, 217, 217),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            margin: const EdgeInsets.only(
+                                                bottom: 25),
+                                            child: Image.asset(
+                                              'assets/dompet/pemberitahuan.png',
+                                              height: 40,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            width: 8,
+                                          ),
+                                          const Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                'Transfer made to bank account \ncould take a few minutes',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.w300),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    )),
                               ],
                             ),
                           );

@@ -96,18 +96,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
       if (token == null) {
         AwesomeDialog(
+            dismissOnTouchOutside: false,
             context: context,
             dialogType: DialogType.error,
             animType: AnimType.rightSlide,
             title: 'Token Expired',
             desc: 'Token anda sudah kadaluarsa, harap login kembali!',
             btnOkOnPress: () {
-              Navigator.pushReplacement(
+              Navigator.pushAndRemoveUntil(
                 // Navigate to sendMail screen
                 context,
                 MaterialPageRoute(
                   builder: (context) => LoginScreen(),
                 ),
+                (Route<dynamic> route) => false,
               );
             },
             btnOkColor: Colors.red)
@@ -156,9 +158,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? apiUser = dotenv.env['API_USER'];
       String? token = prefs.getString('token');
+      String? agentId = prefs.getString('agentId');
 
       if (token == null) {
-        // Handle the case where the token is not available
+        AwesomeDialog(
+            dismissOnTouchOutside: false,
+            context: context,
+            dialogType: DialogType.error,
+            animType: AnimType.rightSlide,
+            title: 'Token Expired',
+            desc: 'Token anda sudah kadaluarsa, harap login kembali!',
+            btnOkOnPress: () {
+              Navigator.pushAndRemoveUntil(
+                // Navigate to sendMail screen
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginScreen(),
+                ),
+                (Route<dynamic> route) => false,
+              );
+            },
+            btnOkColor: Colors.red)
+          ..show();
         throw Exception('Token not available');
       }
 
@@ -196,6 +217,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
       String? agentId = prefs.getString('users');
 
       if (token == null) {
+        AwesomeDialog(
+            dismissOnTouchOutside: false,
+            context: context,
+            dialogType: DialogType.error,
+            animType: AnimType.rightSlide,
+            title: 'Token Expired',
+            desc: 'Token anda sudah kadaluarsa, harap login kembali!',
+            btnOkOnPress: () {
+              Navigator.pushAndRemoveUntil(
+                // Navigate to sendMail screen
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginScreen(),
+                ),
+                (Route<dynamic> route) => false,
+              );
+            },
+            btnOkColor: Colors.red)
+          ..show();
         throw Exception('Token not available');
       }
 
@@ -228,8 +268,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
       String? token = prefs.getString('token');
       String? agentId = prefs.getString('agentId');
 
-      if (token == null || agentId == null) {
-        throw Exception('Token or Agent ID not available');
+      if (token == null) {
+        AwesomeDialog(
+            dismissOnTouchOutside: false,
+            context: context,
+            dialogType: DialogType.error,
+            animType: AnimType.rightSlide,
+            title: 'Token Expired',
+            desc: 'Token anda sudah kadaluarsa, harap login kembali!',
+            btnOkOnPress: () {
+              Navigator.pushAndRemoveUntil(
+                // Navigate to sendMail screen
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginScreen(),
+                ),
+                (Route<dynamic> route) => false,
+              );
+            },
+            btnOkColor: Colors.red)
+          ..show();
+        throw Exception('Token not available');
       }
 
       Dio dio = Dio();
@@ -262,9 +321,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
       String? agentId = prefs.getString('users');
 
       if (token == null) {
+        AwesomeDialog(
+            dismissOnTouchOutside: false,
+            context: context,
+            dialogType: DialogType.error,
+            animType: AnimType.rightSlide,
+            title: 'Token Expired',
+            desc: 'Token anda sudah kadaluarsa, harap login kembali!',
+            btnOkOnPress: () {
+              Navigator.pushAndRemoveUntil(
+                // Navigate to sendMail screen
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginScreen(),
+                ),
+                (Route<dynamic> route) => false,
+              );
+            },
+            btnOkColor: Colors.red)
+          ..show();
         throw Exception('Token not available');
       }
-
       HttpClient httpClient = new HttpClient();
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;

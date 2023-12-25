@@ -79,7 +79,6 @@ class _LoginScreenState extends State<LoginScreen> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
                     Navigator.pushReplacement(
                       // Navigate to login screen
                       context,

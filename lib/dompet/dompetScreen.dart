@@ -262,38 +262,6 @@ class _DompetScreenState extends State<DompetScreen> {
     }
   }
 
-  final List<Map<String, dynamic>> totalSaldoTabungan = [
-    {
-      "id": 1,
-      "name": "Total Saldo Tabungan",
-      "totalSaldoTabungan": "Rp. 100.000.000",
-      "target": "Rp. 277.000,00",
-    },
-  ];
-  final List<Map<String, dynamic>> listSaldoJamaah = [
-    {
-      "id": 1,
-      "title": "List Saldo Jamaah",
-      "img": "assets/home/topup.png",
-      "name": "Papa Khan",
-      "totalSaldoTabungan": "Rp. 25.000.000",
-      "nomorVirtualAkun": "9887146700043563",
-      "nik": "3174082905005000",
-      "paketTabunganUmrah": "Paket Tabungan Umrah Ramadhan (Rp.35.000.000)"
-    },
-    {
-      "id": 2,
-      "title": "",
-      "img": "assets/home/topup.png",
-      "name": "Ricky Setiawan",
-      "totalSaldoTabungan": "Rp. 15.000.000",
-      "nomorVirtualAkun": "9887146700043673",
-      "nik": "3174082902345009",
-      "paketTabunganUmrah": "Paket Tabungan Umrah Sya`ban (Rp. 35.000.000)"
-    },
-    // Tambahkan data lainnya di sini
-  ];
-
   final primaryColor = Color.fromRGBO(43, 69, 112, 1);
 
   @override
@@ -333,7 +301,7 @@ class _DompetScreenState extends State<DompetScreen> {
                   // Bagian atas
                   Container(
                     clipBehavior: Clip.none,
-                    padding: EdgeInsets.only(top: 20),
+                    padding: const EdgeInsets.only(top: 20),
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: primaryColor,
@@ -342,7 +310,7 @@ class _DompetScreenState extends State<DompetScreen> {
                       children: [
                         Container(
                           clipBehavior: Clip.none,
-                          padding: EdgeInsets.only(bottom: 15),
+                          padding: const EdgeInsets.only(bottom: 15),
                           child: ClipOval(
                               child: Image.asset(
                             'assets/home/profile.jpg',
@@ -351,7 +319,7 @@ class _DompetScreenState extends State<DompetScreen> {
                         ),
                         Text(
                           snapshot.data!['name'],
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
@@ -359,10 +327,10 @@ class _DompetScreenState extends State<DompetScreen> {
                         ),
                         Container(
                           clipBehavior: Clip.none,
-                          margin: EdgeInsets.only(top: 8),
+                          margin: const EdgeInsets.only(top: 8),
                           child: Text(
                             snapshot.data!['email'],
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.grey,
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -371,10 +339,10 @@ class _DompetScreenState extends State<DompetScreen> {
                         ),
                         Container(
                           clipBehavior: Clip.none,
-                          margin: EdgeInsets.only(top: 8),
+                          margin: const EdgeInsets.only(top: 8),
                           child: Text(
                             snapshot.data!['phone'],
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.grey,
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -382,8 +350,8 @@ class _DompetScreenState extends State<DompetScreen> {
                           ),
                         ),
                         Container(
-                          margin: EdgeInsets.only(top: 8),
-                          child: Text(
+                          margin: const EdgeInsets.only(top: 8),
+                          child: const Text(
                             'Transfer on Dec 2, 2020',
                             style: TextStyle(
                               color: Colors.white,
@@ -398,14 +366,15 @@ class _DompetScreenState extends State<DompetScreen> {
                               AsyncSnapshot<Map<String, dynamic>> snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
+                              return const Center(
+                                  child: CircularProgressIndicator());
                             } else if (snapshot.hasError) {
                               // Print detailed error information
                               return Center(
                                   child: Text('Error: ${snapshot.error}'));
                             } else if (snapshot.data == null ||
                                 snapshot.data!.isEmpty) {
-                              return Center(
+                              return const Center(
                                   child: Text('Data is null or empty'));
                             } else {
                               // Print the complete response
@@ -419,14 +388,14 @@ class _DompetScreenState extends State<DompetScreen> {
                                       .format(totalSaldo);
 
                               if (totalSaldo == null) {
-                                return Center(
+                                return const Center(
                                     child: Text('Total saldo is null'));
                               }
                               return Container(
-                                margin: EdgeInsets.only(top: 16),
+                                margin: const EdgeInsets.only(top: 16),
                                 child: Text(
                                   formattedTotalSaldo,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 24.0,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
@@ -439,33 +408,34 @@ class _DompetScreenState extends State<DompetScreen> {
                         Container(
                             alignment: Alignment.center,
                             clipBehavior: Clip.none,
-                            margin:
-                                EdgeInsets.only(top: 24, left: 40, right: 40),
+                            margin: const EdgeInsets.only(
+                                top: 24, left: 40, right: 40),
                             child: Container(
-                              margin: EdgeInsets.only(bottom: 12),
+                              margin: const EdgeInsets.only(bottom: 12),
                               height: 84,
                               width: double.infinity,
-                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10.0),
-                                color: Color.fromARGB(82, 217, 217, 217),
+                                color: const Color.fromARGB(82, 217, 217, 217),
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Container(
-                                    margin: EdgeInsets.only(bottom: 25),
+                                    margin: const EdgeInsets.only(bottom: 25),
                                     child: Image.asset(
                                       'assets/dompet/pemberitahuan.png',
                                       height: 40,
                                       color: Colors.white,
                                     ),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 8,
                                   ),
-                                  Column(
+                                  const Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
@@ -491,12 +461,13 @@ class _DompetScreenState extends State<DompetScreen> {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
+                          return const Center(
+                              child: CircularProgressIndicator());
                         } else if (snapshot.hasError) {
                           return Center(
                               child: Text('Error: ${snapshot.error}'));
                         } else if (snapshot.data == null) {
-                          return Center(child: Text('Data is null'));
+                          return const Center(child: Text('Data is null'));
                         } else {
                           return Stack(children: <Widget>[
                             // Your existing UI elements here...
@@ -511,7 +482,7 @@ class _DompetScreenState extends State<DompetScreen> {
                                 builder: (BuildContext context,
                                     ScrollController scrollController) {
                                   return Container(
-                                      decoration: BoxDecoration(
+                                      decoration: const BoxDecoration(
                                         color: Colors.white,
                                         borderRadius: BorderRadius.only(
                                           topLeft: Radius.circular(20.0),
@@ -625,8 +596,9 @@ class _DompetScreenState extends State<DompetScreen> {
                                                           title: index ==
                                                                   0 // Check if it's the first item
                                                               ? Container(
-                                                                  margin: EdgeInsets
-                                                                      .only(
+                                                                  margin:
+                                                                      const EdgeInsets
+                                                                          .only(
                                                                           bottom:
                                                                               0,
                                                                           left:
@@ -634,11 +606,14 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                   child: Column(
                                                                     children: [
                                                                       Container(
-                                                                        margin: EdgeInsets.symmetric(
+                                                                        width: double
+                                                                            .infinity,
+                                                                        margin: const EdgeInsets
+                                                                            .symmetric(
                                                                             horizontal:
                                                                                 160),
                                                                         child:
-                                                                            Center(
+                                                                            const Center(
                                                                           child:
                                                                               Divider(
                                                                             color:
@@ -650,7 +625,7 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                           ),
                                                                         ),
                                                                       ),
-                                                                      Row(
+                                                                      const Row(
                                                                         children: [
                                                                           Text(
                                                                             'List Saldo Jamaah',
@@ -664,17 +639,19 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                     ],
                                                                   ),
                                                                 )
-                                                              : SizedBox
+                                                              : const SizedBox
                                                                   .shrink(),
                                                           subtitle: Container(
                                                             margin:
-                                                                EdgeInsets.only(
+                                                                const EdgeInsets
+                                                                    .only(
                                                               top: 15,
                                                               left: 5,
                                                               right: 5,
                                                             ),
                                                             padding:
-                                                                EdgeInsets.only(
+                                                                const EdgeInsets
+                                                                    .only(
                                                                     left: 20,
                                                                     right: 10,
                                                                     top: 10,
@@ -682,7 +659,7 @@ class _DompetScreenState extends State<DompetScreen> {
                                                             width:
                                                                 double.infinity,
                                                             decoration:
-                                                                BoxDecoration(
+                                                                const BoxDecoration(
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .all(Radius
@@ -701,14 +678,16 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                       .start,
                                                               children: [
                                                                 Container(
-                                                                  padding: EdgeInsets
-                                                                      .only(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .only(
                                                                           bottom:
                                                                               5),
                                                                   child: Row(
                                                                     children: [
                                                                       Container(
-                                                                        margin: EdgeInsets.only(
+                                                                        margin: const EdgeInsets
+                                                                            .only(
                                                                             right:
                                                                                 15),
                                                                         child: Image.asset(
@@ -718,7 +697,7 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                         child:
                                                                             Text(
                                                                           formattedDeposit,
-                                                                          style: TextStyle(
+                                                                          style: const TextStyle(
                                                                               fontSize: 26,
                                                                               fontWeight: FontWeight.w700,
                                                                               color: Colors.white),
@@ -728,13 +707,14 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                   ),
                                                                 ),
                                                                 Container(
-                                                                  margin: EdgeInsets
-                                                                      .only(
+                                                                  margin:
+                                                                      const EdgeInsets
+                                                                          .only(
                                                                           bottom:
                                                                               4),
                                                                   child: Row(
                                                                     children: [
-                                                                      Text(
+                                                                      const Text(
                                                                         'Presentase Tabungan : ',
                                                                         style:
                                                                             TextStyle(
@@ -758,10 +738,10 @@ class _DompetScreenState extends State<DompetScreen> {
                                                                   ),
                                                                 ),
                                                                 Container(
-                                                                  margin: EdgeInsets
+                                                                  margin: const EdgeInsets
                                                                       .symmetric(
-                                                                          vertical:
-                                                                              10),
+                                                                      vertical:
+                                                                          10),
                                                                   child:
                                                                       ClipRRect(
                                                                     borderRadius:

@@ -77,6 +77,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
         // Show success alert
         showDialog(
           context: context,
+          barrierDismissible: false,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("Signup Successful"),
@@ -84,12 +85,13 @@ class _DaftarScreenState extends State<DaftarScreen> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
+                    Navigator.pushAndRemoveUntil(
                       // Navigate to login screen
                       context,
                       MaterialPageRoute(
                         builder: (context) => LoginScreen(),
                       ),
+                      (Route<dynamic> route) => false,
                     );
                   },
                   child: Text("OK"),
