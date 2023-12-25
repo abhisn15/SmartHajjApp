@@ -79,12 +79,13 @@ class _LoginScreenState extends State<LoginScreen> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
+                    Navigator.pushAndRemoveUntil(
                       // Navigate to login screen
                       context,
                       MaterialPageRoute(
                         builder: (context) => BottomNavigation(),
                       ),
+                      (route) => false,
                     );
                   },
                   child: Text("OK"),

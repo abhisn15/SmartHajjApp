@@ -5,7 +5,6 @@ import 'package:SmartHajj/BottomNavigationDompet.dart';
 import 'package:SmartHajj/Dashboard/CustomCategoryButton.dart';
 import 'package:SmartHajj/Dashboard/CustomInformationButton.dart';
 import 'package:SmartHajj/auth/loginScreen.dart';
-import 'package:SmartHajj/dashboard/checkoutDP.dart';
 import 'package:SmartHajj/dashboard/informasi/hewanQurban/hewanQurban.dart';
 import 'package:SmartHajj/dashboard/informasi/infoHotel/infoHotel.dart';
 import 'package:SmartHajj/dashboard/informasi/infoMaktab/infoMaktab.dart';
@@ -94,7 +93,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       String? token = prefs.getString('token');
       String? agentId = prefs.getString('agentId');
 
-      if (token == null) {
+      if (token == null && agentId == null) {
         AwesomeDialog(
             dismissOnTouchOutside: false,
             context: context,
@@ -160,7 +159,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       String? token = prefs.getString('token');
       String? agentId = prefs.getString('agentId');
 
-      if (token == null) {
+      if (token == null && agentId == null) {
         AwesomeDialog(
             dismissOnTouchOutside: false,
             context: context,
@@ -216,7 +215,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       String? token = prefs.getString('token');
       String? agentId = prefs.getString('users');
 
-      if (token == null) {
+      if (token == null && agentId == null) {
         AwesomeDialog(
             dismissOnTouchOutside: false,
             context: context,
@@ -268,7 +267,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       String? token = prefs.getString('token');
       String? agentId = prefs.getString('agentId');
 
-      if (token == null) {
+      if (token == null && agentId == null) {
         AwesomeDialog(
             dismissOnTouchOutside: false,
             context: context,
@@ -320,7 +319,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       String? token = prefs.getString('token');
       String? agentId = prefs.getString('users');
 
-      if (token == null) {
+      if (token == null && agentId == null) {
         AwesomeDialog(
             dismissOnTouchOutside: false,
             context: context,
@@ -342,6 +341,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ..show();
         throw Exception('Token not available');
       }
+
       HttpClient httpClient = new HttpClient();
       httpClient.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
@@ -434,6 +434,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   ];
 
+  final primaryColor = Color.fromRGBO(43, 69, 112, 1);
   bool isTargetVisible = false;
   double targetTabunganBorderRadius = 20.0;
 

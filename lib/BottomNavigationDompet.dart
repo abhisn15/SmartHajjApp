@@ -1,4 +1,3 @@
-import 'package:SmartHajj/dashboard/checkoutScreen.dart';
 import 'package:SmartHajj/dompet/dompetScreen.dart';
 import 'package:SmartHajj/profile/profileScreen.dart';
 import 'package:flutter/material.dart';
@@ -51,6 +50,8 @@ class _BottomNavigationBarExampleState
       }
     });
   }
+
+  final primaryColor = Color.fromRGBO(43, 69, 112, 1);
 
   @override
   Widget build(BuildContext context) {
